@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Persistence
+namespace Common.Interfaces
 {
-    public class Class1
+    public interface IEntity
     {
-        public Class1()
-        {
-        }
+        long Id { get; set; }
     }
 }
