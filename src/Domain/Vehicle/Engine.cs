@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Domain.Vehicle
 {
-    public class Class1
+    public class Engine
     {
-        public Class1()
-        {
-        }
     }
 }
