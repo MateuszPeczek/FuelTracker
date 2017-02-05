@@ -1,0 +1,3 @@
+﻿Add-Migration [NAME] -Project Persistence -StartupProject FuelTracker
+
+update-database -Project Persistence -StartupProject FuelTracker

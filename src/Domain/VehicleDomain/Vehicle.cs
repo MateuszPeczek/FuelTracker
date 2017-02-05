@@ -13,17 +13,17 @@ namespace Domain.VehicleDomain
         public int ProductionYear { get; set; }
         [ForeignKey("Engine")]
         public long EngineID { get; set; }
-        [ForeignKey("Manufacturer")]
-        public long ManufacturerID { get; set; }
-        [ForeignKey("Model")]
-        public long ModelID { get; set; }
+        [ForeignKey("VehicleManufacturer")]
+        public long VehicleManufacturerID { get; set; }
+        [ForeignKey("VehicleModel")]
+        public long VehicleModelID { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
         public VehicleType Type { get; set; }
 
         public virtual Engine Engine { get; set; }
-        public virtual Manufacturer Manufacturer { get; set; }
-        public virtual Model Model { get; set; }
+        public virtual VehicleManufacturer VehicleManufacturer { get; set; }
+        public virtual VehicleModel VehicleModel { get; set; }
         public virtual User User { get; set; }
 
     }

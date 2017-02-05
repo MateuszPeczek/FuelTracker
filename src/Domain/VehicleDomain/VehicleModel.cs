@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.VehicleDomain
 {
-    public class Model : IEntity
+    public class VehicleModel : IEntity
     {
-        [Column("ModelID")]
+        [Column("VehicleModelID")]
         public long Id { get; set; }
         [StringLength(20)]
         public string Name { get; set; }

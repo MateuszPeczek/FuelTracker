@@ -21,6 +21,8 @@ namespace Domain.FuelStatisticsDomain
         public decimal PricePerUnit { get; set; }
         public Units Units { get; set; }
         public DateTime DateCreated { get; set; }
+        [Timestamp]
+        public byte[] RowVersion{ get; set; }
 
         public virtual Vehicle Vehicle { get; set; }
     }
