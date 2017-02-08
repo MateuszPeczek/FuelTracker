@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Persistence;
 using Domain.UserDomain;
+using Common.Interfaces;
+using Infrastructure.Bus;
+using Infrastructure.Factory;
+using Application.Vehicle;
 
 namespace FuelTracker
 {
@@ -32,8 +36,19 @@ namespace FuelTracker
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ICommandSender, CommunicationBus>();
+            services.AddSingleton<IEventPublisher, CommunicationBus>();
+            services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
+            services.AddScoped((s) =>
+            {
+                return services; 
+            });
+            services.AddScoped(typeof(AddVehicleCommand), typeof(AddVehicleCommandHandler));
+
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddMvc();
 
             services.AddIdentity<User, UserRole>(
                 options =>
