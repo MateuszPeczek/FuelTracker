@@ -1,8 +1,10 @@
 ﻿using Common.Interfaces;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Enums;
 
 namespace Infrastructure.Bus
 {
@@ -22,10 +24,23 @@ namespace Infrastructure.Bus
             throw new NotImplementedException();
         }
 
-        public void Send(ICommand command)
+        public CommandResult Send(ICommand command)
         {
-            var handler = commandHandlerFactory.GetHandler(command);
-            handler.Handle(command);
+            try
+            {
+                var handler = commandHandlerFactory.GetHandler(command);
+                var sendingMethod = handler.GetType().GetRuntimeMethods().FirstOrDefault(m => m.Name == "Handle");
+
+                if (sendingMethod != null)
+                    sendingMethod.Invoke(handler, new object[] { command });
+
+                return CommandResult.Success;
+            }
+            catch (Exception ex)
+            {
+                //TODO logging
+                return CommandResult.Failure;
+            }
         }
     }
 }

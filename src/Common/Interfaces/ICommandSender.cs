@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Enums;
+using Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,6 @@ namespace Common.Interfaces
 {
     public interface ICommandSender
     {
-        void Send(ICommand command);
+        CommandResult Send(ICommand command);
     }
 }
