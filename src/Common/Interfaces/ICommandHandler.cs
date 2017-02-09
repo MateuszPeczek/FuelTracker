@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Common.Interfaces
 {
-    public interface ICommandHandler
+    public interface ICommandHandler<in T> where T : ICommand
     {
-        void Handle(ICommand command);
+        void Handle(T command);
     }
 }

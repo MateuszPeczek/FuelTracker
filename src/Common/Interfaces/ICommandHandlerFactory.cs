@@ -7,6 +7,6 @@ namespace Common.Interfaces
 {
     public interface ICommandHandlerFactory
     {
-        ICommandHandler GetHandler(ICommand command);
+       object GetHandler(ICommand command);
     }
 }

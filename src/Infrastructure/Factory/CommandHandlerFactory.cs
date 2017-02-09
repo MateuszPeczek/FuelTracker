@@ -15,9 +15,24 @@ namespace Infrastructure.Factory
             services = diContainer.BuildServiceProvider();
         }
 
-        public ICommandHandler GetHandler(ICommand command)
+        public object GetHandler(ICommand command)
         {
-            return (ICommandHandler)services.GetRequiredService(command.GetType());
+            try
+            {
+                var commandType = command.GetType();
+                var handlerObject = services.GetRequiredService(commandType);
+
+                if (handlerObject == null)
+                    throw new Exception("Handler not found");
+
+                return handlerObject;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                //TODO logging
+            }
         }
+
     }
 }
