@@ -9,7 +9,6 @@ using Domain.UserDomain;
 using Common.Interfaces;
 using Infrastructure.Bus;
 using Infrastructure.Factory;
-using Application.VehicleService;
 using System.Reflection;
 using System.Linq;
 using System;
@@ -49,7 +48,7 @@ namespace FuelTracker
 
 
             services.AddDbContext<ApplicationContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
 
             services.AddMvc();
 
