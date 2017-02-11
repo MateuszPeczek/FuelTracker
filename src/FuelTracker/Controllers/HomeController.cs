@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Common.Interfaces;
-using Application.VehicleService;
+using Application.VehicleApplication;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,10 +21,6 @@ namespace FuelTracker.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            var command = new AddVehicleCommand();
-
-            commandBus.Send(command);
-
             return new string[] { "value1", "value2" };
         }
 
