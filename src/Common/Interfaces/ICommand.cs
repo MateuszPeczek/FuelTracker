@@ -7,5 +7,6 @@ namespace Common.Interfaces
 {
     public interface ICommand
     {
+        Guid Guid { get;}
     }
 }

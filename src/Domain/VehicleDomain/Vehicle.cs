@@ -1,5 +1,6 @@
 ﻿using Common.Interfaces;
 using Domain.UserDomain;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,6 +10,7 @@ namespace Domain.VehicleDomain
     {
         [Column("VahicleID")]
         public long Id { get; set; }
+        public Guid Guid{ get; set; }
         [Range(1900, 2099)]
         public int ProductionYear { get; set; }
         [ForeignKey("Engine")]
