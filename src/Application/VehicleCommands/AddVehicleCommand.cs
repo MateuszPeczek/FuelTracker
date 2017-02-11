@@ -6,13 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Application.VehicleService
+namespace Application.VehicleApplication
 {
     public class AddVehicleCommand : ICommand
     {
-        //TODO add proper command fields
-        public string Name { get; set; }
-        public long EngineID { get; set; }
+        public AddVehicleCommand(long modelID, long manufacturerID)
+        {
+            Guid = new Guid();
+        }
+
+        public Guid Guid { get;}
+        public long ModelID { get; set; }
+        public long ManufacturerID { get; set; }
     }
 
     public class AddVehicleCommandHandler : ICommandHandler<AddVehicleCommand>
@@ -32,7 +37,8 @@ namespace Application.VehicleService
                 {
                     var newVehicle = new Vehicle()
                     {
-                        EngineID = command.EngineID
+                        VehicleModelID = command.ModelID,
+                        VehicleManufacturerID = command.ManufacturerID
                     };
 
                     //TODO handle command
