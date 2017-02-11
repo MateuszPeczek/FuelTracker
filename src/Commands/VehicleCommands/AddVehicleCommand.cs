@@ -2,11 +2,8 @@
 using Domain.VehicleDomain;
 using Persistence;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Application.VehicleApplication
+namespace Commands.VehicleCommands
 {
     public class AddVehicleCommand : ICommand
     {

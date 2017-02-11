@@ -11,4 +11,7 @@ namespace Queries.Vehicle
     }
 
     public class VehicleQueryHandler : IQueryHandler<IQuery>
+    {
+
+    }
 }

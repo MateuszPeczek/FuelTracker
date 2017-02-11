@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "Application": "1.0.0-*",
+    "Commands": "1.0.0-*",
+    "Common": "1.0.0-*",
     "Infrastructure": "1.0.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Mvc": "1.1.1",
@@ -19,8 +20,8 @@
       "version": "1.1.0",
       "type": "platform"
     },
-    "Persistence": "1.0.0-*"
-  },
+    "Persistence": "1.0.0-*",
+    "Queries": "1.0.0-*"  },
 
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final"

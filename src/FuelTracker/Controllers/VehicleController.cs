@@ -1,5 +1,4 @@
-﻿using Application.VehicleApplication;
-using Common.Enums;
+﻿using Commands.VehicleCommands;
 using Common.Interfaces;
 using FuelTracker.ApiModels.Vehicle;
 using Microsoft.AspNetCore.Mvc;

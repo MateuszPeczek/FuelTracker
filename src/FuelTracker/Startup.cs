@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Persistence;
-using Domain.UserDomain;
-using Common.Interfaces;
-using Infrastructure.Bus;
-using Infrastructure.Factory;
 using System.Reflection;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using Common.Interfaces;
+using Infrastructure.Bus;
+using Infrastructure.Factory;
+using Persistence;
+using Domain.UserDomain;
 
 namespace FuelTracker
 {

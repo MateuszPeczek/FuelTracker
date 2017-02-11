@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FuelTracker", "src\FuelTracker\FuelTracker.xproj", "{C1A224EC-342A-4B20-8C15-F6A2BC454B95}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Application", "src\Application\Application.xproj", "{1166F4EC-912D-4625-878B-660E7FF895D0}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Commands", "src\Commands\Commands.xproj", "{1166F4EC-912D-4625-878B-660E7FF895D0}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Common", "src\Common\Common.xproj", "{E48C9051-8811-4C1E-A818-E89E0705F25C}"
 EndProject
@@ -22,7 +22,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Infrastructure", "src\Infra
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Persistence", "src\Persistence\Persistence.xproj", "{40FD2DD9-DB3E-4A60-A51B-182E4C0539A8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Service", "src\Service\Service.xproj", "{4F16C4AB-7DFB-4A6B-A82D-9A1580AF686A}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Queries", "src\Queries\Queries.xproj", "{4F16C4AB-7DFB-4A6B-A82D-9A1580AF686A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
