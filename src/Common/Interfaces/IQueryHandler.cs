@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Common.Interfaces
 {
-    public interface IQueryHandler
+    public interface IQueryHandler<T> where T : IQuery
     {
     }
 }
