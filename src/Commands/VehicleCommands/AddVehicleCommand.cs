@@ -7,14 +7,14 @@ namespace Commands.VehicleCommands
 {
     public class AddVehicleCommand : ICommand
     {
-        public AddVehicleCommand(long modelID, long manufacturerID)
+        public AddVehicleCommand(long modelId)
         {
-            Guid = new Guid();
+            this.Guid = Guid.NewGuid();
+            this.ModelId = modelId;
         }
 
-        public Guid Guid { get;}
-        public long ModelID { get; set; }
-        public long ManufacturerID { get; set; }
+        public Guid Guid { get; set; }
+        public long ModelId { get; set; }
     }
 
     public class AddVehicleCommandHandler : ICommandHandler<AddVehicleCommand>
@@ -34,11 +34,12 @@ namespace Commands.VehicleCommands
                 {
                     var newVehicle = new Vehicle()
                     {
-                        VehicleModelID = command.ModelID,
-                        VehicleManufacturerID = command.ManufacturerID
+                        Guid = command.Guid,
+                        ModelNameId = command.ModelId,
+                        //UserId = 1
                     };
 
-                    //TODO handle command
+                    context.Vehicle.Add(newVehicle);
 
                     context.SaveChanges();
                     transaction.Commit();
