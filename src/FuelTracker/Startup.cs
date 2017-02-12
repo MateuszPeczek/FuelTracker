@@ -43,19 +43,21 @@ namespace FuelTracker
             });
 
             //Register all commands to commands handler
-            var commandsAssemblyName = GetAssemblyByName("Application");
+            var commandsAssemblyName = GetAssemblyByName("Commands");
             RegisterHandlersToCommands(services, commandsAssemblyName);
-
 
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
 
+
             services.AddMvc();
+            services.AddSwaggerGen();
 
             services.AddIdentity<User, UserRole>(
                 options =>
                     options.User.RequireUniqueEmail = true
                 );
+            services.SeedData();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +71,8 @@ namespace FuelTracker
             }
 
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUi();
         }
 
         private bool RegisterHandlersToCommands(IServiceCollection services, AssemblyName sourceAssembly)
