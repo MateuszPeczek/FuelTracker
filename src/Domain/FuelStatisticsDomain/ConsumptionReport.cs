@@ -9,8 +9,6 @@ namespace Domain.FuelStatisticsDomain
 {
     public class ConsumptionReport : IEntity
     {
-        [Key]
-        [Column("ConsumptionReportID")]
         public long Id { get; set; }
         [ForeignKey("Vehicle")]
         [Column("Vehicle")]
