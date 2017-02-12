@@ -17,8 +17,8 @@ namespace Persistence
         public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
         public DbSet<FuelSummary> FuelSummary { get; set; }
         public DbSet<Engine> Engine { get; set; }
-        public DbSet<VehicleManufacturer> VehicleManufacturer { get; set; }
-        public DbSet<VehicleModel> VehicleModel { get; set; }
+        public DbSet<Manufacturer> Manufacturer { get; set; }
+        public DbSet<ModelName> ModelName { get; set; }
         public DbSet<Vehicle> Vehicle { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
