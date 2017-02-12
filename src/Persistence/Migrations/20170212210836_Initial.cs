@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Persistence.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -54,7 +54,7 @@ namespace Persistence.Migrations
                 name: "Engine",
                 columns: table => new
                 {
-                    EngineID = table.Column<long>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Cylinders = table.Column<int>(nullable: false),
                     Displacement = table.Column<float>(nullable: false),
@@ -65,33 +65,20 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Engine", x => x.EngineID);
+                    table.PrimaryKey("PK_Engine", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "VehicleManufacturer",
+                name: "Manufacturer",
                 columns: table => new
                 {
-                    VehicleManufacturerID = table.Column<long>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleManufacturer", x => x.VehicleManufacturerID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "VehicleModel",
-                columns: table => new
-                {
-                    VehicleModelID = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(maxLength: 20, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VehicleModel", x => x.VehicleModelID);
+                    table.PrimaryKey("PK_Manufacturer", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -195,44 +182,51 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vehicle",
+                name: "ModelName",
                 columns: table => new
                 {
-                    VahicleID = table.Column<long>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    EngineID = table.Column<long>(nullable: false),
-                    ProductionYear = table.Column<int>(nullable: false),
-                    Type = table.Column<int>(nullable: false),
-                    UserId = table.Column<long>(nullable: false),
-                    VehicleManufacturerID = table.Column<long>(nullable: false),
-                    VehicleModelID = table.Column<long>(nullable: false)
+                    ManufacturerId = table.Column<long>(nullable: false),
+                    Name = table.Column<string>(maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vehicle", x => x.VahicleID);
+                    table.PrimaryKey("PK_ModelName", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicle_Engine_EngineID",
-                        column: x => x.EngineID,
-                        principalTable: "Engine",
-                        principalColumn: "EngineID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Vehicle_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_ModelName_Manufacturer_ManufacturerId",
+                        column: x => x.ManufacturerId,
+                        principalTable: "Manufacturer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vehicle",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    EngineId = table.Column<long>(nullable: true),
+                    Guid = table.Column<Guid>(nullable: false),
+                    ModelNameId = table.Column<long>(nullable: false),
+                    ProductionYear = table.Column<int>(nullable: true),
+                    VehicleType = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vehicle", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicle_VehicleManufacturer_VehicleManufacturerID",
-                        column: x => x.VehicleManufacturerID,
-                        principalTable: "VehicleManufacturer",
-                        principalColumn: "VehicleManufacturerID",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Vehicle_Engine_EngineId",
+                        column: x => x.EngineId,
+                        principalTable: "Engine",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Vehicle_VehicleModel_VehicleModelID",
-                        column: x => x.VehicleModelID,
-                        principalTable: "VehicleModel",
-                        principalColumn: "VehicleModelID",
+                        name: "FK_Vehicle_ModelName_ModelNameId",
+                        column: x => x.ModelNameId,
+                        principalTable: "ModelName",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -240,7 +234,7 @@ namespace Persistence.Migrations
                 name: "ConsumptionReport",
                 columns: table => new
                 {
-                    ConsumptionReportID = table.Column<long>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     Distance = table.Column<float>(nullable: false),
@@ -253,12 +247,12 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ConsumptionReport", x => x.ConsumptionReportID);
+                    table.PrimaryKey("PK_ConsumptionReport", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ConsumptionReport_Vehicle_Vehicle",
                         column: x => x.Vehicle,
                         principalTable: "Vehicle",
-                        principalColumn: "VahicleID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -266,23 +260,23 @@ namespace Persistence.Migrations
                 name: "FuelSummary",
                 columns: table => new
                 {
-                    FuelSummaryID = table.Column<long>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AverageConsumption = table.Column<float>(nullable: false),
                     DistanceDriven = table.Column<decimal>(nullable: false),
                     FuelBurned = table.Column<decimal>(nullable: false),
                     MoneySpent = table.Column<decimal>(nullable: false),
                     ReportsNumber = table.Column<long>(nullable: false),
-                    Vehicle = table.Column<long>(nullable: false)
+                    VehicleId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FuelSummary", x => x.FuelSummaryID);
+                    table.PrimaryKey("PK_FuelSummary", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FuelSummary_Vehicle_Vehicle",
-                        column: x => x.Vehicle,
+                        name: "FK_FuelSummary_Vehicle_VehicleId",
+                        column: x => x.VehicleId,
                         principalTable: "Vehicle",
-                        principalColumn: "VahicleID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -292,9 +286,9 @@ namespace Persistence.Migrations
                 column: "Vehicle");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FuelSummary_Vehicle",
+                name: "IX_FuelSummary_VehicleId",
                 table: "FuelSummary",
-                column: "Vehicle");
+                column: "VehicleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -314,24 +308,19 @@ namespace Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vehicle_EngineID",
-                table: "Vehicle",
-                column: "EngineID");
+                name: "IX_ModelName_ManufacturerId",
+                table: "ModelName",
+                column: "ManufacturerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vehicle_UserId",
+                name: "IX_Vehicle_EngineId",
                 table: "Vehicle",
-                column: "UserId");
+                column: "EngineId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vehicle_VehicleManufacturerID",
+                name: "IX_Vehicle_ModelNameId",
                 table: "Vehicle",
-                column: "VehicleManufacturerID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vehicle_VehicleModelID",
-                table: "Vehicle",
-                column: "VehicleModelID");
+                column: "ModelNameId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -384,16 +373,16 @@ namespace Persistence.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Engine");
-
-            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "VehicleManufacturer");
+                name: "Engine");
 
             migrationBuilder.DropTable(
-                name: "VehicleModel");
+                name: "ModelName");
+
+            migrationBuilder.DropTable(
+                name: "Manufacturer");
         }
     }
 }

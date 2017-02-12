@@ -10,8 +10,8 @@ using Domain.VehicleDomain;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20170205205943_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20170212210836_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,8 +22,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.FuelStatisticsDomain.ConsumptionReport", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ConsumptionReportID");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("DateCreated");
 
@@ -54,8 +53,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.FuelStatisticsDomain.FuelSummary", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("FuelSummaryID");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<float>("AverageConsumption");
 
@@ -67,8 +65,7 @@ namespace Persistence.Migrations
 
                     b.Property<long>("ReportsNumber");
 
-                    b.Property<long>("VehicleId")
-                        .HasColumnName("Vehicle");
+                    b.Property<long>("VehicleId");
 
                     b.HasKey("Id");
 
@@ -153,8 +150,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.VehicleDomain.Engine", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("EngineID");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("Cylinders");
 
@@ -174,63 +170,58 @@ namespace Persistence.Migrations
                     b.ToTable("Engine");
                 });
 
+            modelBuilder.Entity("Domain.VehicleDomain.Manufacturer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(20);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Manufacturer");
+                });
+
+            modelBuilder.Entity("Domain.VehicleDomain.ModelName", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("ManufacturerId");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(20);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManufacturerId");
+
+                    b.ToTable("ModelName");
+                });
+
             modelBuilder.Entity("Domain.VehicleDomain.Vehicle", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("VahicleID");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<long>("EngineID");
+                    b.Property<long?>("EngineId");
 
-                    b.Property<int>("ProductionYear");
+                    b.Property<Guid>("Guid");
 
-                    b.Property<int>("Type");
+                    b.Property<long>("ModelNameId");
 
-                    b.Property<long>("UserId");
+                    b.Property<int?>("ProductionYear");
 
-                    b.Property<long>("VehicleManufacturerID");
-
-                    b.Property<long>("VehicleModelID");
+                    b.Property<int?>("VehicleType");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EngineID");
+                    b.HasIndex("EngineId");
 
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("VehicleManufacturerID");
-
-                    b.HasIndex("VehicleModelID");
+                    b.HasIndex("ModelNameId");
 
                     b.ToTable("Vehicle");
-                });
-
-            modelBuilder.Entity("Domain.VehicleDomain.VehicleManufacturer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("VehicleManufacturerID");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(20);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VehicleManufacturer");
-                });
-
-            modelBuilder.Entity("Domain.VehicleDomain.VehicleModel", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("VehicleModelID");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(20);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VehicleModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<long>", b =>
@@ -330,26 +321,23 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Domain.VehicleDomain.ModelName", b =>
+                {
+                    b.HasOne("Domain.VehicleDomain.Manufacturer", "Manufacturer")
+                        .WithMany("ModelName")
+                        .HasForeignKey("ManufacturerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Domain.VehicleDomain.Vehicle", b =>
                 {
                     b.HasOne("Domain.VehicleDomain.Engine", "Engine")
-                        .WithMany()
-                        .HasForeignKey("EngineID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("Vehicle")
+                        .HasForeignKey("EngineId");
 
-                    b.HasOne("Domain.UserDomain.User", "User")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.VehicleDomain.VehicleManufacturer", "VehicleManufacturer")
-                        .WithMany()
-                        .HasForeignKey("VehicleManufacturerID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.VehicleDomain.VehicleModel", "VehicleModel")
-                        .WithMany()
-                        .HasForeignKey("VehicleModelID")
+                    b.HasOne("Domain.VehicleDomain.ModelName", "ModelName")
+                        .WithMany("Vehicle")
+                        .HasForeignKey("ModelNameId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
