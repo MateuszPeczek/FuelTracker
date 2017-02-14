@@ -2,7 +2,8 @@
 using Common.Enums;
 using Common.Interfaces;
 using Dapper;
-using FuelTracker.ApiModels.VehicleApiModels;
+using FuelTracker.ApiModels.VehicleApiModels.DataPresentation;
+using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Data.SqlClient;
@@ -25,11 +26,25 @@ namespace FuelTracker.Controllers
             this.commandBus = commandBus;
         }
 
-        // GET: api/values
         [HttpGet]
         public ActionResult Get()
         {
-            throw new NotImplementedException();
+            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            {
+                var sqlQuery = @"select v.guid, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
+                                 from vehicle v
+                                 join ModelName md on md.Id = v.ModelNameId
+                                 left join Manufacturer mf on mf.Id = md.ManufacturerID
+                                 left join Engine e on e.Id = v.EngineId";
+
+
+                var result = db.Query<VehicleDetailsModel>(sqlQuery).ToList();
+
+                if (result != null)
+                    return new JsonResult(result);
+                else
+                    return NotFound();
+            }
         }
 
         // GET api/values/5
@@ -38,7 +53,7 @@ namespace FuelTracker.Controllers
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
-                var sqlQuery = @"select mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
+                var sqlQuery = @"select v.guid, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
                                  from vehicle v
                                  join ModelName md on md.Id = v.ModelNameId
                                  left join Manufacturer mf on mf.Id = md.ManufacturerID
@@ -57,7 +72,7 @@ namespace FuelTracker.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]PostVehicle model)
+        public ActionResult Post([FromBody]PostNewVehicle model)
         {
             if (ModelState.IsValid)
             {
@@ -77,24 +92,63 @@ namespace FuelTracker.Controllers
                         Content = new StringContent(ex.Message)
                     };
                     throw new HttpResponseException(message);
-                } 
+                }
             }
 
             return BadRequest();
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]string value)
+        [HttpPut]
+        public ActionResult Put([FromBody]PutUpdateVehicle model)
         {
-            throw new NotImplementedException();
+            if (ModelState.IsValid)
+            {
+                var command = new UpdateVehicleCommand(model.Guid, model.ProductionYear, model.EngineId);
+
+                try
+                {
+                    var commandResult = commandBus.Send(command);
+
+                    if (commandResult == CommandResult.Success)
+                        return Get(command.Guid);
+                }
+                catch (Exception ex)
+                {
+                    var message = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                    {
+                        Content = new StringContent(ex.Message)
+                    };
+                    throw new HttpResponseException(message);
+                }
+            }
+
+            return BadRequest();
         }
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{guid}")]
+        public ActionResult Delete(Guid guid)
         {
-            throw new NotImplementedException();
+            var command = new DeleteVehicleCommand(guid);
+
+            try
+            {
+                var commandResult = commandBus.Send(command);
+
+                if (commandResult == CommandResult.Success)
+                    return Get();
+                else
+                    return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                var message = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+                throw new HttpResponseException(message);
+            }
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FuelTracker.ApiModels.VehicleApiModels
+namespace FuelTracker.ApiModels.VehicleApiModels.RESTCommunication
 {
-    public class PostVehicle
+    public class PostNewVehicle
     {
         public long ModelId { get; set; }
     }
