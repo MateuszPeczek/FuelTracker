@@ -13,6 +13,7 @@ using Infrastructure.Bus;
 using Infrastructure.Factory;
 using Persistence;
 using Domain.UserDomain;
+using Infrastructure.InversionOfControl;
 
 namespace FuelTracker
 {
@@ -43,8 +44,7 @@ namespace FuelTracker
             });
 
             //Register all commands to commands handler
-            var commandsAssemblyName = GetAssemblyByName("Commands");
-            RegisterHandlersToCommands(services, commandsAssemblyName);
+            services.RegisterHandlersToCommands("Commands");
 
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
@@ -73,59 +73,6 @@ namespace FuelTracker
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUi();
-        }
-
-        private bool RegisterHandlersToCommands(IServiceCollection services, AssemblyName sourceAssembly)
-        {
-            try
-            {
-
-                var assembly = Assembly.Load(sourceAssembly);
-                var types = assembly.GetTypes();
-                var commandTypes = types.Where(c => c.GetInterfaces().Where(i => i.Name == "ICommand").Any()).ToList();
-                var handlerTypes = types.Where(c => c.GetInterfaces().Where(i => i.Name.Contains("ICommandHandler")).Any()).ToList();
-
-                var names = new HashSet<string>();
-
-                if (commandTypes.Count != handlerTypes.Count)
-                    return false;
-
-                foreach (var type in types)
-                {
-                    names.Add(type.Name.ToLower().Replace("commandhandler", string.Empty).Replace("command", string.Empty));
-                }
-
-                foreach (var typeName in names)
-                {
-                    services.AddScoped(
-                        commandTypes.Single(c => c.Name.ToLower() == $"{typeName}command"), 
-                        handlerTypes.Single(c => c.Name.ToLower() == $"{typeName}commandhandler")
-                        );
-                }
-
-                return true;
-
-            }
-            catch (Exception ex)
-            {
-                //TODO: logging
-                return false;
-            }
-        }
-
-        private AssemblyName GetAssemblyByName(string assemblyName)
-        {
-            var referencedAssemblies = Assembly.GetEntryAssembly().GetReferencedAssemblies();
-
-            foreach (var assembly in referencedAssemblies)
-            {
-                if (assemblyName.ToLower().Trim().Equals(assembly.Name.ToLower().Trim()))
-                    return assembly;
-
-                continue;
-            }
-
-            return null;
-        }
+        } 
     }
 }
