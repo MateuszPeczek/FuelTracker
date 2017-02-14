@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Helpers;
+using Common.Interfaces;
 using Domain.UserDomain;
 using System;
 using System.ComponentModel.DataAnnotations;
