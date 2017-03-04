@@ -1,13 +1,11 @@
 ﻿using Commands.VehicleCommands;
 using Common.Enums;
 using Common.Interfaces;
-using Dapper;
-using FuelTracker.ApiModels.VehicleApiModels.DataPresentation;
 using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
 using Microsoft.AspNetCore.Mvc;
+using Queries.VehicleDetailsQueries;
 using System;
-using System.Data.SqlClient;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -20,54 +18,31 @@ namespace FuelTracker.Controllers
     public class VehicleController : Controller
     {
         private readonly ICommandSender commandBus;
+        private readonly IQuerySender queryBus;
 
-        public VehicleController(ICommandSender commandBus)
+        public VehicleController(ICommandSender commandBus, IQuerySender queryBus)
         {
             this.commandBus = commandBus;
+            this.queryBus = queryBus;
         }
 
         [HttpGet]
         public ActionResult Get()
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
-            {
-                var sqlQuery = @"select v.guid, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
-                                 from vehicle v
-                                 join ModelName md on md.Id = v.ModelNameId
-                                 left join Manufacturer mf on mf.Id = md.ManufacturerID
-                                 left join Engine e on e.Id = v.EngineId";
+            var query = new GetVehicleDetailsListQuery();
+            var result = queryBus.Send<ICollection<VehicleDetailsModel>>(query);
 
-
-                var result = db.Query<VehicleDetailsModel>(sqlQuery).ToList();
-
-                if (result != null)
-                    return new JsonResult(result);
-                else
-                    return NotFound();
-            }
+            return new JsonResult(result);
         }
 
         // GET api/values/5
         [HttpGet("{guid}")]
         public ActionResult Get(Guid guid)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
-            {
-                var sqlQuery = @"select v.guid, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
-                                 from vehicle v
-                                 join ModelName md on md.Id = v.ModelNameId
-                                 left join Manufacturer mf on mf.Id = md.ManufacturerID
-                                 left join Engine e on e.Id = v.EngineId
-                                 where v.Guid = @Guid";
+            var query = new GetSingleVehicleDetailsQuery();
+            var result = queryBus.Send<VehicleDetailsModel>(query);
 
-
-                var result = db.Query<VehicleDetailsModel>(sqlQuery, new { Guid = guid }).SingleOrDefault();
-
-                if (result != null)
-                    return new JsonResult(result);
-                else
-                    return NotFound();
-            }
+            return new JsonResult(result);
         }
 
         // POST api/values

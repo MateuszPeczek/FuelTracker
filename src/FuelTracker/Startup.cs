@@ -14,6 +14,7 @@ using Infrastructure.Factory;
 using Persistence;
 using Domain.UserDomain;
 using Infrastructure.InversionOfControl;
+using Infrastructure.Enum;
 
 namespace FuelTracker
 {
@@ -36,15 +37,18 @@ namespace FuelTracker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ICommandSender, CommunicationBus>();
+            services.AddSingleton<IQuerySender, CommunicationBus>();
             services.AddSingleton<IEventPublisher, CommunicationBus>();
-            services.AddSingleton<ICommandHandlerFactory, CommandHandlerFactory>();
+            services.AddSingleton<ICommandHandlerFactory, HandlerFactory>();
+            services.AddSingleton<IQueryHandlerFactory, HandlerFactory>();
             services.AddScoped((s) =>
             {
                 return services;
             });
 
             //Register all commands to commands handler
-            services.RegisterHandlersToCommands("Commands");
+            services.RegisterHandlers("Commands", HandlerType.Command);
+            services.RegisterHandlers("Queries", HandlerType.Query);
 
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));

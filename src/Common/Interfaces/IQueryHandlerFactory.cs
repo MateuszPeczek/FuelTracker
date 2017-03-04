@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Common.Interfaces
 {
-    public interface IQueryHandler<TQuery, TResult> where TQuery : IQuery
-    { 
-        TResult Handle(TQuery query);
+    public interface IQueryHandlerFactory
+    {
+        object GetHandler(IQuery query);
     }
 }

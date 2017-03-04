@@ -21,7 +21,6 @@ namespace Domain.FuelStatisticsDomain
         public DateTime DateCreated { get; set; }
         [Timestamp]
         public byte[] RowVersion{ get; set; }
-
         public virtual Vehicle Vehicle { get; set; }
     }
 }
