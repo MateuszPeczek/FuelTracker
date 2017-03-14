@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Commands.VehicleCommands
 {
-    public class DeleteVehicleCommand : ICommand
+    public class DeleteVehicle : ICommand
     {
-        public DeleteVehicleCommand(Guid guid)
+        public DeleteVehicle(Guid guid)
         {
             Guid = guid;
         }
@@ -17,16 +17,16 @@ namespace Commands.VehicleCommands
         public Guid Guid { get; set; }
     }
 
-    public class DeleteVehicleCommandHandler : ICommandHandler<DeleteVehicleCommand>
+    public class DeleteVehicleHandler : ICommandHandler<DeleteVehicle>
     {
         private readonly ApplicationContext context;
 
-        public DeleteVehicleCommandHandler(ApplicationContext context)
+        public DeleteVehicleHandler(ApplicationContext context)
         {
             this.context = context;
         }
 
-        public void Handle(DeleteVehicleCommand command)
+        public void Handle(DeleteVehicle command)
         {
             using (var transaction = context.Database.BeginTransaction())
             {

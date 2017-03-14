@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyModel;
-using Microsoft.DotNet.InternalAbstractions;
 using System.Threading.Tasks;
 
 namespace Infrastructure.InversionOfControl

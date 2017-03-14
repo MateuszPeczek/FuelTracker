@@ -5,9 +5,9 @@ using System;
 
 namespace Commands.VehicleCommands
 {
-    public class AddVehicleCommand : ICommand
+    public class AddVehicle : ICommand
     {
-        public AddVehicleCommand(long modelId)
+        public AddVehicle(long modelId)
         {
             this.Guid = Guid.NewGuid();
             this.ModelId = modelId;
@@ -17,16 +17,16 @@ namespace Commands.VehicleCommands
         public long ModelId { get; set; }
     }
 
-    public class AddVehicleCommandHandler : ICommandHandler<AddVehicleCommand>
+    public class AddVehicleHandler : ICommandHandler<AddVehicle>
     {
         private readonly ApplicationContext context;
 
-        public AddVehicleCommandHandler(ApplicationContext context)
+        public AddVehicleHandler(ApplicationContext context)
         {
             this.context = context;
         }
 
-        public void Handle(AddVehicleCommand command)
+        public void Handle(AddVehicle command)
         {
             using (var transaction = context.Database.BeginTransaction())
             {

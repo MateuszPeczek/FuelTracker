@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Queries.VehicleDetailsQueries
 {
-    public class GetVehicleDetailsListQuery : IQuery
+    public class GetVehicleDetailsList : IQuery
     {
         
     }
 
-    public class GetVehicleDetailsListQueryHandler : IQueryHandler<GetVehicleDetailsListQuery, ICollection<VehicleDetailsModel>>
+    public class GetVehicleDetailsListHandler : IQueryHandler<GetVehicleDetailsList, ICollection<VehicleDetails>>
     {
-        public ICollection<VehicleDetailsModel> Handle(GetVehicleDetailsListQuery query)
+        public ICollection<VehicleDetails> Handle(GetVehicleDetailsList query)
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
@@ -26,16 +26,16 @@ namespace Queries.VehicleDetailsQueries
                                  left join Manufacturer mf on mf.Id = md.ManufacturerID
                                  left join Engine e on e.Id = v.EngineId";
                 
-                var result = db.Query<VehicleDetailsModel>(sqlQuery).ToList();
+                var result = db.Query<VehicleDetails>(sqlQuery).ToList();
 
                 return result;
             }
         }
     }
 
-    public class GetSingleVehicleDetailsQuery : IQuery
+    public class GetSingleVehicleDetails : IQuery
     {
-        public GetSingleVehicleDetailsQuery(Guid guid)
+        public GetSingleVehicleDetails(Guid guid)
         {
             this.Guid = guid;
         }
@@ -43,9 +43,9 @@ namespace Queries.VehicleDetailsQueries
         public Guid Guid { get; set; }
     }
 
-    public class GetSingleVehicleDetailsQueryHandler : IQueryHandler<GetSingleVehicleDetailsQuery, VehicleDetailsModel>
+    public class GetSingleVehicleDetailsHandler : IQueryHandler<GetSingleVehicleDetails, VehicleDetails>
     {
-        public VehicleDetailsModel Handle(GetSingleVehicleDetailsQuery query)
+        public VehicleDetails Handle(GetSingleVehicleDetails query)
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
@@ -57,14 +57,14 @@ namespace Queries.VehicleDetailsQueries
                                  where v.Guid = @Guid";
 
 
-                var result = db.Query<VehicleDetailsModel>(sqlQuery, new { Guid = query.Guid }).SingleOrDefault();
+                var result = db.Query<VehicleDetails>(sqlQuery, new { Guid = query.Guid }).SingleOrDefault();
 
                 return result;
             }
         }
     }
 
-    public class VehicleDetailsModel
+    public class VehicleDetails
     {
         public Guid Guid { get; set; }
         public string Manufacturer { get; set; }

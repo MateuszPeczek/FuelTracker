@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Commands.VehicleCommands
 {
-    public class UpdateVehicleCommand : ICommand
+    public class UpdateVehicle : ICommand
     {
         public Guid Guid { get; set; }
         public int? ProductionYear { get; set; }
         public long? EngineId { get; set; }
 
-        public UpdateVehicleCommand(Guid guid, int? productionYear, long? engineId)
+        public UpdateVehicle(Guid guid, int? productionYear, long? engineId)
         {
             Guid = guid;
             ProductionYear = productionYear;
@@ -22,16 +22,16 @@ namespace Commands.VehicleCommands
         }
     }
 
-    public class UpdateVehicleCommandHandler : ICommandHandler<UpdateVehicleCommand>
+    public class UpdateVehicleHandler : ICommandHandler<UpdateVehicle>
     {
         private readonly ApplicationContext context;
 
-        public UpdateVehicleCommandHandler(ApplicationContext context)
+        public UpdateVehicleHandler(ApplicationContext context)
         {
             this.context = context;
         }
 
-        public void Handle(UpdateVehicleCommand command)
+        public void Handle(UpdateVehicle command)
         {
             using (var transaction = context.Database.BeginTransaction())
             {

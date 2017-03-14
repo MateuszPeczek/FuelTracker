@@ -29,8 +29,8 @@ namespace FuelTracker.Controllers
         [HttpGet]
         public ActionResult Get()
         {
-            var query = new GetVehicleDetailsListQuery();
-            var result = queryBus.Send<ICollection<VehicleDetailsModel>>(query);
+            var query = new GetVehicleDetailsList();
+            var result = queryBus.Send<ICollection<VehicleDetails>>(query);
 
             return new JsonResult(result);
         }
@@ -39,8 +39,8 @@ namespace FuelTracker.Controllers
         [HttpGet("{guid}")]
         public ActionResult Get(Guid guid)
         {
-            var query = new GetSingleVehicleDetailsQuery(guid);
-            var result = queryBus.Send<VehicleDetailsModel>(query);
+            var query = new GetSingleVehicleDetails(guid);
+            var result = queryBus.Send<VehicleDetails>(query);
 
             return new JsonResult(result);
         }
@@ -51,7 +51,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new AddVehicleCommand(model.ModelId);
+                var command = new AddVehicle(model.ModelId);
 
                 try
                 {
@@ -79,7 +79,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new UpdateVehicleCommand(model.Guid, model.ProductionYear, model.EngineId);
+                var command = new UpdateVehicle(model.Guid, model.ProductionYear, model.EngineId);
 
                 try
                 {
@@ -105,7 +105,7 @@ namespace FuelTracker.Controllers
         [HttpDelete("{guid}")]
         public ActionResult Delete(Guid guid)
         {
-            var command = new DeleteVehicleCommand(guid);
+            var command = new DeleteVehicle(guid);
 
             try
             {
