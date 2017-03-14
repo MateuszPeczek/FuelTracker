@@ -39,7 +39,7 @@ namespace FuelTracker.Controllers
         [HttpGet("{guid}")]
         public ActionResult Get(Guid guid)
         {
-            var query = new GetSingleVehicleDetailsQuery();
+            var query = new GetSingleVehicleDetailsQuery(guid);
             var result = queryBus.Send<VehicleDetailsModel>(query);
 
             return new JsonResult(result);

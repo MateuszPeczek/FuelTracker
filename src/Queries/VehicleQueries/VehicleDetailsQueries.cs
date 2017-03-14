@@ -35,6 +35,11 @@ namespace Queries.VehicleDetailsQueries
 
     public class GetSingleVehicleDetailsQuery : IQuery
     {
+        public GetSingleVehicleDetailsQuery(Guid guid)
+        {
+            this.Guid = guid;
+        }
+
         public Guid Guid { get; set; }
     }
 

@@ -1,28 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{40A0CE46-F9EF-4C9A-9E38-2BDE8EE24037}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0418290F-C788-441F-B87D-4D6DF5A69316}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FuelTracker", "src\FuelTracker\FuelTracker.xproj", "{C1A224EC-342A-4B20-8C15-F6A2BC454B95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FuelTracker", "src\FuelTracker\FuelTracker.csproj", "{C1A224EC-342A-4B20-8C15-F6A2BC454B95}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Commands", "src\Commands\Commands.xproj", "{1166F4EC-912D-4625-878B-660E7FF895D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commands", "src\Commands\Commands.csproj", "{1166F4EC-912D-4625-878B-660E7FF895D0}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Common", "src\Common\Common.xproj", "{E48C9051-8811-4C1E-A818-E89E0705F25C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common.csproj", "{E48C9051-8811-4C1E-A818-E89E0705F25C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Domain", "src\Domain\Domain.xproj", "{C57E7259-99B7-4839-81FD-472192D29520}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain.csproj", "{C57E7259-99B7-4839-81FD-472192D29520}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Infrastructure", "src\Infrastructure\Infrastructure.xproj", "{E9EEB83B-7E98-4005-AC28-8371FD36692A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{E9EEB83B-7E98-4005-AC28-8371FD36692A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Persistence", "src\Persistence\Persistence.xproj", "{40FD2DD9-DB3E-4A60-A51B-182E4C0539A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "src\Persistence\Persistence.csproj", "{40FD2DD9-DB3E-4A60-A51B-182E4C0539A8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Queries", "src\Queries\Queries.xproj", "{4F16C4AB-7DFB-4A6B-A82D-9A1580AF686A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Queries", "src\Queries\Queries.csproj", "{4F16C4AB-7DFB-4A6B-A82D-9A1580AF686A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
