@@ -1,67 +1,48 @@
-﻿using Infrastructure.Enum;
+﻿using Common.Interfaces;
+using Infrastructure.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.DotNet.InternalAbstractions;
 using System.Threading.Tasks;
 
 namespace Infrastructure.InversionOfControl
 {
     public static class DependencyResolverExtensions
     {
-        public static bool RegisterHandlers(this IServiceCollection services, string sourceAssembly, HandlerType handlerType)
+        public static bool RegisterHandlers(this IServiceCollection services, IEnumerable<string> assemblyNames)
         {
             try
             {
-                var handledInterfaceName = string.Empty;
-                var handlerInterfaceName = string.Empty;
-                var handledImplementationName = string.Empty;
-                var handlerImplementationName = string.Empty;
+                var assemblies = new HashSet<Assembly>();
+                var types = new HashSet<Type>();
 
-                //TODO: move to resources/config file to enable easy convention change
-                switch(handlerType)
+                foreach (var name in assemblyNames)
                 {
-                    case HandlerType.Command:
-                        handledInterfaceName = "ICommand";
-                        handlerInterfaceName = "ICommandHandler";
-                        handledImplementationName = "command";
-                        handlerImplementationName = "commandhandler";
-                        break;
-                    case HandlerType.Query:
-                        handledInterfaceName = "IQuery";
-                        handlerInterfaceName = "IQueryHandler";
-                        handledImplementationName = "query";
-                        handlerImplementationName = "queryhandler";
-                        break;
+                    var assemblyName = GetAssemblyByName(name);
+                    assemblies.Add(Assembly.Load(assemblyName));
                 }
 
-                var assembly = Assembly.Load(GetAssemblyByName(sourceAssembly));
-                var types = assembly.GetTypes();
-                var commandTypes = types.Where(c => c.GetInterfaces().Where(i => i.Name == handledInterfaceName).Any()).ToList();
-                var handlerTypes = types.Where(c => c.GetInterfaces().Where(i => i.Name.Contains(handlerInterfaceName)).Any()).ToList();
-
-                var names = new HashSet<string>();
-
-                if (commandTypes.Count != handlerTypes.Count)
-                    return false;
-
-                foreach (var type in commandTypes)
+                foreach (var assembly in assemblies)
                 {
-                    names.Add(type.Name.ToLower().Replace(handledImplementationName, string.Empty));
+                    foreach (var type in assembly.GetTypes())
+                    {
+                        types.Add(type);
+                    }
                 }
 
-                foreach (var type in handlerTypes)
-                {
-                    names.Add(type.Name.ToLower().Replace(handlerImplementationName, string.Empty));
-                }
+                var handlersTypes = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)).Any()).ToList() //all command handlers
+                    .Concat(types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)).Any()).ToList()); //all query handlers
 
-                foreach (var typeName in names)
+                foreach (var type in handlersTypes)
                 {
-                    services.AddScoped(
-                        commandTypes.Single(c => c.Name.ToLower() == $"{typeName}{handledImplementationName}"),
-                        handlerTypes.Single(c => c.Name.ToLower() == $"{typeName}{handlerImplementationName}")
-                        );
+
+                    var handledCommand = type.GetTypeInfo().ImplementedInterfaces.First().GenericTypeArguments.First();
+                    var handler = type;
+                    services.AddScoped(handledCommand, type);
                 }
 
                 return true;
