@@ -7,6 +7,6 @@ namespace Common.Interfaces
 {
     public interface IQuerySender
     {
-        TResult Send<TResult>(IQuery query) where TResult : class;
+        IQueryResult<T> Get<T>(IQuery query);
     }
 }
