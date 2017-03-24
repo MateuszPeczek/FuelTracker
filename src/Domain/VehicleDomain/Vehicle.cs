@@ -9,18 +9,16 @@ namespace Domain.VehicleDomain
 {
     public class Vehicle : IEntity
     {
-        public long Id { get; set; }
-
-        public Guid Guid{ get; set; }
-
+        public Guid Id { get; set; }
+        
         [Range(1900, 2099)]
         public int? ProductionYear { get; set; }
 
-        public long? EngineId { get; set; }
+        public Guid? EngineId { get; set; }
         [ForeignKey("EngineId")]
         public virtual Engine Engine { get; set; }
 
-        public long ModelNameId { get; set; }
+        public Guid ModelNameId { get; set; }
         [ForeignKey("ModelNameId")]
         public virtual ModelName ModelName { get; set; }
 

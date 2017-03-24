@@ -7,14 +7,14 @@ namespace Commands.VehicleCommands
 {
     public class AddVehicle : ICommand
     {
-        public AddVehicle(long modelId)
+        public AddVehicle(Guid modelId)
         {
-            this.Guid = Guid.NewGuid();
-            this.ModelId = modelId;
+            Id = Guid.NewGuid();
+            ModelId = modelId;
         }
 
-        public Guid Guid { get; set; }
-        public long ModelId { get; set; }
+        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
     }
 
     public class AddVehicleHandler : ICommandHandler<AddVehicle>
@@ -34,9 +34,9 @@ namespace Commands.VehicleCommands
                 {
                     var newVehicle = new Vehicle()
                     {
-                        Guid = command.Guid,
+                        Id = command.Id,
                         ModelNameId = command.ModelId,
-                        //UserId = 1
+                        
                     };
 
                     context.Vehicle.Add(newVehicle);

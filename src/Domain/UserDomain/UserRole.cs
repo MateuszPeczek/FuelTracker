@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.UserDomain
 {
-    public class UserRole : IdentityRole<long>, IEntity
+    public class UserRole : IdentityRole<Guid>, IEntity
     {
     }
 }

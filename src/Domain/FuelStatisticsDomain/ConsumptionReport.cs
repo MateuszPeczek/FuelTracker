@@ -9,10 +9,10 @@ namespace Domain.FuelStatisticsDomain
 {
     public class ConsumptionReport : IEntity
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         [ForeignKey("Vehicle")]
         [Column("Vehicle")]
-        public long VehicleId { get; set; }
+        public Guid VehicleId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float FuelEfficiency { get; set; }

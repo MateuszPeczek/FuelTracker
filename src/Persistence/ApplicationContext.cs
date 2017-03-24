@@ -3,10 +3,11 @@ using Domain.UserDomain;
 using Domain.VehicleDomain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Persistence
 {
-    public class ApplicationContext : IdentityDbContext<User, UserRole, long>
+    public class ApplicationContext : IdentityDbContext<User, UserRole, Guid>
     {
         public ApplicationContext()
         {

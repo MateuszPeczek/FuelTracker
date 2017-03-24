@@ -30,13 +30,13 @@ namespace Persistence
             {
                 var manufacturers = new List<Manufacturer>()
                 {
-                    new Manufacturer() { Name = "Alfa Romeo" },
-                    new Manufacturer() { Name = "BMW" },
-                    new Manufacturer() { Name = "Dodge" },
-                    new Manufacturer() { Name = "Ford" },
-                    new Manufacturer() { Name = "Honda" },
-                    new Manufacturer() { Name = "Merces" },
-                    new Manufacturer() { Name = "Volvo" }
+                    new Manufacturer() { Id = new Guid("d0428eca-caaa-4ea7-9661-d5a4221fc7ff"), Name = "Alfa Romeo" },
+                    new Manufacturer() { Id = new Guid("b33cb901-6da5-47b5-a2ad-3e821c1bfbdd"), Name = "BMW" },
+                    new Manufacturer() { Id = new Guid("904b0afd-6bd1-4d25-81c1-e9b3cf65e2d8"), Name = "Dodge" },
+                    new Manufacturer() { Id = new Guid("6783e8aa-9186-4a2c-81b5-58f622683239"), Name = "Ford" },
+                    new Manufacturer() { Id = new Guid("cd7cf296-702a-4b55-931f-9b24a931c1a1"), Name = "Honda" },
+                    new Manufacturer() { Id = new Guid("64810dcc-79f6-4cab-8891-625bcb50585f"), Name = "Merces" },
+                    new Manufacturer() { Id = new Guid("10e8bdfb-66a2-41c9-b61b-c4de3037b874"), Name = "Volvo" }
                 };
 
                 context.Manufacturer.AddRange(manufacturers);
@@ -50,20 +50,20 @@ namespace Persistence
             {
                 var models = new List<ModelName>()
                 {
-                    new ModelName() { ManufacturerId = 1, Name = "Gulietta" },
-                    new ModelName() { ManufacturerId = 1, Name = "Gulia" },
-                    new ModelName() { ManufacturerId = 2, Name = "3" },
-                    new ModelName() { ManufacturerId = 2, Name = "5" },
-                    new ModelName() { ManufacturerId = 3, Name = "Viper" },
-                    new ModelName() { ManufacturerId = 3, Name = "Charger" },
-                    new ModelName() { ManufacturerId = 4, Name = "Fiesta" },
-                    new ModelName() { ManufacturerId = 4, Name = "Focus" },
-                    new ModelName() { ManufacturerId = 5, Name = "Accord" },
-                    new ModelName() { ManufacturerId = 5, Name = "Civic" },
-                    new ModelName() { ManufacturerId = 6, Name = "S" },
-                    new ModelName() { ManufacturerId = 6, Name = "SLS" },
-                    new ModelName() { ManufacturerId = 7, Name = "V70" },
-                    new ModelName() { ManufacturerId = 7, Name = "S90" }
+                    new ModelName() { ManufacturerId = new Guid("d0428eca-caaa-4ea7-9661-d5a4221fc7ff"), Name = "Gulietta" },
+                    new ModelName() { ManufacturerId = new Guid("d0428eca-caaa-4ea7-9661-d5a4221fc7ff"), Name = "Gulia" },
+                    new ModelName() { ManufacturerId = new Guid("b33cb901-6da5-47b5-a2ad-3e821c1bfbdd"), Name = "3" },
+                    new ModelName() { ManufacturerId = new Guid("b33cb901-6da5-47b5-a2ad-3e821c1bfbdd"), Name = "5" },
+                    new ModelName() { ManufacturerId = new Guid("904b0afd-6bd1-4d25-81c1-e9b3cf65e2d8"), Name = "Viper" },
+                    new ModelName() { ManufacturerId = new Guid("904b0afd-6bd1-4d25-81c1-e9b3cf65e2d8"), Name = "Charger" },
+                    new ModelName() { ManufacturerId = new Guid("6783e8aa-9186-4a2c-81b5-58f622683239"), Name = "Fiesta" },
+                    new ModelName() { ManufacturerId = new Guid("6783e8aa-9186-4a2c-81b5-58f622683239"), Name = "Focus" },
+                    new ModelName() { ManufacturerId = new Guid("cd7cf296-702a-4b55-931f-9b24a931c1a1"), Name = "Accord" },
+                    new ModelName() { ManufacturerId = new Guid("cd7cf296-702a-4b55-931f-9b24a931c1a1"), Name = "Civic" },
+                    new ModelName() { ManufacturerId = new Guid("64810dcc-79f6-4cab-8891-625bcb50585f"), Name = "S" },
+                    new ModelName() { ManufacturerId = new Guid("64810dcc-79f6-4cab-8891-625bcb50585f"), Name = "SLS" },
+                    new ModelName() { ManufacturerId = new Guid("10e8bdfb-66a2-41c9-b61b-c4de3037b874"), Name = "V70" },
+                    new ModelName() { ManufacturerId = new Guid("10e8bdfb-66a2-41c9-b61b-c4de3037b874"), Name = "S90" }
                 };
 
                 context.ModelName.AddRange(models);
@@ -77,7 +77,7 @@ namespace Persistence
             {
                 var engines = new List<Engine>()
                 {
-                    new Engine() { Cylinders = 4, Displacement = 2000, FuelType = FuelType.Diesel, Name = "D4202T", Power = 136, Torque = 400 }
+                    new Engine() {Id = new Guid("5b6a048a-ce00-48f9-815b-9e287efe2588"), Cylinders = 4, Displacement = 2000, FuelType = FuelType.Diesel, Name = "D4202T", Power = 136, Torque = 400 }
                 };
 
                 context.Engine.AddRange(engines);
@@ -91,9 +91,8 @@ namespace Persistence
             {
                 var vehcile = new Vehicle()
                 {
-                    EngineId = 1,
-                    Guid = Guid.NewGuid(),
-                    ModelNameId = 13,
+                    EngineId = new Guid("7ec813ae-3109-4fdc-ab05-2b6a31755b12"),
+                    ModelNameId = new Guid("5b6a048a-ce00-48f9-815b-9e287efe2588"),
                     ProductionYear = 2008,
                     VehicleType = VehicleType.Car
                 };

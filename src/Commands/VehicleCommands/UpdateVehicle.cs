@@ -10,13 +10,13 @@ namespace Commands.VehicleCommands
 {
     public class UpdateVehicle : ICommand
     {
-        public Guid Guid { get; set; }
+        public Guid Id { get; set; }
         public int? ProductionYear { get; set; }
-        public long? EngineId { get; set; }
+        public Guid? EngineId { get; set; }
 
-        public UpdateVehicle(Guid guid, int? productionYear, long? engineId)
+        public UpdateVehicle(Guid guid, int? productionYear, Guid? engineId)
         {
-            Guid = guid;
+            Id = guid;
             ProductionYear = productionYear;
             EngineId = engineId;
         }
@@ -37,7 +37,7 @@ namespace Commands.VehicleCommands
             {
                 try
                 {
-                    var vehicleToUpdate = context.Vehicle.Single(v => v.Guid == command.Guid);
+                    var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.Id);
                     var selectedEngine = context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
 
                     vehicleToUpdate.ProductionYear = command.ProductionYear;

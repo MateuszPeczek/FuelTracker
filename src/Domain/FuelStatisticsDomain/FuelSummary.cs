@@ -1,12 +1,13 @@
 ﻿using Common.Interfaces;
 using Domain.VehicleDomain;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.FuelStatisticsDomain
 {
     public class FuelSummary : IEntity
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
 
         [ForeignKey("VehicleId")]
         public long VehicleId { get; set; }

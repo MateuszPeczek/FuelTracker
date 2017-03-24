@@ -7,6 +7,6 @@ namespace FuelTracker.ApiModels.VehicleApiModels.RESTCommunication
 {
     public class PostNewVehicle
     {
-        public long ModelId { get; set; }
+        public Guid ModelId { get; set; }
     }
 }

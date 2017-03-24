@@ -11,10 +11,10 @@ namespace Commands.VehicleCommands
     {
         public DeleteVehicle(Guid guid)
         {
-            Guid = guid;
+            Id = guid;
         }
 
-        public Guid Guid { get; set; }
+        public Guid Id { get; set; }
     }
 
     public class DeleteVehicleHandler : ICommandHandler<DeleteVehicle>
@@ -32,7 +32,7 @@ namespace Commands.VehicleCommands
             {
                 try
                 {
-                    var vehicleToDelete = context.Vehicle.Single(s => s.Guid == command.Guid);
+                    var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.Id);
                     context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 
                     context.SaveChanges();

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Common.Enums
 {
-    public enum CommandResult
+    public enum CommandStatus
     {
         Success,
         Failure

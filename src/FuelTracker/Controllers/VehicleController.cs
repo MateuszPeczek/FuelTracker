@@ -30,22 +30,20 @@ namespace FuelTracker.Controllers
         public ActionResult Get()
         {
             var query = new GetVehicleDetailsList();
-            var result = queryBus.Send<ICollection<VehicleDetails>>(query);
+            var result = queryBus.Get<ICollection<VehicleDetails>>(query);
 
             return new JsonResult(result);
         }
 
-        // GET api/values/5
         [HttpGet("{guid}")]
         public ActionResult Get(Guid guid)
         {
             var query = new GetSingleVehicleDetails(guid);
-            var result = queryBus.Send<VehicleDetails>(query);
+            var result = queryBus.Get<VehicleDetails>(query);
 
             return new JsonResult(result);
         }
 
-        // POST api/values
         [HttpPost]
         public ActionResult Post([FromBody]PostNewVehicle model)
         {
@@ -57,8 +55,8 @@ namespace FuelTracker.Controllers
                 {
                     var commandResult = commandBus.Send(command);
 
-                    if (commandResult == CommandResult.Success)
-                        return Get(command.Guid);
+                    if (commandResult == CommandStatus.Success)
+                        return Get(command.Id);
                 }
                 catch (Exception ex)
                 {
@@ -73,7 +71,6 @@ namespace FuelTracker.Controllers
             return BadRequest();
         }
 
-        // PUT api/values/5
         [HttpPut]
         public ActionResult Put([FromBody]PutUpdateVehicle model)
         {
@@ -85,8 +82,8 @@ namespace FuelTracker.Controllers
                 {
                     var commandResult = commandBus.Send(command);
 
-                    if (commandResult == CommandResult.Success)
-                        return Get(command.Guid);
+                    if (commandResult == CommandStatus.Success)
+                        return Get(command.Id);
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +98,6 @@ namespace FuelTracker.Controllers
             return BadRequest();
         }
 
-        // DELETE api/values/5
         [HttpDelete("{guid}")]
         public ActionResult Delete(Guid guid)
         {
@@ -111,7 +107,7 @@ namespace FuelTracker.Controllers
             {
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult == CommandResult.Success)
+                if (commandResult == CommandStatus.Success)
                     return Get();
                 else
                     return BadRequest();

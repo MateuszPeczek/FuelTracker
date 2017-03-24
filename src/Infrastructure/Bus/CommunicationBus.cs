@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Enums;
+using Infrastructure.CommunicationModels;
 
 namespace Infrastructure.Bus
 {
@@ -12,14 +13,12 @@ namespace Infrastructure.Bus
     {
         private readonly ICommandHandlerFactory commandHandlerFactory;
         private readonly IQueryHandlerFactory queryHandlerFactory;
-        //private readonly IEventHandlerFactory eventHandlerFactory;
 
         public CommunicationBus(ICommandHandlerFactory commandHandlerFactory,
-                                IQueryHandlerFactory queryHandlerFactory/*, IEventHandlerFactory eventHandlerFactory*/)
+                                IQueryHandlerFactory queryHandlerFactory)
         {
             this.commandHandlerFactory = commandHandlerFactory;
             this.queryHandlerFactory = queryHandlerFactory;
-            //this.eventHandlerFactory = eventHandlerFactory;
         }
 
         public void Publish(IEvent applicationEvent)
@@ -27,30 +26,29 @@ namespace Infrastructure.Bus
             throw new NotImplementedException();
         }
 
-        public TResult Send<TResult>(IQuery query) where TResult : class
+        public IQueryResult<T> Get<T>(IQuery query)
         {
             try
             {
                 var handler = queryHandlerFactory.GetHandler(query);
                 var sendingMethod = handler.GetType().GetRuntimeMethods().FirstOrDefault(m => m.Name == "Handle");
-                TResult result;
+                T result;
                 
                 if (sendingMethod != null)
                 {
-                   result = (TResult)sendingMethod.Invoke(handler, new object[] { query });
-                   return result;
+                   result = (T)sendingMethod.Invoke(handler, new object[] { query });
+                   return new QueryResult<T>() { Data = result };
                 }
 
                 throw new Exception($"Handle method not found on {handler.ToString()} object");
             }
             catch (Exception ex)
             {
-                //TODO logging
-                return null;
+                return new QueryResult<T>() { Data = default(T), Exception = ex };
             }
         }
 
-        public CommandResult Send(ICommand command)
+        public ICommandResult Send(ICommand command)
         {
             try
             {
@@ -60,12 +58,12 @@ namespace Infrastructure.Bus
                 if (sendingMethod != null)
                     sendingMethod.Invoke(handler, new object[] { command });
 
-                return CommandResult.Success;
+                return new CommandResult() { Status = CommandStatus.Success, CommandException = null };
             }
             catch (Exception ex)
             {
                 //TODO logging
-                return CommandResult.Failure;
+                return new CommandResult() { Status = CommandStatus.Failure, CommandException = ex };
             }
         }
     }

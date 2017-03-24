@@ -9,6 +9,6 @@ namespace FuelTracker.ApiModels.VehicleApiModels.RESTCommunication
     {
         public Guid Guid { get; set; }
         public int? ProductionYear { get; set; }
-        public long? EngineId { get; set; }
+        public Guid? EngineId { get; set; }
     }
 }
