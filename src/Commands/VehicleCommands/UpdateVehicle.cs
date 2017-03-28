@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
@@ -22,17 +23,30 @@ namespace Commands.VehicleCommands
         }
     }
 
+    public class UpdateVehicleValidator : ICommandValidator<UpdateVehicle>
+    {
+        public void Validate(UpdateVehicle command)
+        {
+            if (command.EngineId.HasValue && command.EngineId.Value == Guid.Empty)
+                throw new InvalidEngineIdException();
+        }
+    }
+
     public class UpdateVehicleHandler : ICommandHandler<UpdateVehicle>
     {
         private readonly ApplicationContext context;
+        private readonly ICommandValidator<UpdateVehicle> commandValidator;
 
-        public UpdateVehicleHandler(ApplicationContext context)
+        public UpdateVehicleHandler(ApplicationContext context, ICommandValidator<UpdateVehicle> commandValidator)
         {
             this.context = context;
+            this.commandValidator = commandValidator;
         }
 
         public void Handle(UpdateVehicle command)
         {
+            commandValidator.Validate(command);
+
             using (var transaction = context.Database.BeginTransaction())
             {
                 try

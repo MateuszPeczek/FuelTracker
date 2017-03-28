@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Vehicle;
 using Persistence;
 using System;
 using System.Collections.Generic;
@@ -17,17 +18,30 @@ namespace Commands.VehicleCommands
         public Guid Id { get; set; }
     }
 
+    public class DeleteVehicleValidator : ICommandValidator<DeleteVehicle>
+    {
+        public void Validate(DeleteVehicle command)
+        {
+            if (command.Id == Guid.Empty)
+                throw new InvalidVehicleIdException();
+        }
+    }
+
     public class DeleteVehicleHandler : ICommandHandler<DeleteVehicle>
     {
         private readonly ApplicationContext context;
+        private readonly ICommandValidator<DeleteVehicle> commandValidator;
 
-        public DeleteVehicleHandler(ApplicationContext context)
+        public DeleteVehicleHandler(ApplicationContext context, ICommandValidator<DeleteVehicle> commandValidator)
         {
             this.context = context;
+            this.commandValidator = commandValidator;
         }
 
         public void Handle(DeleteVehicle command)
         {
+            commandValidator.Validate(command);
+
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
