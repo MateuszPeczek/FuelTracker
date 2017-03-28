@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
@@ -21,21 +22,26 @@ namespace Commands.VehicleCommands
     {
         public void Validate(AddVehicle command)
         {
-            throw new NotImplementedException();
+            if (command.ModelId == Guid.Empty)
+                throw new InvalidModelIdException();
         }
     }
 
     public class AddVehicleHandler : ICommandHandler<AddVehicle>
     {
         private readonly ApplicationContext context;
+        private readonly ICommandValidator<AddVehicle> commandValidator;
 
-        public AddVehicleHandler(ApplicationContext context)
+        public AddVehicleHandler(ApplicationContext context, ICommandValidator<AddVehicle> commandValidator)
         {
             this.context = context;
+            this.commandValidator = commandValidator;
         }
 
         public void Handle(AddVehicle command)
         {
+            commandValidator.Validate(command);
+
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
@@ -44,7 +50,6 @@ namespace Commands.VehicleCommands
                     {
                         Id = command.Id,
                         ModelNameId = command.ModelId,
-                        
                     };
 
                     context.Vehicle.Add(newVehicle);
