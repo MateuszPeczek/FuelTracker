@@ -17,8 +17,10 @@ namespace FuelTracker.Helpers
             {
                 //exception mapper
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
-                return response;
+                return null;
             }
+
+            return null;
         }
     }
 }
