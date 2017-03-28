@@ -55,7 +55,7 @@ namespace FuelTracker.Controllers
                 {
                     var commandResult = commandBus.Send(command);
 
-                    if (commandResult == CommandStatus.Success)
+                    if (commandResult.Status == CommandStatus.Success)
                         return Get(command.Id);
                 }
                 catch (Exception ex)
@@ -82,7 +82,7 @@ namespace FuelTracker.Controllers
                 {
                     var commandResult = commandBus.Send(command);
 
-                    if (commandResult == CommandStatus.Success)
+                    if (commandResult.Status == CommandStatus.Success)
                         return Get(command.Id);
                 }
                 catch (Exception ex)
@@ -107,7 +107,7 @@ namespace FuelTracker.Controllers
             {
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult == CommandStatus.Success)
+                if (commandResult.Status == CommandStatus.Success)
                     return Get();
                 else
                     return BadRequest();

@@ -17,6 +17,14 @@ namespace Commands.VehicleCommands
         public Guid ModelId { get; set; }
     }
 
+    public class AddVehicleValidator : ICommandValidator<AddVehicle>
+    {
+        public void Validate(AddVehicle command)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class AddVehicleHandler : ICommandHandler<AddVehicle>
     {
         private readonly ApplicationContext context;
