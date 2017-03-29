@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Wrappers
+namespace Common.Paging
 {
     public class PaginatedList<T>
     {
