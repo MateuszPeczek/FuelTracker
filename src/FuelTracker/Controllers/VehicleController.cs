@@ -1,6 +1,7 @@
 ﻿using Commands.VehicleCommands;
 using Common.Enums;
 using Common.Interfaces;
+using Common.Paging;
 using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
 using Microsoft.AspNetCore.Mvc;
 using Queries.VehicleDetailsQueries;
@@ -27,10 +28,11 @@ namespace FuelTracker.Controllers
         }
 
         [HttpGet]
-        public ActionResult Get()
+        [ProducesResponseType(typeof(PaginatedList<VehicleDetails>), 200)]
+        public ActionResult Get(int? pageSize, int? pageNo)
         {
-            var query = new GetVehicleDetailsList();
-            var result = queryBus.Get<ICollection<VehicleDetails>>(query);
+            var query = new GetVehicleDetailsList(pageSize, pageNo);
+            var result = queryBus.Get<PaginatedList<VehicleDetails>>(query);
 
             return new JsonResult(result);
         }
@@ -51,21 +53,10 @@ namespace FuelTracker.Controllers
             {
                 var command = new AddVehicle(model.ModelId);
 
-                try
-                {
-                    var commandResult = commandBus.Send(command);
+                var commandResult = commandBus.Send(command);
 
-                    if (commandResult.Status == CommandStatus.Success)
-                        return Get(command.Id);
-                }
-                catch (Exception ex)
-                {
-                    var message = new HttpResponseMessage(HttpStatusCode.InternalServerError)
-                    {
-                        Content = new StringContent(ex.Message)
-                    };
-                    throw new HttpResponseException(message);
-                }
+                if (commandResult.Status == CommandStatus.Success)
+                    return Get(command.Id);
             }
 
             return BadRequest();
@@ -77,22 +68,11 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new UpdateVehicle(model.Guid, model.ProductionYear, model.EngineId);
+                var commandResult = commandBus.Send(command);
 
-                try
-                {
-                    var commandResult = commandBus.Send(command);
+                if (commandResult.Status == CommandStatus.Success)
+                    return Get(command.Id);
 
-                    if (commandResult.Status == CommandStatus.Success)
-                        return Get(command.Id);
-                }
-                catch (Exception ex)
-                {
-                    var message = new HttpResponseMessage(HttpStatusCode.InternalServerError)
-                    {
-                        Content = new StringContent(ex.Message)
-                    };
-                    throw new HttpResponseException(message);
-                }
             }
 
             return BadRequest();
@@ -101,24 +81,14 @@ namespace FuelTracker.Controllers
         [HttpDelete("{guid}")]
         public ActionResult Delete(Guid guid)
         {
-            var command = new DeleteVehicle(guid);
-
-            try
             {
+                var command = new DeleteVehicle(guid);
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get();
+                    return Get(pageSize: 10, pageNo: 1);
                 else
                     return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                var message = new HttpResponseMessage(HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-                throw new HttpResponseException(message);
             }
         }
     }
