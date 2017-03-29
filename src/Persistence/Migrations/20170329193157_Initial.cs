@@ -13,8 +13,7 @@ namespace Persistence.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
@@ -39,8 +38,7 @@ namespace Persistence.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
@@ -54,8 +52,7 @@ namespace Persistence.Migrations
                 name: "Engine",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Cylinders = table.Column<int>(nullable: false),
                     Displacement = table.Column<float>(nullable: false),
                     FuelType = table.Column<int>(nullable: false),
@@ -72,8 +69,7 @@ namespace Persistence.Migrations
                 name: "Manufacturer",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 20, nullable: true)
                 },
                 constraints: table =>
@@ -85,7 +81,7 @@ namespace Persistence.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
                     LoginProvider = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
@@ -103,7 +99,7 @@ namespace Persistence.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -123,7 +119,7 @@ namespace Persistence.Migrations
                     LoginProvider = table.Column<string>(nullable: false),
                     ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    UserId = table.Column<long>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -144,7 +140,7 @@ namespace Persistence.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    RoleId = table.Column<long>(nullable: false)
+                    RoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -161,8 +157,8 @@ namespace Persistence.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(nullable: false),
-                    RoleId = table.Column<long>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false),
+                    RoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -185,9 +181,8 @@ namespace Persistence.Migrations
                 name: "ModelName",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ManufacturerId = table.Column<long>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    ManufacturerId = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 20, nullable: true)
                 },
                 constraints: table =>
@@ -205,11 +200,9 @@ namespace Persistence.Migrations
                 name: "Vehicle",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    EngineId = table.Column<long>(nullable: true),
-                    Guid = table.Column<Guid>(nullable: false),
-                    ModelNameId = table.Column<long>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    EngineId = table.Column<Guid>(nullable: true),
+                    ModelNameId = table.Column<Guid>(nullable: false),
                     ProductionYear = table.Column<int>(nullable: true),
                     VehicleType = table.Column<int>(nullable: true)
                 },
@@ -234,8 +227,7 @@ namespace Persistence.Migrations
                 name: "ConsumptionReport",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     Distance = table.Column<float>(nullable: false),
                     FuelBurned = table.Column<float>(nullable: false),
@@ -243,7 +235,7 @@ namespace Persistence.Migrations
                     PricePerUnit = table.Column<decimal>(nullable: false),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     Units = table.Column<int>(nullable: false),
-                    Vehicle = table.Column<long>(nullable: false)
+                    Vehicle = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -260,24 +252,24 @@ namespace Persistence.Migrations
                 name: "FuelSummary",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     AverageConsumption = table.Column<float>(nullable: false),
                     DistanceDriven = table.Column<decimal>(nullable: false),
                     FuelBurned = table.Column<decimal>(nullable: false),
                     MoneySpent = table.Column<decimal>(nullable: false),
                     ReportsNumber = table.Column<long>(nullable: false),
-                    VehicleId = table.Column<long>(nullable: false)
+                    VehicleId = table.Column<long>(nullable: false),
+                    VehicleId1 = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FuelSummary", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FuelSummary_Vehicle_VehicleId",
-                        column: x => x.VehicleId,
+                        name: "FK_FuelSummary_Vehicle_VehicleId1",
+                        column: x => x.VehicleId1,
                         principalTable: "Vehicle",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -286,9 +278,9 @@ namespace Persistence.Migrations
                 column: "Vehicle");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FuelSummary_VehicleId",
+                name: "IX_FuelSummary_VehicleId1",
                 table: "FuelSummary",
-                column: "VehicleId");
+                column: "VehicleId1");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",

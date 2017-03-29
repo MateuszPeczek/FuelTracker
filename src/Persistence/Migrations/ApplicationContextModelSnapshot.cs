@@ -15,12 +15,12 @@ namespace Persistence.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
+                .HasAnnotation("ProductVersion", "1.1.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Domain.FuelStatisticsDomain.ConsumptionReport", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("DateCreated");
@@ -39,7 +39,7 @@ namespace Persistence.Migrations
 
                     b.Property<int>("Units");
 
-                    b.Property<long>("VehicleId")
+                    b.Property<Guid>("VehicleId")
                         .HasColumnName("Vehicle");
 
                     b.HasKey("Id");
@@ -51,7 +51,7 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.FuelStatisticsDomain.FuelSummary", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<float>("AverageConsumption");
@@ -66,16 +66,18 @@ namespace Persistence.Migrations
 
                     b.Property<long>("VehicleId");
 
+                    b.Property<Guid?>("VehicleId1");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId");
+                    b.HasIndex("VehicleId1");
 
                     b.ToTable("FuelSummary");
                 });
 
             modelBuilder.Entity("Domain.UserDomain.User", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
@@ -125,7 +127,7 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.UserDomain.UserRole", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ConcurrencyStamp")
@@ -148,7 +150,7 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.VehicleDomain.Engine", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("Cylinders");
@@ -171,7 +173,7 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.VehicleDomain.Manufacturer", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
@@ -184,10 +186,10 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.VehicleDomain.ModelName", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long>("ManufacturerId");
+                    b.Property<Guid>("ManufacturerId");
 
                     b.Property<string>("Name")
                         .HasMaxLength(20);
@@ -201,14 +203,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.VehicleDomain.Vehicle", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("EngineId");
+                    b.Property<Guid?>("EngineId");
 
-                    b.Property<Guid>("Guid");
-
-                    b.Property<long>("ModelNameId");
+                    b.Property<Guid>("ModelNameId");
 
                     b.Property<int?>("ProductionYear");
 
@@ -223,7 +223,7 @@ namespace Persistence.Migrations
                     b.ToTable("Vehicle");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -232,7 +232,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<long>("RoleId");
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("Id");
 
@@ -241,7 +241,7 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -250,7 +250,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<long>("UserId");
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("Id");
 
@@ -259,7 +259,7 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider");
 
@@ -267,7 +267,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
-                    b.Property<long>("UserId");
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -276,11 +276,11 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<long>("UserId");
+                    b.Property<Guid>("UserId");
 
-                    b.Property<long>("RoleId");
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -289,9 +289,9 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<long>("UserId");
+                    b.Property<Guid>("UserId");
 
                     b.Property<string>("LoginProvider");
 
@@ -316,8 +316,7 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
                         .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("VehicleId1");
                 });
 
             modelBuilder.Entity("Domain.VehicleDomain.ModelName", b =>
@@ -340,7 +339,7 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Domain.UserDomain.UserRole")
                         .WithMany("Claims")
@@ -348,7 +347,7 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.HasOne("Domain.UserDomain.User")
                         .WithMany("Claims")
@@ -356,7 +355,7 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.HasOne("Domain.UserDomain.User")
                         .WithMany("Logins")
@@ -364,7 +363,7 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<long>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<System.Guid>", b =>
                 {
                     b.HasOne("Domain.UserDomain.UserRole")
                         .WithMany("Users")
