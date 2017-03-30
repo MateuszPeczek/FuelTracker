@@ -11,7 +11,7 @@ namespace Infrastructure.InversionOfControl
 {
     public static class DependencyResolverExtensions
     {
-        public static bool RegisterHandlers(this IServiceCollection services, IEnumerable<string> assemblyNames)
+        public static bool RegisterHandlersAndValidators(this IServiceCollection services, IEnumerable<string> assemblyNames)
         {
             try
             {
@@ -35,12 +35,21 @@ namespace Infrastructure.InversionOfControl
                 var handlersTypes = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)).Any()).ToList() //all command handlers
                     .Concat(types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)).Any()).ToList()); //all query handlers
 
+                var validators = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandValidator<>)).Any()).ToList();
+
                 foreach (var type in handlersTypes)
                 {
 
-                    var handledCommand = type.GetTypeInfo().ImplementedInterfaces.First().GenericTypeArguments.First();
+                    var handledCommand = type.GetTypeInfo().ImplementedInterfaces.First().GenericTypeArguments.Single();
                     var handler = type;
                     services.AddScoped(handledCommand, type);
+                }
+
+                foreach (var type in validators)
+                {
+                    var implementedInterface = type.GetTypeInfo().ImplementedInterfaces.Single();
+                    var validatorImplementation = type;
+                    services.AddScoped(implementedInterface, type);
                 }
 
                 return true;

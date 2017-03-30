@@ -46,7 +46,7 @@ namespace FuelTracker
                 return services;
             });
 
-            services.RegisterHandlers(new List<string>() { "Commands", "Queries" });
+            services.RegisterHandlersAndValidators(new List<string>() { "Commands", "Queries" });
 
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
