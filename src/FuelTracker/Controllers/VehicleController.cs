@@ -1,6 +1,8 @@
 ﻿using Commands.VehicleCommands;
 using Common.Enums;
 using Common.Interfaces;
+using Common.Ordering.Shared;
+using Common.Ordering.Vehicle;
 using Common.Paging;
 using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +31,12 @@ namespace FuelTracker.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedList<VehicleDetails>), 200)]
-        public ActionResult Get(int? pageSize, int? pageNo)
+        public ActionResult Get([FromQuery]int pageSize = 10, 
+                                [FromQuery]int pageNo = 1, 
+                                [FromQuery]VehicleOrderColumn orderbyColumn = VehicleOrderColumn.Manufacturer,
+                                [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
-            var query = new GetVehicleDetailsList(pageSize, pageNo);
+            var query = new GetVehicleDetailsList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.Get<PaginatedList<VehicleDetails>>(query);
 
             return new JsonResult(result);
