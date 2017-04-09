@@ -21,7 +21,11 @@ namespace Infrastructure.InversionOfControl
                 foreach (var name in assemblyNames)
                 {
                     var assemblyName = GetAssemblyByName(name);
-                    assemblies.Add(Assembly.Load(assemblyName));
+
+                    if (assemblyName != null)
+                        assemblies.Add(Assembly.Load(assemblyName));
+                    else
+                        throw new ArgumentNullException();
                 }
 
                 foreach (var assembly in assemblies)
@@ -58,7 +62,7 @@ namespace Infrastructure.InversionOfControl
             catch (Exception ex)
             {
                 //TODO: logging
-                return false;
+                throw ex;
             }
         }
 
