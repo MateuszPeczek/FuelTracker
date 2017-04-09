@@ -44,7 +44,7 @@ namespace Infrastructure.Bus
             }
             catch (Exception ex)
             {
-                return new QueryResult<T>() { Data = default(T), Exception = ex };
+                return new QueryResult<T>() { Data = default(T), ExceptionMessage = ex.Message };
             }
         }
 
@@ -58,12 +58,12 @@ namespace Infrastructure.Bus
                 if (sendingMethod != null)
                     sendingMethod.Invoke(handler, new object[] { command });
 
-                return new CommandResult() { Status = CommandStatus.Success, CommandException = null };
+                return new CommandResult() { Status = CommandStatus.Success, ExceptionMessage = string.Empty};
             }
             catch (Exception ex)
             {
                 //TODO logging
-                return new CommandResult() { Status = CommandStatus.Failure, CommandException = ex };
+                return new CommandResult() { Status = CommandStatus.Failure, ExceptionMessage = ex.Message };
             }
         }
     }

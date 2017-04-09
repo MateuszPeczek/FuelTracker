@@ -47,7 +47,7 @@ namespace Infrastructure.InversionOfControl
 
                 foreach (var type in validators)
                 {
-                    var implementedInterface = type.GetTypeInfo().ImplementedInterfaces.Single();
+                    var implementedInterface = type.GetTypeInfo().ImplementedInterfaces.First();
                     var validatorImplementation = type;
                     services.AddScoped(implementedInterface, type);
                 }

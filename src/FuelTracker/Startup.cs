@@ -67,6 +67,10 @@ namespace FuelTracker
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
 
             app.UseMvc();
             app.UseSwagger();

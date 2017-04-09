@@ -8,6 +8,6 @@ namespace Common.Interfaces
     public interface ICommandResult
     {
         CommandStatus Status { get; set; }
-        Exception CommandException { get; set; }
+        string ExceptionMessage { get; set; }
     }
 }

@@ -64,7 +64,7 @@ namespace FuelTracker.Controllers
                     return Get(command.Id);
             }
 
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [HttpPut]
@@ -93,7 +93,7 @@ namespace FuelTracker.Controllers
                 if (commandResult.Status == CommandStatus.Success)
                     return Get(pageSize: 10, pageNo: 1);
                 else
-                    return BadRequest();
+                    return BadRequest(ModelState);
             }
         }
     }

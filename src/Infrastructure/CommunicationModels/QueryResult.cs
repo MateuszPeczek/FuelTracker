@@ -8,6 +8,6 @@ namespace Infrastructure.CommunicationModels
     public class QueryResult<T> : IQueryResult<T>
     {
         public T Data { get; set; }
-        public Exception Exception { get; set; }
+        public string ExceptionMessage { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace FuelTracker.Helpers
     {
         public static IActionResult GetCommandRequestResponse(HttpRequest request, ICommandResult commandResult, bool redirectToObject = false)
         {
-            if (commandResult.CommandException != null)
+            if (string.IsNullOrWhiteSpace(commandResult.ExceptionMessage))
             {
                 //exception mapper
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);

@@ -9,6 +9,6 @@ namespace Infrastructure.CommunicationModels
     public class CommandResult : ICommandResult
     {
         public CommandStatus Status { get; set; }
-        public Exception CommandException { get; set; }
+        public string ExceptionMessage { get; set; }
     }
 }
