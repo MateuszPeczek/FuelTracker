@@ -40,7 +40,7 @@ namespace Infrastructure.InversionOfControl
                 foreach (var type in handlersTypes)
                 {
 
-                    var handledCommand = type.GetTypeInfo().ImplementedInterfaces.First().GenericTypeArguments.Single();
+                    var handledCommand = type.GetTypeInfo().ImplementedInterfaces.First().GenericTypeArguments.First();
                     var handler = type;
                     services.AddScoped(handledCommand, type);
                 }
