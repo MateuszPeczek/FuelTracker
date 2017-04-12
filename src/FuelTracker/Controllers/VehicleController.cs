@@ -8,10 +8,6 @@ using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
 using Microsoft.AspNetCore.Mvc;
 using Queries.VehicleDetailsQueries;
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,7 +27,7 @@ namespace FuelTracker.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedList<VehicleDetails>), 200)]
-        public ActionResult Get([FromQuery]int pageSize = 10, 
+        public IActionResult Get([FromQuery]int pageSize = 10, 
                                 [FromQuery]int pageNo = 1, 
                                 [FromQuery]VehicleOrderColumn orderbyColumn = VehicleOrderColumn.Manufacturer,
                                 [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
@@ -43,7 +39,7 @@ namespace FuelTracker.Controllers
         }
 
         [HttpGet("{guid}")]
-        public ActionResult Get(Guid guid)
+        public IActionResult Get(Guid guid)
         {
             var query = new GetSingleVehicleDetails(guid);
             var result = queryBus.Get<VehicleDetails>(query);
@@ -52,7 +48,7 @@ namespace FuelTracker.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody]PostNewVehicle model)
+        public IActionResult Post([FromBody]PostNewVehicle model)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +64,7 @@ namespace FuelTracker.Controllers
         }
 
         [HttpPut]
-        public ActionResult Put([FromBody]PutUpdateVehicle model)
+        public IActionResult Put([FromBody]PutUpdateVehicle model)
         {
             if (ModelState.IsValid)
             {
@@ -84,7 +80,7 @@ namespace FuelTracker.Controllers
         }
 
         [HttpDelete("{guid}")]
-        public ActionResult Delete(Guid guid)
+        public IActionResult Delete(Guid guid)
         {
             {
                 var command = new DeleteVehicle(guid);
