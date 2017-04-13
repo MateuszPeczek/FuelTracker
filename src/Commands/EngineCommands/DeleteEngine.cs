@@ -8,37 +8,37 @@ using System.Text;
 
 namespace Commands.EngineCommands
 {
-    public class DeleteEngine : ICommand
+    public class DeleteManufacturer : ICommand
     {
         public Guid Id { get; set; }
 
-        public DeleteEngine(Guid id)
+        public DeleteManufacturer(Guid id)
         {
             Id = id;
         }
     }
 
-    public class DeleteEngineValidator : ICommandValidator<DeleteEngine>
+    public class DeleteEngineValidator : ICommandValidator<DeleteManufacturer>
     {
-        public void Validate(DeleteEngine command)
+        public void Validate(DeleteManufacturer command)
         {
             if (command.Id == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
 
-    public class DeleteEngineHandler : ICommandHandler<DeleteEngine>
+    public class DeleteEngineHandler : ICommandHandler<DeleteManufacturer>
     {
         private readonly ApplicationContext context;
-        private readonly ICommandValidator<DeleteEngine> commandValidator;
+        private readonly ICommandValidator<DeleteManufacturer> commandValidator;
 
-        public DeleteEngineHandler(ApplicationContext context, ICommandValidator<DeleteEngine> commandValidator)
+        public DeleteEngineHandler(ApplicationContext context, ICommandValidator<DeleteManufacturer> commandValidator)
         {
             this.context = context;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(DeleteEngine command)
+        public void Handle(DeleteManufacturer command)
         {
             commandValidator.Validate(command);
 

@@ -8,9 +8,9 @@ using System.Text;
 
 namespace Commands.EngineCommands
 {
-    public class UpdateEngine : ICommand
+    public class UpdateModel : ICommand
     {
-        public UpdateEngine(Guid id, string name, int? power, int? torque, int? cylinders, float? displacement)
+        public UpdateModel(Guid id, string name, int? power, int? torque, int? cylinders, float? displacement)
         {
             Id = id;
             Name = name;
@@ -28,27 +28,27 @@ namespace Commands.EngineCommands
         public float? Displacement { get; set; }
     }
 
-    public class UpdateEngineValidaotr : ICommandValidator<UpdateEngine>
+    public class UpdateEngineValidaotr : ICommandValidator<UpdateModel>
     {
-        public void Validate(UpdateEngine command)
+        public void Validate(UpdateModel command)
         {
             if (command.Id == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
 
-    public class UpdateEngineHandler : ICommandHandler<UpdateEngine>
+    public class UpdateEngineHandler : ICommandHandler<UpdateModel>
     {
         private readonly ApplicationContext context;
-        private readonly ICommandValidator<UpdateEngine> commandValidator;
+        private readonly ICommandValidator<UpdateModel> commandValidator;
 
-        public UpdateEngineHandler(ApplicationContext context, ICommandValidator<UpdateEngine> commandValidator)
+        public UpdateEngineHandler(ApplicationContext context, ICommandValidator<UpdateModel> commandValidator)
         {
             this.context = context;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(UpdateEngine command)
+        public void Handle(UpdateModel command)
         {
             commandValidator.Validate(command);
 
