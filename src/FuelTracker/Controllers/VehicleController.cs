@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace FuelTracker.Controllers
 {
-    [Route("api/vehicle")]
+    [ApiVersion("1.0")]
+    [Route("[controller]")]
     public class VehicleController : Controller
     {
         private readonly ICommandSender commandBus;

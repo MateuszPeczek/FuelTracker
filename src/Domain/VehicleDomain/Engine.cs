@@ -13,13 +13,13 @@ namespace Domain.VehicleDomain
         [StringLength(15, MinimumLength = 3)]
         public string Name { get; set; }
 
-        public int Power { get; set; }
+        public int? Power { get; set; }
 
-        public int Torque { get; set; }
+        public int? Torque { get; set; }
 
-        public int Cylinders { get; set; }
+        public int? Cylinders { get; set; }
 
-        public float Displacement { get; set; }
+        public float? Displacement { get; set; }
 
         public FuelType FuelType { get; set; }
         

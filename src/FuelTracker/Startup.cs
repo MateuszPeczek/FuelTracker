@@ -11,6 +11,7 @@ using Infrastructure.Factory;
 using Persistence;
 using Domain.UserDomain;
 using Infrastructure.InversionOfControl;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FuelTracker
 {
@@ -46,10 +47,21 @@ namespace FuelTracker
 
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
-
-
+            
             services.AddMvc();
-            services.AddSwaggerGen();
+
+            services.AddApiVersioning(options =>
+                {
+                    options.AssumeDefaultVersionWhenUnspecified = true;
+                    options.DefaultApiVersion = new ApiVersion(1, 0);
+                }
+            );
+
+            services.AddSwaggerGen(options =>
+            {
+                options.DescribeAllEnumsAsStrings();
+                options.DescribeStringEnumsInCamelCase();
+            });
 
             services.AddIdentity<User, UserRole>(
                 options =>
@@ -72,7 +84,11 @@ namespace FuelTracker
                 app.UseExceptionHandler("/error");
             }
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(name: "default",
+                    template: "api/v{version:apiVersion}/{controller=Default}/{action=Get}/{id?}");
+            });
             app.UseSwagger();
             app.UseSwaggerUi();
         } 

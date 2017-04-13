@@ -8,6 +8,9 @@ namespace Domain.VehicleDomain
         Diesel,
 
         [Description("Petrol")]
-        Petrol
+        Petrol,
+
+        [Description("LPG")]
+        LPG
     }
 }
