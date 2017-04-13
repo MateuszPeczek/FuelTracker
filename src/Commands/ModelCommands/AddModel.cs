@@ -1,0 +1,74 @@
+﻿using Common.Interfaces;
+using CustomExceptions.Engine;
+using CustomExceptions.Manufacturer;
+using CustomExceptions.Vehicle;
+using Domain.VehicleDomain;
+using Persistence;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Commands.ModelCommands
+{
+    public class AddModel : ICommand
+    {
+        public Guid Id { get; set; }
+        public Guid ManufacturerId { get; set; }
+        public string Name { get; set; }
+
+        public AddModel(Guid manufacturerId, string name)
+        {
+            Id = Guid.NewGuid();
+            ManufacturerId = manufacturerId;
+            Name = name;
+        }
+    }
+
+    public class AddModelValidator : ICommandValidator<AddModel>
+    {
+        public void Validate(AddModel command)
+        {
+            if (command.ManufacturerId == new Guid())
+                throw new InvalidManufacturerIdException();
+
+            if (command.Id == new Guid())
+                throw new InvalidModelIdException();
+        }
+    }
+
+    public class AddModelHandler : ICommandHandler<AddModel>
+    {
+        private readonly ApplicationContext context;
+        private readonly ICommandValidator<AddModel> commandValidator;
+
+        public AddModelHandler(ApplicationContext context, ICommandValidator<AddModel> commandValidator)
+        {
+            this.context = context;
+            this.commandValidator = commandValidator;
+        }
+
+        public void Handle(AddModel command)
+        {
+            commandValidator.Validate(command);
+
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var modelToAdd = new ModelName() {Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
+
+                    context.ModelName.Add(modelToAdd);
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+    }
+}
