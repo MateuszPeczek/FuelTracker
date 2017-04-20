@@ -1,5 +1,6 @@
 ﻿using Common.Interfaces;
 using Domain.Common;
+using Domain.UserDomain;
 using Domain.VehicleDomain;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +14,9 @@ namespace Domain.FuelStatisticsDomain
         [ForeignKey("Vehicle")]
         [Column("Vehicle")]
         public Guid VehicleId { get; set; }
+        [ForeignKey("User")]
+        [Column("User")]
+        public Guid UserId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float FuelEfficiency { get; set; }
@@ -22,5 +26,6 @@ namespace Domain.FuelStatisticsDomain
         [Timestamp]
         public byte[] RowVersion{ get; set; }
         public virtual Vehicle Vehicle { get; set; }
+        public virtual User User { get; set; }
     }
 }
