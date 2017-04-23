@@ -7,7 +7,7 @@ namespace CustomExceptions.FuelStatistics
 {
     public class InvalidDistanceException : Exception, IBadReuestException
     {
-        private const string messasge = "Distance has to be greater than 0";
+        private const string message = "Distance has to be greater than 0";
 
         public InvalidDistanceException() : base(message)
         {

@@ -1,10 +1,11 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.FuelStatistics;
+using CustomExceptions.User;
+using CustomExceptions.Vehicle;
 using Domain.Common;
 using Domain.FuelStatisticsDomain;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -26,6 +27,9 @@ namespace Commands.FuelStatisticsCommands
         {
             if (command.VehicleId == null || command.VehicleId == new Guid())
                 throw new InvalidVehicleIdException();
+
+            if (command.UserId == null || command.UserId == Guid.NewGuid())
+                throw new InvalidUserIdException();
 
             if (command.Distance <= 0)
                 throw new InvalidDistanceException();
@@ -55,6 +59,12 @@ namespace Commands.FuelStatisticsCommands
             {
                 try
                 {
+                    if (!context.Vehicle.Any(v => v.Id == command.VehicleId))
+                        throw new VehicleNotFoundException(command.VehicleId);
+
+                    if (!context.User.Any(u => u.Id == command.UserId))
+                        throw new UserNotFoundException(command.UserId);
+
                     var unitsSettings = context.UserSettings.Single(s => s.UserId == command.UserId);
                     var report = new ConsumptionReport()
                     {

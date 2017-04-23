@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Common.Interfaces;
+using Domain.FuelStatisticsDomain;
+using Common.Paging;
+using Commands.FuelStatisticsCommands;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,36 +25,76 @@ namespace FuelTracker.Controllers
             this.queryBus = queryBus;
         }
 
-        // GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        [ProducesResponseType(typeof(PaginatedList<ConsumptionReport>), 200)]
+        public async Task<IActionResult> Get([FromQuery]int pageSize = 10,
+                                [FromQuery]int pageNo = 1)//,
+                                //[FromQuery]VehicleOrderColumn orderbyColumn = VehicleOrderColumn.Manufacturer,
+                                //[FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
-            return new string[] { "value1", "value2" };
+            //var query = new GetVehicleDetailsList(pageSize, pageNo, orderbyColumn, orderDirection);
+            //var result = queryBus.Get<PaginatedList<VehicleDetails>>(query);
+            //
+            //return new JsonResult(result);
+            return null;
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{guid}")]
+        public async Task<IActionResult> Get(Guid guid)
         {
-            return "value";
+            //var query = new GetSingleVehicleDetails(guid);
+            //var result = queryBus.Get<VehicleDetails>(query);
+            //
+            //return new JsonResult(result);
+            return null;
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> Post([FromBody]AddConsumptionReport command)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var command = new AddVehicle(model.ModelId);
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+        //        var commandResult = commandBus.Send(command);
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //        if (commandResult.Status == CommandStatus.Success)
+        //            return await Get(command.Id);
+        //    }
+
+        //    return BadRequest(ModelState);
+        //    return null;
+        //}
+
+        //[HttpPut]
+        //public async Task<IActionResult> Put([FromBody]PutUpdateVehicle model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var command = new UpdateVehicle(model.Guid, model.ProductionYear, model.EngineId);
+        //        var commandResult = commandBus.Send(command);
+
+        //        if (commandResult.Status == CommandStatus.Success)
+        //            return await Get(command.Id);
+
+        //    }
+
+        //    return BadRequest();
+        //    return null;
+        //}
+
+        //[HttpDelete("{guid}")]
+        //public async Task<IActionResult> Delete(Guid guid)
+        //{
+        //    {
+        //        var command = new DeleteVehicle(guid);
+        //        var commandResult = commandBus.Send(command);
+
+        //        if (commandResult.Status == CommandStatus.Success)
+        //            return await Get(pageSize: 10, pageNo: 1);
+        //        else
+        //            return BadRequest(ModelState);
+        //    }
+        //}
     }
 }
