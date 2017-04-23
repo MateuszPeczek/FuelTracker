@@ -1,13 +1,10 @@
 ﻿using Common.Interfaces;
-using CustomExceptions.Engine;
 using CustomExceptions.Manufacturer;
 using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Commands.ModelCommands
 {
@@ -56,6 +53,9 @@ namespace Commands.ModelCommands
             {
                 try
                 {
+                    if (!context.Manufacturer.Any(m => m.Id == command.Id))
+                        throw new ManufacturerNotFoundException(command.ManufacturerId);
+                    
                     var modelToAdd = new ModelName() {Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
 
                     context.ModelName.Add(modelToAdd);
