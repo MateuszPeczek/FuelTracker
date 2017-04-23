@@ -32,10 +32,10 @@ namespace Queries.ManufacturerQueries
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
-                var sqlQuery = $@"SELECT Id, Name from Manufactuer
-                                  ORDER BY {query.OrderDirection.ToString()}
+                var sqlQuery = $@"SELECT Id, Name from Manufacturer
+                                  ORDER BY Name {query.OrderDirection.ToString()}
                                   OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
-                                  FETCH NEXT {query.PageSize} ONLY";
+                                  FETCH NEXT {query.PageSize} ROWS ONLY";
 
                 var result = db.Query<ManufacturerDetails>(sqlQuery).ToList();
 

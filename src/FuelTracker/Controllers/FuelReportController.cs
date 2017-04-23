@@ -27,7 +27,7 @@ namespace FuelTracker.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedList<ConsumptionReport>), 200)]
-        public async Task<IActionResult> Get([FromQuery]int pageSize = 10,
+        public IActionResult Get([FromQuery]int pageSize = 10,
                                 [FromQuery]int pageNo = 1)//,
                                 //[FromQuery]VehicleOrderColumn orderbyColumn = VehicleOrderColumn.Manufacturer,
                                 //[FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
@@ -40,7 +40,7 @@ namespace FuelTracker.Controllers
         }
 
         [HttpGet("{guid}")]
-        public async Task<IActionResult> Get(Guid guid)
+        public IActionResult Get(Guid guid)
         {
             //var query = new GetSingleVehicleDetails(guid);
             //var result = queryBus.Get<VehicleDetails>(query);
@@ -50,7 +50,7 @@ namespace FuelTracker.Controllers
         }
 
         //[HttpPost]
-        //public async Task<IActionResult> Post([FromBody]AddConsumptionReport command)
+        //public IActionResult Post([FromBody]AddConsumptionReport command)
         //{
         //    if (ModelState.IsValid)
         //    {
@@ -67,7 +67,7 @@ namespace FuelTracker.Controllers
         //}
 
         //[HttpPut]
-        //public async Task<IActionResult> Put([FromBody]PutUpdateVehicle model)
+        //public IActionResult Put([FromBody]PutUpdateVehicle model)
         //{
         //    if (ModelState.IsValid)
         //    {
@@ -84,7 +84,7 @@ namespace FuelTracker.Controllers
         //}
 
         //[HttpDelete("{guid}")]
-        //public async Task<IActionResult> Delete(Guid guid)
+        //public IActionResult Delete(Guid guid)
         //{
         //    {
         //        var command = new DeleteVehicle(guid);

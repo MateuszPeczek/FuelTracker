@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Vehicle;
 using Dapper;
 using System;
 using System.Data.SqlClient;
@@ -31,7 +32,10 @@ namespace Queries.VehicleQueries
 
                 var result = db.Query<VehicleDetails>(sqlQuery, new { Id = query.Id }).SingleOrDefault();
 
-                return result;
+                if (result == null)
+                    throw new VehicleNotFoundException(query.Id);
+                else
+                    return result;
             }
         }
     }

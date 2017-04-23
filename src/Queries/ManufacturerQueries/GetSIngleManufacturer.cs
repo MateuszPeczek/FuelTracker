@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Manufacturer;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,11 @@ namespace Queries.ManufacturerQueries
     public class GetSingleManufacturer : IQuery
     {
         public Guid Id { get; set; }
+
+        public GetSingleManufacturer(Guid id)
+        {
+            Id = id;
+        }
     }
 
     public class GetSingleManufacturerHandler : IQueryHandler<GetSingleManufacturer, ManufacturerDetails>
@@ -23,7 +29,10 @@ namespace Queries.ManufacturerQueries
 
                 var result = db.Query<ManufacturerDetails>(sqlQuery, new { Id = query.Id }).SingleOrDefault();
 
-                return result;
+                if (result == null)
+                    throw new ManufacturerNotFoundException(query.Id);
+                else
+                    return result;
             }
         }
     }
