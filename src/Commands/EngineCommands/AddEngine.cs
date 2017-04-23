@@ -10,21 +10,21 @@ using System.Text;
 
 namespace Commands.EngineCommands
 {
-    public class AddModel : ICommand
+    public class AddEngineModel : ICommand
     {
         public Guid Id { get; set; }
         public FuelType FuelType { get; set; }
 
-        public AddModel(FuelType fuelType)
+        public AddEngineModel(FuelType fuelType)
         {
             Id = Guid.NewGuid();
             this.FuelType = fuelType;
         }
     }
 
-    public class AddEngineValidator : ICommandValidator<AddModel>
+    public class AddEngineValidator : ICommandValidator<AddEngineModel>
     {
-        public void Validate(AddModel command)
+        public void Validate(AddEngineModel command)
         {
             if (command.FuelType > Enum.GetValues(typeof(FuelType)).Cast<FuelType>().Last())
                 throw new FuelTypeOutOfRangeException();
@@ -34,18 +34,18 @@ namespace Commands.EngineCommands
         }
     }
 
-    public class AddEngineHandler : ICommandHandler<AddModel>
+    public class AddEngineHandler : ICommandHandler<AddEngineModel>
     {
         private readonly ApplicationContext context;
-        private readonly ICommandValidator<AddModel> commandValidator;
+        private readonly ICommandValidator<AddEngineModel> commandValidator;
 
-        public AddEngineHandler(ApplicationContext context, ICommandValidator<AddModel> commandValidator)
+        public AddEngineHandler(ApplicationContext context, ICommandValidator<AddEngineModel> commandValidator)
         {
             this.context = context;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(AddModel command)
+        public void Handle(AddEngineModel command)
         {
             commandValidator.Validate(command);
 

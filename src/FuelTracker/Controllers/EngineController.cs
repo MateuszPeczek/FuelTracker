@@ -49,7 +49,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new AddModel(fuelType);
+                var command = new AddEngineModel(fuelType);
 
                 var commandResult = commandBus.Send(command);
 

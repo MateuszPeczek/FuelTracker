@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Manufacturer;
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
@@ -50,6 +51,9 @@ namespace Commands.ModelCommands
             {
                 try
                 {
+                    if (!context.Manufacturer.Any(m => m.Id == command.Id))
+                        throw new ManufacturerNotFoundException(command.ManufacturerId);
+
                     var modelToUpdate = context.ModelName.Single(m => m.Id == command.Id);
 
                     modelToUpdate.Name = command.Name;
