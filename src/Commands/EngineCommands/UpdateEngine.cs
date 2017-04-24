@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Engine;
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
@@ -8,9 +9,9 @@ using System.Text;
 
 namespace Commands.EngineCommands
 {
-    public class UpdateModel : ICommand
+    public class UpdateEngine : ICommand
     {
-        public UpdateModel(Guid id, string name, int? power, int? torque, int? cylinders, float? displacement)
+        public UpdateEngine(Guid id, string name, int? power, int? torque, int? cylinders, float? displacement)
         {
             Id = id;
             Name = name;
@@ -28,27 +29,27 @@ namespace Commands.EngineCommands
         public float? Displacement { get; set; }
     }
 
-    public class UpdateEngineValidaotr : ICommandValidator<UpdateModel>
+    public class UpdateEngineValidaotr : ICommandValidator<UpdateEngine>
     {
-        public void Validate(UpdateModel command)
+        public void Validate(UpdateEngine command)
         {
             if (command.Id == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
 
-    public class UpdateEngineHandler : ICommandHandler<UpdateModel>
+    public class UpdateEngineHandler : ICommandHandler<UpdateEngine>
     {
         private readonly ApplicationContext context;
-        private readonly ICommandValidator<UpdateModel> commandValidator;
+        private readonly ICommandValidator<UpdateEngine> commandValidator;
 
-        public UpdateEngineHandler(ApplicationContext context, ICommandValidator<UpdateModel> commandValidator)
+        public UpdateEngineHandler(ApplicationContext context, ICommandValidator<UpdateEngine> commandValidator)
         {
             this.context = context;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(UpdateModel command)
+        public void Handle(UpdateEngine command)
         {
             commandValidator.Validate(command);
 
@@ -57,6 +58,9 @@ namespace Commands.EngineCommands
                 try
                 {
                     var engineToUpdate = context.Engine.Single(e => e.Id == command.Id);
+
+                    if (engineToUpdate == null)
+                        throw new EngineNotFoundException(command.Id);
 
                     engineToUpdate.Name = command.Name;
                     engineToUpdate.Power = command.Power;

@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Engine;
 using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
@@ -52,12 +53,19 @@ namespace Commands.VehicleCommands
                 try
                 {
                     var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.Id);
-                    var selectedEngine = context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
+                    if (vehicleToUpdate == null)
+                        throw new VehicleNotFoundException(command.Id);
+
+                    if (command.EngineId.HasValue)
+                    {
+                        var selectedEngine = context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
+                        if (selectedEngine == null)
+                            throw new EngineNotFoundException(command.EngineId.Value);
+
+                        vehicleToUpdate.EngineId = command.EngineId;
+                    }
 
                     vehicleToUpdate.ProductionYear = command.ProductionYear;
-
-                    if (selectedEngine != null)
-                        vehicleToUpdate.Engine = selectedEngine;
 
                     context.SaveChanges();
                     transaction.Commit();

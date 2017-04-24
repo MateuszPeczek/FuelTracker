@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Common.Paging;
 using FuelTracker.ApiModels.EngineApiModels;
@@ -9,8 +6,9 @@ using Common.Interfaces;
 using Commands.EngineCommands;
 using Common.Enums;
 using Domain.VehicleDomain;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Queries.EngineQueries;
+using Common.Ordering.Engine;
+using Common.Ordering.Shared;
 
 namespace FuelTracker.Controllers
 {
@@ -29,27 +27,35 @@ namespace FuelTracker.Controllers
         }
 
 
-        //[HttpGet]
-        //[ProducesResponseType(typeof(PaginatedList<EngineDetails>), 200)]
-        //public IActionResult Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginatedList<EngineDetails>), 200)]
+        public IActionResult Get([FromQuery]int pageSize = 10,
+                                 [FromQuery]int pageNo = 1,
+                                 [FromQuery]EngineOrderColumn orderbyColumn = EngineOrderColumn.FuelType,
+                                 [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
+        {
+            var query = new GetEnginesList(pageSize, pageNo, orderbyColumn, orderDirection);
+            var result = queryBus.Get<PaginatedList<EngineDetails>>(query);
+
+            return new JsonResult(result);
+        }
 
 
         [HttpGet("{guid}")]
         public IActionResult Get(Guid guid)
         {
-            return null;
+            var query = new GetSingleEngine(guid);
+            var result = queryBus.Get<EngineDetails>(query);
+
+            return new JsonResult(result);
         }
 
-
         [HttpPost]
-        public IActionResult AddEngine([FromBody]FuelType fuelType)
+        public IActionResult Post([FromBody]FuelType fuelType)
         {
             if (ModelState.IsValid)
             {
-                var command = new AddEngineModel(fuelType);
+                var command = new AddEngine(fuelType);
 
                 var commandResult = commandBus.Send(command);
 
@@ -60,18 +66,34 @@ namespace FuelTracker.Controllers
             return BadRequest(ModelState);
         }
 
-
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]string value)
+        [HttpPut]
+        public IActionResult Put([FromBody]PutEngine model)
         {
-            return null;
+            if (ModelState.IsValid)
+            {
+                var command = new UpdateEngine(model.Id, model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement);
+                var commandResult = commandBus.Send(command);
+
+                if (commandResult.Status == CommandStatus.Success)
+                    return Get(command.Id);
+
+            }
+
+            return BadRequest();
         }
 
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{guid}")]
+        public IActionResult Delete(Guid guid)
         {
-            return null;
+            {
+                var command = new DeleteEngine(guid);
+                var commandResult = commandBus.Send(command);
+
+                if (commandResult.Status == CommandStatus.Success)
+                    return Ok();
+                else
+                    return BadRequest(ModelState);
+            }
         }
     }
 }

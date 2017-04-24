@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Engine;
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
@@ -8,37 +9,37 @@ using System.Text;
 
 namespace Commands.EngineCommands
 {
-    public class DeleteManufacturer : ICommand
+    public class DeleteEngine : ICommand
     {
         public Guid Id { get; set; }
 
-        public DeleteManufacturer(Guid id)
+        public DeleteEngine(Guid id)
         {
             Id = id;
         }
     }
 
-    public class DeleteEngineValidator : ICommandValidator<DeleteManufacturer>
+    public class DeleteEngineValidator : ICommandValidator<DeleteEngine>
     {
-        public void Validate(DeleteManufacturer command)
+        public void Validate(DeleteEngine command)
         {
             if (command.Id == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
 
-    public class DeleteEngineHandler : ICommandHandler<DeleteManufacturer>
+    public class DeleteEngineHandler : ICommandHandler<DeleteEngine>
     {
         private readonly ApplicationContext context;
-        private readonly ICommandValidator<DeleteManufacturer> commandValidator;
+        private readonly ICommandValidator<DeleteEngine> commandValidator;
 
-        public DeleteEngineHandler(ApplicationContext context, ICommandValidator<DeleteManufacturer> commandValidator)
+        public DeleteEngineHandler(ApplicationContext context, ICommandValidator<DeleteEngine> commandValidator)
         {
             this.context = context;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(DeleteManufacturer command)
+        public void Handle(DeleteEngine command)
         {
             commandValidator.Validate(command);
 
@@ -46,9 +47,12 @@ namespace Commands.EngineCommands
             {
                 try
                 {
-                    var engineToDelte = context.Engine.Single(e => e.Id == command.Id);
+                    var engineToDelete = context.Engine.Single(e => e.Id == command.Id);
 
-                    context.Entry(engineToDelte).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    if (engineToDelete == null)
+                        throw new EngineNotFoundException(command.Id);
+
+                    context.Entry(engineToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 
                     context.SaveChanges();
                     transaction.Commit();
