@@ -118,6 +118,16 @@ namespace Commands.FuelStatisticsCommands
                         fuelSummary.AverageConsumption = report.FuelEfficiency;
                         fuelSummary.Units = report.Units;
 
+                        switch (fuelSummary.Units)
+                        {
+                            case Units.Metric:
+                                fuelSummary.AverageConsumption = (fuelSummary.FuelBurned * 100) / fuelSummary.DistanceDriven;
+                                break;
+                            case Units.Imperial:
+                                fuelSummary.AverageConsumption = fuelSummary.DistanceDriven / fuelSummary.FuelBurned;
+                                break;
+                        }
+
                         context.FuelSummary.Add(fuelSummary);
                     }
                     else

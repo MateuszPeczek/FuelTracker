@@ -9,7 +9,7 @@ namespace Queries.FuelStatisticsQueries
     public class ConsumptionReportDetails
     {
         public Guid Id { get; set; }
-        public Guid Vehicle { get; set; }
+        public Guid VehicleId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float FuelEfficiency { get; set; }

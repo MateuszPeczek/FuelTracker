@@ -46,7 +46,7 @@ namespace Queries.FuelStatisticsQueries
                 var startDateFilterValue = query.StartDate.HasValue ? query.StartDate.Value : (DateTime)SqlDateTime.MinValue;
                 var endDateFilterValue = query.EndDate.HasValue ? query.EndDate.Value : (DateTime)SqlDateTime.MaxValue;
 
-                var sqlQuery = $@"SELECT Id, Vehicle, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport
+                var sqlQuery = $@"SELECT Id, VehicleId, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport
                                   WHERE DateCreated > '{startDateFilterValue.ToString("yyyy-MM-dd HH:mm:ss.fff")}' AND DateCreated < '{endDateFilterValue.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
                                   ORDER BY {query.OrderColumn.ToString()} {query.OrderDirection.ToString()}
                                   OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
