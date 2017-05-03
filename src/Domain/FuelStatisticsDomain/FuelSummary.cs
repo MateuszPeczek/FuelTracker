@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using Domain.Common;
 using Domain.VehicleDomain;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,17 +11,18 @@ namespace Domain.FuelStatisticsDomain
         public Guid Id { get; set; }
 
         [ForeignKey("VehicleId")]
-        public long VehicleId { get; set; }
+        public Guid VehicleId { get; set; }
         public virtual Vehicle Vehicle{ get; set; }
 
         public float AverageConsumption { get; set; }
 
         public long ReportsNumber { get; set; }
 
-        public decimal DistanceDriven { get; set; }
+        public float DistanceDriven { get; set; }
 
-        public decimal FuelBurned { get; set; }
+        public float FuelBurned { get; set; }
 
-        public decimal MoneySpent { get; set; }
+        public float MoneySpent { get; set; }
+        public Units Units { get; set; }
     }
 }

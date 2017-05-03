@@ -26,7 +26,7 @@ namespace FuelTracker.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(PaginatedList<ConsumptionReport>), 200)]
+        [ProducesResponseType(typeof(PaginatedList<>), 200)]
         public IActionResult Get([FromQuery]int pageSize = 10,
                                 [FromQuery]int pageNo = 1)//,
                                 //[FromQuery]VehicleOrderColumn orderbyColumn = VehicleOrderColumn.Manufacturer,
