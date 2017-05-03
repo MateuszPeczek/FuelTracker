@@ -86,15 +86,15 @@ namespace Commands.FuelStatisticsCommands
                     {
                         if (reportToUpdate.Units == Units.Imperial && fuelSummaryToUpdate.Units == Units.Metric)
                         {
-                            fuelSummaryToUpdate.DistanceDriven -= reportToUpdate.Distance * milesToKilometersConst;
-                            fuelSummaryToUpdate.FuelBurned -= reportToUpdate.FuelBurned * galonsToLitresConst;
+                            fuelSummaryToUpdate.DistanceDriven -= (reportToUpdate.Distance - command.Distance) * milesToKilometersConst;
+                            fuelSummaryToUpdate.FuelBurned -= (reportToUpdate.FuelBurned - command.FuelBurned) * galonsToLitresConst;
                             fuelSummaryToUpdate.AverageConsumption = (fuelSummaryToUpdate.FuelBurned * 100) / fuelSummaryToUpdate.DistanceDriven;
                         }
 
                         if (reportToUpdate.Units == Units.Metric && fuelSummaryToUpdate.Units == Units.Imperial)
                         {
-                            fuelSummaryToUpdate.DistanceDriven -= reportToUpdate.Distance * kilometersToMilesConst;
-                            fuelSummaryToUpdate.FuelBurned -= reportToUpdate.FuelBurned * litresToGalonsConst;
+                            fuelSummaryToUpdate.DistanceDriven -= (reportToUpdate.Distance - command.Distance) * kilometersToMilesConst;
+                            fuelSummaryToUpdate.FuelBurned -= (reportToUpdate.FuelBurned - command.FuelBurned) * litresToGalonsConst;
                             fuelSummaryToUpdate.AverageConsumption = fuelSummaryToUpdate.DistanceDriven / fuelSummaryToUpdate.FuelBurned;
                         }
                     }

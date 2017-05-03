@@ -31,7 +31,9 @@ namespace Persistence.Migrations
 
                     b.Property<float>("FuelEfficiency");
 
-                    b.Property<decimal>("PricePerUnit");
+                    b.Property<DateTime>("LastChanged");
+
+                    b.Property<float>("PricePerUnit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -61,21 +63,21 @@ namespace Persistence.Migrations
 
                     b.Property<float>("AverageConsumption");
 
-                    b.Property<decimal>("DistanceDriven");
+                    b.Property<float>("DistanceDriven");
 
-                    b.Property<decimal>("FuelBurned");
+                    b.Property<float>("FuelBurned");
 
-                    b.Property<decimal>("MoneySpent");
+                    b.Property<float>("MoneySpent");
 
                     b.Property<long>("ReportsNumber");
 
-                    b.Property<long>("VehicleId");
+                    b.Property<int>("Units");
 
-                    b.Property<Guid?>("VehicleId1");
+                    b.Property<Guid>("VehicleId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId1");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("FuelSummary");
                 });
@@ -342,7 +344,8 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
                         .WithMany()
-                        .HasForeignKey("VehicleId1");
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.VehicleDomain.ModelName", b =>

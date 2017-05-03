@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Persistence.Migrations
 {
-    public partial class Initial : Migration
+    public partial class V1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -49,16 +49,30 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserSettings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    FuelType = table.Column<int>(nullable: false),
+                    Units = table.Column<int>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Engine",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Cylinders = table.Column<int>(nullable: false),
-                    Displacement = table.Column<float>(nullable: false),
+                    Cylinders = table.Column<int>(nullable: true),
+                    Displacement = table.Column<float>(nullable: true),
                     FuelType = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 15, nullable: true),
-                    Power = table.Column<int>(nullable: false),
-                    Torque = table.Column<int>(nullable: false)
+                    Power = table.Column<int>(nullable: true),
+                    Torque = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -232,14 +246,22 @@ namespace Persistence.Migrations
                     Distance = table.Column<float>(nullable: false),
                     FuelBurned = table.Column<float>(nullable: false),
                     FuelEfficiency = table.Column<float>(nullable: false),
-                    PricePerUnit = table.Column<decimal>(nullable: false),
+                    LastChanged = table.Column<DateTime>(nullable: false),
+                    PricePerUnit = table.Column<float>(nullable: false),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     Units = table.Column<int>(nullable: false),
+                    User = table.Column<Guid>(nullable: false),
                     Vehicle = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ConsumptionReport", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConsumptionReport_AspNetUsers_User",
+                        column: x => x.User,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ConsumptionReport_Vehicle_Vehicle",
                         column: x => x.Vehicle,
@@ -254,23 +276,28 @@ namespace Persistence.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     AverageConsumption = table.Column<float>(nullable: false),
-                    DistanceDriven = table.Column<decimal>(nullable: false),
-                    FuelBurned = table.Column<decimal>(nullable: false),
-                    MoneySpent = table.Column<decimal>(nullable: false),
+                    DistanceDriven = table.Column<float>(nullable: false),
+                    FuelBurned = table.Column<float>(nullable: false),
+                    MoneySpent = table.Column<float>(nullable: false),
                     ReportsNumber = table.Column<long>(nullable: false),
-                    VehicleId = table.Column<long>(nullable: false),
-                    VehicleId1 = table.Column<Guid>(nullable: true)
+                    Units = table.Column<int>(nullable: false),
+                    VehicleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FuelSummary", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FuelSummary_Vehicle_VehicleId1",
-                        column: x => x.VehicleId1,
+                        name: "FK_FuelSummary_Vehicle_VehicleId",
+                        column: x => x.VehicleId,
                         principalTable: "Vehicle",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConsumptionReport_User",
+                table: "ConsumptionReport",
+                column: "User");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConsumptionReport_Vehicle",
@@ -278,9 +305,9 @@ namespace Persistence.Migrations
                 column: "Vehicle");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FuelSummary_VehicleId1",
+                name: "IX_FuelSummary_VehicleId",
                 table: "FuelSummary",
-                column: "VehicleId1");
+                column: "VehicleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -342,6 +369,9 @@ namespace Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "FuelSummary");
+
+            migrationBuilder.DropTable(
+                name: "UserSettings");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");

@@ -10,8 +10,8 @@ using Domain.VehicleDomain;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20170329193157_Initial")]
-    partial class Initial
+    [Migration("20170503183051_V1")]
+    partial class V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,7 +32,9 @@ namespace Persistence.Migrations
 
                     b.Property<float>("FuelEfficiency");
 
-                    b.Property<decimal>("PricePerUnit");
+                    b.Property<DateTime>("LastChanged");
+
+                    b.Property<float>("PricePerUnit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -40,10 +42,15 @@ namespace Persistence.Migrations
 
                     b.Property<int>("Units");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnName("User");
+
                     b.Property<Guid>("VehicleId")
                         .HasColumnName("Vehicle");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VehicleId");
 
@@ -57,21 +64,21 @@ namespace Persistence.Migrations
 
                     b.Property<float>("AverageConsumption");
 
-                    b.Property<decimal>("DistanceDriven");
+                    b.Property<float>("DistanceDriven");
 
-                    b.Property<decimal>("FuelBurned");
+                    b.Property<float>("FuelBurned");
 
-                    b.Property<decimal>("MoneySpent");
+                    b.Property<float>("MoneySpent");
 
                     b.Property<long>("ReportsNumber");
 
-                    b.Property<long>("VehicleId");
+                    b.Property<int>("Units");
 
-                    b.Property<Guid?>("VehicleId1");
+                    b.Property<Guid>("VehicleId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId1");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("FuelSummary");
                 });
@@ -149,23 +156,39 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
+            modelBuilder.Entity("Domain.UserDomain.UserSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("FuelType");
+
+                    b.Property<int>("Units");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSettings");
+                });
+
             modelBuilder.Entity("Domain.VehicleDomain.Engine", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("Cylinders");
+                    b.Property<int?>("Cylinders");
 
-                    b.Property<float>("Displacement");
+                    b.Property<float?>("Displacement");
 
                     b.Property<int>("FuelType");
 
                     b.Property<string>("Name")
                         .HasMaxLength(15);
 
-                    b.Property<int>("Power");
+                    b.Property<int?>("Power");
 
-                    b.Property<int>("Torque");
+                    b.Property<int?>("Torque");
 
                     b.HasKey("Id");
 
@@ -307,6 +330,11 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.FuelStatisticsDomain.ConsumptionReport", b =>
                 {
+                    b.HasOne("Domain.UserDomain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
@@ -317,7 +345,8 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
                         .WithMany()
-                        .HasForeignKey("VehicleId1");
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.VehicleDomain.ModelName", b =>
