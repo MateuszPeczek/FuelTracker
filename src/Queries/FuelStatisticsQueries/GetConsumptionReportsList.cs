@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using Common.Ordering.FuelStatistics;
 using Common.Ordering.Shared;
 using Common.Paging;
 using Dapper;
@@ -15,12 +16,14 @@ namespace Queries.FuelStatisticsQueries
         public int PageSize { get; set; }
         public int PageNo { get; set; }
         public OrderDirection OrderDirection { get; set; }
+        public ConsumptionReportOrderColumn OrderColumn { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
         public GetConsumptionReportsList(int? pageSize,
                                     int? pageNo,
                                     OrderDirection orderDirection,
+                                    ConsumptionReportOrderColumn OrderColumn,
                                     DateTime? startDate = null,
                                     DateTime? endDate = null)
         {
@@ -43,7 +46,7 @@ namespace Queries.FuelStatisticsQueries
 
                 var sqlQuery = $@"SELECT Id, DateCreated, Distance, FuelBurned, FuelEfficency, PricePerUnit, Units FROM ConsumptionReport
                                   WHERE DateCreated > {startDateFilterValue.ToString()} AND DateCreated < {endDateFilterValue.ToString()}
-                                  ORDER BY Name {query.OrderDirection.ToString()}
+                                  ORDER BY {query.OrderColumn.ToString()} {query.OrderDirection.ToString()}
                                   OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
                                   FETCH NEXT {query.PageSize} ROWS ONLY";
 

@@ -19,6 +19,16 @@ namespace Commands.FuelStatisticsCommands
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
+
+        public CalculateFuelConsumption(Guid vehicleId, Guid userId, float distance, float fuelBurned, float pricePerUnit)
+        {
+            Id = Guid.NewGuid();
+            VehicleId = VehicleId;
+            UserId = userId;
+            Distance = distance;
+            FuelBurned = fuelBurned;
+            PricePerUnit = pricePerUnit;
+        }
     }
 
     public class CalculateFuelConsumptionValidator : ICommandValidator<CalculateFuelConsumption>

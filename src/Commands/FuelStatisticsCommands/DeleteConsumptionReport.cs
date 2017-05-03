@@ -12,6 +12,11 @@ namespace Commands.FuelStatisticsCommands
     public class DeleteConsumptionReport : ICommand
     {
         public Guid Id { get; set; }
+
+        public DeleteConsumptionReport(Guid id)
+        {
+            Id = id;
+        }
     }
 
     public class DeleteConsumptionReportValidator : ICommandValidator<DeleteConsumptionReport>

@@ -12,6 +12,11 @@ namespace Queries.FuelStatisticsQueries
     public class GetFuelSummary : IQuery
     {
         public Guid VehicleId { get; set; }
+
+        public GetFuelSummary(Guid vehicleId)
+        {
+            VehicleId = vehicleId;
+        }
     }
 
     public class GetFuelSummaryHandler : IQueryHandler<GetFuelSummary, FuelSummaryDetails>

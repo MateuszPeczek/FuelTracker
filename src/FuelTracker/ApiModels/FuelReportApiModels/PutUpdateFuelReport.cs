@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace FuelTracker.ApiModels.FuelReportApiModels
 {
-    public class PostNewFuelReport
+    public class PutUpdateFuelReport
     {
-        public Guid VehicleId { get; set; }
-        public Guid UserId { get; set; }
+        public Guid Id { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }

@@ -15,6 +15,14 @@ namespace Commands.FuelStatisticsCommands
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
+
+        public UpdateConsumptionReport(Guid id, float distance, float fuelBurned, float pricePerUnit)
+        {
+            Id = id;
+            Distance = distance;
+            FuelBurned = fuelBurned;
+            PricePerUnit = pricePerUnit;
+        }
     }
 
     public class UpdateConsumptionReportValidator : ICommandValidator<UpdateConsumptionReport>
