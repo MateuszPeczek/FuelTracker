@@ -100,7 +100,7 @@ namespace Commands.FuelStatisticsCommands
                     context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     transaction.Rollback();
                     throw;

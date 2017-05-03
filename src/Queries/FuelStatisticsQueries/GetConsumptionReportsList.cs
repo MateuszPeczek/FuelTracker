@@ -3,9 +3,11 @@ using Common.Ordering.FuelStatistics;
 using Common.Ordering.Shared;
 using Common.Paging;
 using Dapper;
+using Domain.FuelStatisticsDomain;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 
@@ -41,11 +43,11 @@ namespace Queries.FuelStatisticsQueries
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
-                var startDateFilterValue = query.StartDate.HasValue ? query.StartDate.Value : DateTime.MinValue;
-                var endDateFilterValue = query.EndDate.HasValue ? query.EndDate.Value : DateTime.MaxValue;
+                var startDateFilterValue = query.StartDate.HasValue ? query.StartDate.Value : (DateTime)SqlDateTime.MinValue;
+                var endDateFilterValue = query.EndDate.HasValue ? query.EndDate.Value : (DateTime)SqlDateTime.MaxValue;
 
-                var sqlQuery = $@"SELECT Id, DateCreated, Distance, FuelBurned, FuelEfficency, PricePerUnit, Units FROM ConsumptionReport
-                                  WHERE DateCreated > {startDateFilterValue.ToString()} AND DateCreated < {endDateFilterValue.ToString()}
+                var sqlQuery = $@"SELECT Id, Vehicle, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport
+                                  WHERE DateCreated > '{startDateFilterValue.ToString("yyyy-MM-dd HH:mm:ss.fff")}' AND DateCreated < '{endDateFilterValue.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
                                   ORDER BY {query.OrderColumn.ToString()} {query.OrderDirection.ToString()}
                                   OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
                                   FETCH NEXT {query.PageSize} ROWS ONLY";

@@ -46,7 +46,7 @@ namespace FuelTracker.Controllers
         {
             var query = new GetConsumptionReportsList(pageSize, pageNo, orderDirection, orderColumn, startDate, endDate);
             var result = queryBus.Get<PaginatedList<ConsumptionReportDetails>>(query);
-            
+
             return new JsonResult(result);
         }
 
@@ -55,7 +55,7 @@ namespace FuelTracker.Controllers
         {
             var query = new GetSingleConsumptionReport(id);
             var result = queryBus.Get<ConsumptionReportDetails>(query);
-            
+
             return new JsonResult(result);
         }
 
@@ -70,6 +70,8 @@ namespace FuelTracker.Controllers
 
                 if (commandResult.Status == CommandStatus.Success)
                     return GetSingleConsumptionReport(command.Id);
+                else
+                    return new JsonResult(commandResult);
             }
 
             return BadRequest(ModelState);
@@ -85,6 +87,8 @@ namespace FuelTracker.Controllers
 
                 if (commandResult.Status == CommandStatus.Success)
                     return GetSingleConsumptionReport(command.Id);
+                else
+                    return new JsonResult(commandResult);
             }
 
             return BadRequest(ModelState);
@@ -100,7 +104,7 @@ namespace FuelTracker.Controllers
                 if (commandResult.Status == CommandStatus.Success)
                     return GetConsumptionReportsList(pageSize: 10, pageNo: 1);
                 else
-                    return BadRequest(ModelState);
+                    return new JsonResult(commandResult);
             }
         }
     }

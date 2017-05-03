@@ -23,7 +23,7 @@ namespace Commands.FuelStatisticsCommands
         public CalculateFuelConsumption(Guid vehicleId, Guid userId, float distance, float fuelBurned, float pricePerUnit)
         {
             Id = Guid.NewGuid();
-            VehicleId = VehicleId;
+            VehicleId = vehicleId;
             UserId = userId;
             Distance = distance;
             FuelBurned = fuelBurned;
@@ -76,6 +76,9 @@ namespace Commands.FuelStatisticsCommands
                         throw new UserNotFoundException(command.UserId);
 
                     var unitsSettings = context.UserSettings.Single(s => s.UserId == command.UserId);
+                    if (unitsSettings == null)
+                        throw new Exception();
+
                     var report = new ConsumptionReport()
                     {
                         Id = command.Id,
@@ -84,7 +87,8 @@ namespace Commands.FuelStatisticsCommands
                         FuelBurned = command.FuelBurned,
                         UserId = command.UserId,
                         DateCreated = DateTime.Now,
-                        PricePerUnit = command.PricePerUnit
+                        PricePerUnit = command.PricePerUnit,
+                        LastChanged = DateTime.Now
                     };
 
                     switch (unitsSettings.Units)
@@ -145,7 +149,7 @@ namespace Commands.FuelStatisticsCommands
                     context.SaveChanges();
                     transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     transaction.Rollback();
                     throw;
