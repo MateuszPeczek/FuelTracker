@@ -26,7 +26,7 @@ namespace FuelTracker.Controllers
             this.queryBus = queryBus;
         }
 
-        [HttpGet("{vehicleId}")]
+        [HttpGet("FuelSummary/{vehicleId}")]
         public IActionResult GetFuelSummary(Guid vehicleId)
         {
             var query = new GetFuelSummary(vehicleId);
