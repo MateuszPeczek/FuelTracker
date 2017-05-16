@@ -12,12 +12,12 @@ namespace Commands.EngineCommands
 {
     public class AddEngine : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
         public FuelType FuelType { get; set; }
 
         public AddEngine(FuelType fuelType)
         {
-            Id = Guid.NewGuid();
+            ModelId = Guid.NewGuid();
             this.FuelType = fuelType;
         }
     }
@@ -29,7 +29,7 @@ namespace Commands.EngineCommands
             if (command.FuelType > Enum.GetValues(typeof(FuelType)).Cast<FuelType>().Last())
                 throw new FuelTypeOutOfRangeException();
 
-            if (command.Id == new Guid())
+            if (command.ModelId == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
@@ -53,7 +53,7 @@ namespace Commands.EngineCommands
             {
                 try
                 {
-                    var engineToAdd = new Engine() { Id = command.Id, FuelType = command.FuelType };
+                    var engineToAdd = new Engine() { Id = command.ModelId, FuelType = command.FuelType };
 
                     context.Engine.Add(engineToAdd);
                     context.SaveChanges();

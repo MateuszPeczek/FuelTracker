@@ -12,14 +12,17 @@ namespace Queries.ModelQueries
 {
     public class GetModelsList : IQuery
     {
+        public Guid ManufacturerId { get; set; }
         public int PageSize { get; set; }
         public int PageNo { get; set; }
         public OrderDirection OrderDirection { get; set; }
 
-        public GetModelsList(int? pageSize,
+        public GetModelsList(Guid manufacturerId,
+                             int? pageSize,
                              int? pageNo,
                              OrderDirection orderDirection)
         {
+            ManufacturerId = manufacturerId;
             PageSize = pageSize ?? 10;
             PageNo = pageNo ?? 1;
             OrderDirection = orderDirection;
@@ -33,6 +36,7 @@ namespace Queries.ModelQueries
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
                 var sqlQuery = $@"SELECT Id, Name from ModelName
+                                  WHERE ManufacturerId = '{query.ManufacturerId}'
                                   ORDER BY Name {query.OrderDirection.ToString()}
                                   OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
                                   FETCH NEXT {query.PageSize} ROWS ONLY";

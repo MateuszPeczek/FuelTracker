@@ -13,8 +13,6 @@ namespace Domain.FuelStatisticsDomain
         public Guid Id { get; set; }
         [ForeignKey("VehicleId")]
         public Guid VehicleId { get; set; }
-        [ForeignKey("UserId")]
-        public Guid UserId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float FuelEfficiency { get; set; }
@@ -25,6 +23,5 @@ namespace Domain.FuelStatisticsDomain
         [Timestamp]
         public byte[] RowVersion{ get; set; }
         public virtual Vehicle Vehicle { get; set; }
-        public virtual User User { get; set; }
     }
 }

@@ -11,11 +11,11 @@ namespace Commands.FuelStatisticsCommands
 {
     public class DeleteConsumptionReport : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
 
         public DeleteConsumptionReport(Guid id)
         {
-            Id = id;
+            ModelId = id;
         }
     }
 
@@ -23,7 +23,7 @@ namespace Commands.FuelStatisticsCommands
     {
         public void Validate(DeleteConsumptionReport command)
         {
-            if (command.Id == null || command.Id == new Guid())
+            if (command.ModelId == null || command.ModelId == new Guid())
                 throw new InvalidConsumptionReportIdException();
         }
     }
@@ -53,9 +53,9 @@ namespace Commands.FuelStatisticsCommands
             {
                 try
                 {
-                    var reportToDelete = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.Id);
+                    var reportToDelete = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.ModelId);
                     if (reportToDelete == null)
-                        throw new ConsumptionReportNotFoundException(command.Id);
+                        throw new ConsumptionReportNotFoundException(command.ModelId);
 
                     var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToDelete.VehicleId);
                     if (fuelSummaryToUpdate == null)

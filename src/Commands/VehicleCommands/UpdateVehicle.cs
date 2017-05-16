@@ -12,13 +12,13 @@ namespace Commands.VehicleCommands
 {
     public class UpdateVehicle : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
         public int? ProductionYear { get; set; }
         public Guid? EngineId { get; set; }
 
         public UpdateVehicle(Guid guid, int? productionYear, Guid? engineId)
         {
-            Id = guid;
+            ModelId = guid;
             ProductionYear = productionYear;
             EngineId = engineId;
         }
@@ -52,9 +52,9 @@ namespace Commands.VehicleCommands
             {
                 try
                 {
-                    var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.Id);
+                    var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.ModelId);
                     if (vehicleToUpdate == null)
-                        throw new VehicleNotFoundException(command.Id);
+                        throw new VehicleNotFoundException(command.ModelId);
 
                     if (command.EngineId.HasValue)
                     {

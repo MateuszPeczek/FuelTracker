@@ -8,6 +8,7 @@ namespace Queries.VehicleQueries
     public class VehicleDetails
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public string Manufacturer { get; set; }
 
         public string Model { get; set; }

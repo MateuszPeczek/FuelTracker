@@ -12,17 +12,17 @@ namespace Commands.VehicleCommands
     {
         public DeleteVehicle(Guid guid)
         {
-            Id = guid;
+            ModelId = guid;
         }
 
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
     }
 
     public class DeleteVehicleValidator : ICommandValidator<DeleteVehicle>
     {
         public void Validate(DeleteVehicle command)
         {
-            if (command.Id == Guid.Empty)
+            if (command.ModelId == Guid.Empty)
                 throw new InvalidVehicleIdException();
         }
     }
@@ -46,7 +46,7 @@ namespace Commands.VehicleCommands
             {
                 try
                 {
-                    var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.Id);
+                    var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.ModelId);
                     context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 
                     context.SaveChanges();

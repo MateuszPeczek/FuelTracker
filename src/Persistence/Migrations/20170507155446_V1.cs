@@ -27,7 +27,8 @@ namespace Persistence.Migrations
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     SecurityStamp = table.Column<string>(nullable: true),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    UserSettingsId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,20 +47,6 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserSettings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    FuelType = table.Column<int>(nullable: false),
-                    Units = table.Column<int>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserSettings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -103,6 +90,25 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserSettings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Units = table.Column<int>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSettings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserSettings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,6 +224,7 @@ namespace Persistence.Migrations
                     EngineId = table.Column<Guid>(nullable: true),
                     ModelNameId = table.Column<Guid>(nullable: false),
                     ProductionYear = table.Column<int>(nullable: true),
+                    UserId = table.Column<Guid>(nullable: false),
                     VehicleType = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -235,6 +242,12 @@ namespace Persistence.Migrations
                         principalTable: "ModelName",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Vehicle_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -250,21 +263,14 @@ namespace Persistence.Migrations
                     PricePerUnit = table.Column<float>(nullable: false),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     Units = table.Column<int>(nullable: false),
-                    User = table.Column<Guid>(nullable: false),
-                    Vehicle = table.Column<Guid>(nullable: false)
+                    VehicleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ConsumptionReport", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ConsumptionReport_AspNetUsers_User",
-                        column: x => x.User,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ConsumptionReport_Vehicle_Vehicle",
-                        column: x => x.Vehicle,
+                        name: "FK_ConsumptionReport_Vehicle_VehicleId",
+                        column: x => x.VehicleId,
                         principalTable: "Vehicle",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -295,14 +301,9 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConsumptionReport_User",
+                name: "IX_ConsumptionReport_VehicleId",
                 table: "ConsumptionReport",
-                column: "User");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ConsumptionReport_Vehicle",
-                table: "ConsumptionReport",
-                column: "Vehicle");
+                column: "VehicleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FuelSummary_VehicleId",
@@ -327,6 +328,12 @@ namespace Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserSettings_UserId",
+                table: "UserSettings",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ModelName_ManufacturerId",
                 table: "ModelName",
                 column: "ManufacturerId");
@@ -340,6 +347,11 @@ namespace Persistence.Migrations
                 name: "IX_Vehicle_ModelNameId",
                 table: "Vehicle",
                 column: "ModelNameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicle_UserId",
+                table: "Vehicle",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -395,13 +407,13 @@ namespace Persistence.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Engine");
 
             migrationBuilder.DropTable(
                 name: "ModelName");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Manufacturer");

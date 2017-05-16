@@ -60,7 +60,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get(command.Id);
+                    return Get(command.ModelId);
             }
 
             return BadRequest(ModelState);
@@ -75,7 +75,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get(command.Id);
+                    return Get(command.ModelId);
 
             }
 

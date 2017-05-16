@@ -1,10 +1,11 @@
 ﻿using Domain.VehicleDomain;
-using Microsoft.EntityFrameworkCore;
+using Domain.UserDomain;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
@@ -15,12 +16,49 @@ namespace Persistence
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var context = (ApplicationContext)serviceProvider.GetRequiredService(typeof(ApplicationContext));
-
+            
+            var userId = CreateUser(context);
             SeedManufacturers(context);
             SeedModels(context);
             SeedEngines(context);
-            SeedVehicle(context);
-            
+            SeedVehicle(context, userId);
+        }
+
+        private static Guid CreateUser(ApplicationContext context)
+        {
+            if (!context.Manufacturer.Any())
+            {
+                var hasher = new PasswordHasher<User>();
+
+                var user = new User
+                {
+                    Id = new Guid("7b80243c-0204-4e02-8b6a-5f757c3e6a2f"),
+                    UserName = "Mateusz",
+                    Email = "***REMOVED***",
+                    NormalizedEmail = "***REMOVED***".Normalize(),
+                    NormalizedUserName = "Mateusz".Normalize(),
+                };
+
+                var userSettings = new UserSettings()
+                {
+                    Id = new Guid("e3e1e9e8-0681-4c70-853a-6d3a8e4df7cf"),
+                    Units = Domain.Common.Units.Metric,
+                    UserId = new Guid("7b80243c-0204-4e02-8b6a-5f757c3e6a2f"),
+                    User = user
+                };
+
+                user.PasswordHash = hasher.HashPassword(user, "***REMOVED***");
+                user.UserSettings = userSettings;
+                user.UserSettingsId = userSettings.Id;
+
+                context.User.Add(user);
+                context.UserSettings.Add(userSettings);
+                context.SaveChanges();
+
+                return user.Id;
+            }
+
+            return Guid.NewGuid();
         }
 
         private static void SeedManufacturers(ApplicationContext context)
@@ -87,7 +125,7 @@ namespace Persistence
             }
         }
 
-        private static void SeedVehicle(ApplicationContext context)
+        private static void SeedVehicle(ApplicationContext context, Guid userId)
         {
             if (!context.Vehicle.Any())
             {
@@ -98,25 +136,10 @@ namespace Persistence
                         Id = new Guid("d51b848f-c1b8-4a74-afb5-6730dd2554f5"),
                         EngineId = new Guid("5b6a048a-ce00-48f9-815b-9e287efe2588"),
                         ModelNameId = new Guid("f31b62aa-22fb-49dc-8fdf-c9576a657a3b"),
+                        UserId = userId,
                         ProductionYear = 2008,
                         VehicleType = VehicleType.Car
-                    },
-                    new Vehicle
-                    {
-                        Id = new Guid("c4b31e8d-1788-4364-ae28-b0a5ec0e619e"),
-                        EngineId = new Guid("3d8579fd-2f30-4eae-8e1f-9e24927cda24"),
-                        ModelNameId = new Guid("cd62002a-b3a2-4464-b394-a5e8c993caec"),
-                        ProductionYear = 2016,
-                        VehicleType = VehicleType.Car
-                    },
-                    new Vehicle
-                    {
-                        Id = new Guid("091dbb3f-2c6c-4f3c-b8eb-99af897a1f10"),
-                        EngineId = new Guid("35a66ff7-5bb3-436b-9202-a6f7e023e5a1"),
-                        ModelNameId = new Guid("49e7fa7d-d3f2-4fa0-8d6b-9dcf776a284b"),
-                        ProductionYear = 2003,
-                        VehicleType = VehicleType.Car
-                    },
+                    }
                 };
 
                 context.Vehicle.AddRange(vehciles);

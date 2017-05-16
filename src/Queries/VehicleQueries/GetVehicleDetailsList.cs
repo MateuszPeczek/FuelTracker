@@ -41,7 +41,7 @@ namespace Queries.VehicleDetailsQueries
             {
                 
 
-                var sqlQuery = $@"select  v.id, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
+                var sqlQuery = $@"select  v.id, v.UserId,  mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
                                  from vehicle v
                                  join ModelName md on md.Id = v.ModelNameId
                                  left join manufacturer mf on mf.Id = md.manufacturerId

@@ -1,4 +1,6 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Manufacturer;
+using CustomExceptions.Model;
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
@@ -10,11 +12,13 @@ namespace Commands.ModelCommands
 {
     public class DeleteModel : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ManufacturerId { get; set; }
+        public Guid ModelId { get; set; }
 
-        public DeleteModel(Guid id)
+        public DeleteModel(Guid manufacturerId, Guid modelId)
         {
-            Id = id;
+            ManufacturerId = manufacturerId;
+            ModelId = modelId;
         }
     }
 
@@ -22,8 +26,11 @@ namespace Commands.ModelCommands
     {
         public void Validate(DeleteModel command)
         {
-            if (command.Id == new Guid())
-                throw new InvalidModelIdException();
+            if (command.ModelId == new Guid())
+                throw new CustomExceptions.Model.InvalidModelIdException();
+
+            if (command.ManufacturerId == new Guid())
+                throw new InvalidManufacturerIdException();
         }
     }
 
@@ -46,7 +53,10 @@ namespace Commands.ModelCommands
             {
                 try
                 {
-                    var modelToDelete = context.ModelName.Single(m => m.Id == command.Id);
+                    var modelToDelete = context.ModelName.Where(m => m.ManufacturerId == command.ManufacturerId).Single(m => m.Id == command.ModelId);
+
+                    if (modelToDelete == null)
+                        throw new ModelNotFoundException(command.ManufacturerId, command.ModelId);
 
                     context.Entry(modelToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 

@@ -11,14 +11,14 @@ namespace Commands.FuelStatisticsCommands
 {
     public class UpdateConsumptionReport : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
 
         public UpdateConsumptionReport(Guid id, float distance, float fuelBurned, float pricePerUnit)
         {
-            Id = id;
+            ModelId = id;
             Distance = distance;
             FuelBurned = fuelBurned;
             PricePerUnit = pricePerUnit;
@@ -29,7 +29,7 @@ namespace Commands.FuelStatisticsCommands
     {
         public void Validate(UpdateConsumptionReport command)
         {
-            if (command.Id == null || command.Id == new Guid())
+            if (command.ModelId == null || command.ModelId == new Guid())
                 throw new InvalidConsumptionReportIdException();
 
             if (command.Distance <= 0)
@@ -65,9 +65,9 @@ namespace Commands.FuelStatisticsCommands
             {
                 try
                 {
-                    var reportToUpdate = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.Id);
+                    var reportToUpdate = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.ModelId);
                     if (reportToUpdate == null)
-                        throw new ConsumptionReportNotFoundException(command.Id);
+                        throw new ConsumptionReportNotFoundException(command.ModelId);
 
                     var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToUpdate.VehicleId);
                     if (fuelSummaryToUpdate == null)

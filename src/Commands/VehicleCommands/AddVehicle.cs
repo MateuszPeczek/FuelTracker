@@ -22,7 +22,7 @@ namespace Commands.VehicleCommands
     {
         public void Validate(AddVehicle command)
         {
-            if (command.ModelId == Guid.Empty)
+            if (command.Id == Guid.Empty)
                 throw new InvalidModelIdException();
         }
     }
@@ -48,7 +48,7 @@ namespace Commands.VehicleCommands
                 {
                     var newVehicle = new Vehicle()
                     {
-                        Id = command.Id,
+                        Id = command.ModelId,
                         ModelNameId = command.ModelId,
                     };
 

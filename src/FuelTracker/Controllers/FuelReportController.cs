@@ -69,7 +69,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetSingleConsumptionReport(command.Id);
+                    return GetSingleConsumptionReport(command.ModelId);
                 else
                     return new JsonResult(commandResult);
             }
@@ -86,7 +86,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetSingleConsumptionReport(command.Id);
+                    return GetSingleConsumptionReport(command.ModelId);
                 else
                     return new JsonResult(commandResult);
             }

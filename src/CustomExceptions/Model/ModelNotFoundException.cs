@@ -7,9 +7,9 @@ namespace CustomExceptions.Model
 {
     public class ModelNotFoundException : Exception, INotFoundException
     {
-        private const string message = "Model with id: {0} not exists";
+        private const string message = "Model with id: {1} not exists in manufactuers with id: {0}";
 
-        public ModelNotFoundException(Guid id) : base(string.Format(message, id))
+        public ModelNotFoundException(Guid manufactuerId, Guid modelId) : base(string.Format(message, manufactuerId, modelId))
         {
 
         }

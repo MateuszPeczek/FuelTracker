@@ -22,9 +22,9 @@ namespace Domain.VehicleDomain
         [ForeignKey("ModelNameId")]
         public virtual ModelName ModelName { get; set; }
 
-        //public long UserId { get; set; }
-        //[ForeignKey("UserId")]
-        //public virtual User User { get; set; }
+        public Guid UserId { get; set; }
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
 
         public VehicleType? VehicleType { get; set; }
 

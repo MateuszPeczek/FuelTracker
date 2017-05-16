@@ -11,11 +11,11 @@ namespace Commands.EngineCommands
 {
     public class DeleteEngine : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
 
         public DeleteEngine(Guid id)
         {
-            Id = id;
+            ModelId = id;
         }
     }
 
@@ -23,7 +23,7 @@ namespace Commands.EngineCommands
     {
         public void Validate(DeleteEngine command)
         {
-            if (command.Id == new Guid())
+            if (command.ModelId == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
@@ -47,10 +47,10 @@ namespace Commands.EngineCommands
             {
                 try
                 {
-                    var engineToDelete = context.Engine.Single(e => e.Id == command.Id);
+                    var engineToDelete = context.Engine.Single(e => e.Id == command.ModelId);
 
                     if (engineToDelete == null)
-                        throw new EngineNotFoundException(command.Id);
+                        throw new EngineNotFoundException(command.ModelId);
 
                     context.Entry(engineToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 

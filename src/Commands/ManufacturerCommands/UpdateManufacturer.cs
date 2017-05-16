@@ -13,11 +13,11 @@ namespace Commands.ManufacturerCommands
     {
         public UpdateManufacturer(Guid id, string name)
         {
-            Id = id;
+            ModelId = id;
             Name = name;
         }
 
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
         public string Name { get; set; }
     }
 
@@ -25,7 +25,7 @@ namespace Commands.ManufacturerCommands
     {
         public void Validate(UpdateManufacturer command)
         {
-            if (command.Id == new Guid())
+            if (command.ModelId == new Guid())
                 throw new InvalidManufacturerIdException();
         }
     }
@@ -49,7 +49,7 @@ namespace Commands.ManufacturerCommands
             {
                 try
                 {
-                    var manufacturerToUpdate = context.Manufacturer.Single(e => e.Id == command.Id);
+                    var manufacturerToUpdate = context.Manufacturer.Single(e => e.Id == command.ModelId);
 
                     manufacturerToUpdate.Name = command.Name;
 

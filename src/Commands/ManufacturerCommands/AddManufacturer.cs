@@ -13,12 +13,12 @@ namespace Commands.ManudaturerCommands
 {
     public class AddManufacturer : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
         public string Name { get; set; }
 
         public AddManufacturer(string name)
         {
-            Id = Guid.NewGuid();
+            ModelId = Guid.NewGuid();
             Name = name;
         }
     }
@@ -27,7 +27,7 @@ namespace Commands.ManudaturerCommands
     {
         public void Validate(AddManufacturer command)
         {
-            if (command.Id == new Guid())
+            if (command.ModelId == new Guid())
                 throw new InvalidManufacturerIdException();
 
             if (string.IsNullOrWhiteSpace(command.Name))
@@ -54,7 +54,7 @@ namespace Commands.ManudaturerCommands
             {
                 try
                 {
-                    var manufacturerToAdd = new Manufacturer() { Id = command.Id, Name = command.Name };
+                    var manufacturerToAdd = new Manufacturer() { Id = command.ModelId, Name = command.Name };
 
                     context.Manufacturer.Add(manufacturerToAdd);
                     context.SaveChanges();

@@ -12,11 +12,13 @@ namespace Queries.ModelQueries
 {
     public class GetSingleModel : IQuery
     {
-        public Guid Id { get; set; }
+        public Guid ManufacturerId { get; set; }
+        public Guid ModelId { get; set; }
 
-        public GetSingleModel(Guid id)
+        public GetSingleModel(Guid manufacturerId, Guid modelId)
         {
-            Id = id;
+            ManufacturerId = manufacturerId;
+            ModelId = modelId;
         }
     }
 
@@ -26,12 +28,12 @@ namespace Queries.ModelQueries
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
-                var sqlQuery = @"SELECT Id, Name FROM ModelName WHERE Id = @id";
+                var sqlQuery = $@"SELECT Id, Name FROM ModelName WHERE ManufacturerId = '{query.ManufacturerId}' and Id = '{query.ModelId}'";
 
-                var result = db.Query<ModelDetails>(sqlQuery, new { Id = query.Id }).SingleOrDefault();
+                var result = db.Query<ModelDetails>(sqlQuery, new { ManufacturerId = query.ManufacturerId, ModelId = query.ModelId }).SingleOrDefault();
 
                 if (result == null)
-                    throw new ModelNotFoundException(query.Id);
+                    throw new ModelNotFoundException(query.ManufacturerId, query.ModelId);
                 else
                     return result;
             }

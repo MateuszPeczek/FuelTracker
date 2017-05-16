@@ -10,13 +10,13 @@ namespace Commands.ModelCommands
 {
     public class AddModel : ICommand
     {
-        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
         public Guid ManufacturerId { get; set; }
         public string Name { get; set; }
 
         public AddModel(Guid manufacturerId, string name)
         {
-            Id = Guid.NewGuid();
+            ModelId = Guid.NewGuid();
             ManufacturerId = manufacturerId;
             Name = name;
         }
@@ -29,7 +29,7 @@ namespace Commands.ModelCommands
             if (command.ManufacturerId == new Guid())
                 throw new InvalidManufacturerIdException();
 
-            if (command.Id == new Guid())
+            if (command.ModelId == new Guid())
                 throw new InvalidModelIdException();
         }
     }
@@ -53,10 +53,10 @@ namespace Commands.ModelCommands
             {
                 try
                 {
-                    if (!context.Manufacturer.Any(m => m.Id == command.Id))
+                    if (!context.Manufacturer.Any(m => m.Id == command.ModelId))
                         throw new ManufacturerNotFoundException(command.ManufacturerId);
                     
-                    var modelToAdd = new ModelName() {Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
+                    var modelToAdd = new ModelName() {Id = command.ModelId, ManufacturerId = command.ManufacturerId, Name = command.Name };
 
                     context.ModelName.Add(modelToAdd);
                     context.SaveChanges();
