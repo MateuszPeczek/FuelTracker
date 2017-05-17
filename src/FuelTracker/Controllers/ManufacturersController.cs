@@ -16,7 +16,7 @@ using Commands.ModelCommands;
 namespace FuelTracker.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/")]
+    [Route("api/manufacturers")]
     public class ManufacturersController : Controller
     {
         private readonly ICommandSender commandBus;
@@ -29,7 +29,7 @@ namespace FuelTracker.Controllers
         }
 
         // GET: api/manufacturers
-        [HttpGet("manufacturers")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(PaginatedList<ManufacturerDetails>), 200)]
         public IActionResult GetManufacturers([FromQuery]int pageSize = 10,
                                 [FromQuery]int pageNo = 1,
@@ -42,7 +42,7 @@ namespace FuelTracker.Controllers
         }
 
         // GET api/manufacturers/{manufacturerId}
-        [HttpGet("manufacturers/{manufacturerId}")]
+        [HttpGet("{manufacturerId}")]
         public IActionResult GetManufacturers(Guid manufacturerId)
         {
             var query = new GetSingleManufacturer(manufacturerId);
@@ -52,7 +52,7 @@ namespace FuelTracker.Controllers
         }
 
         // POST api/manufacturers
-        [HttpPost("manufacturers/")]
+        [HttpPost("")]
         public IActionResult PostManufacturers([FromBody]PostManufacturer model)
         {
             if (ModelState.IsValid)
@@ -61,7 +61,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetManufacturers(command.ModelId);
+                    return GetManufacturers(command.Id);
                 else
                     return new JsonResult(commandResult.ExceptionMessage);
             }
@@ -70,7 +70,7 @@ namespace FuelTracker.Controllers
         }
 
         // PUT api/manufacturers/{manufacturerId}
-        [HttpPut("manufacturers/{manufacturerId}")]
+        [HttpPut("{manufacturerId}")]
         public IActionResult PutManufacturers(Guid manufacturerId, [FromBody]PutManufactuer model)
         {
             if (ModelState.IsValid)
@@ -79,7 +79,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetManufacturers(command.ModelId);
+                    return GetManufacturers(command.Id);
                 else
                     return new JsonResult(commandResult.ExceptionMessage);
             }
@@ -88,7 +88,7 @@ namespace FuelTracker.Controllers
         }
 
         // DELETE api/manufacturers/{manufacturerId}
-        [HttpDelete("manufacturers/{manufacturerId}")]
+        [HttpDelete("{manufacturerId}")]
         public IActionResult DeleteManufacturers(Guid manufacturerId)
         {
             var command = new DeleteManufacturer(manufacturerId);
@@ -101,7 +101,7 @@ namespace FuelTracker.Controllers
         }
 
         // GET: api/manufacturers/{manufacturerId}/models
-        [HttpGet("manufacturers/{manufacturerId}/models")]
+        [HttpGet("{manufacturerId}/models")]
         [ProducesResponseType(typeof(PaginatedList<ModelDetails>), 200)]
         public IActionResult GetModels(Guid manufacturerId, [FromQuery]int pageSize = 10,
                                                             [FromQuery]int pageNo = 1,
@@ -114,7 +114,7 @@ namespace FuelTracker.Controllers
         }
 
         // GET: api/manufacturers/{manufacturerId}/models
-        [HttpGet("manufacturers/{manufacturerId}/models/{modelId}")]
+        [HttpGet("{manufacturerId}/models/{modelId}")]
         public IActionResult GetModels(Guid manufacturerId, Guid modelId)
         {
             var query = new GetSingleModel(manufacturerId, modelId);
@@ -124,7 +124,7 @@ namespace FuelTracker.Controllers
         }
 
         // POST api/manufacturers/{manufacturerId}/models
-        [HttpPost("manufacturers/{manufacturerId}/models")]
+        [HttpPost("{manufacturerId}/models")]
         public IActionResult PostModels(Guid manufacturerId, [FromBody]PostModelName model)
         {
             if (ModelState.IsValid)
@@ -133,7 +133,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetModels(command.ModelId);
+                    return GetModels(command.Id);
                 else
                     return new JsonResult(commandResult.ExceptionMessage);
             }
@@ -142,7 +142,7 @@ namespace FuelTracker.Controllers
         }
 
         // PUT api/manufacturers/{manufacturerId}/models/{modelId}
-        [HttpPut("manufacturers/{manufacturerId}/models{modelId}")]
+        [HttpPut("{manufacturerId}/models{modelId}")]
         public IActionResult PutModels(Guid manufactuerId, Guid modelId, [FromBody]PutModelName model)
         {
             if (ModelState.IsValid)
@@ -151,7 +151,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetModels(command.ModelId);
+                    return GetModels(command.Id);
                 else
                     return new JsonResult(commandResult.ExceptionMessage);
             }
@@ -160,7 +160,7 @@ namespace FuelTracker.Controllers
         }
 
         // DELETE api/manufacturers/{manufacturerId}/models/{modelId}
-        [HttpDelete("api/manufacturers/{manufacturerId}/models/{modelId}")]
+        [HttpDelete("{manufacturerId}/models/{modelId}")]
         public IActionResult DeleteModels(Guid manufactuerId, Guid modelId)
         {
             var command = new DeleteModel(manufactuerId, modelId);

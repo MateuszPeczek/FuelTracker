@@ -8,14 +8,14 @@ namespace Commands.VehicleCommands
 {
     public class AddVehicle : ICommand
     {
+        public Guid Id { get; set; }
+        public Guid ModelId { get; set; }
+
         public AddVehicle(Guid modelId)
         {
             Id = Guid.NewGuid();
             ModelId = modelId;
         }
-
-        public Guid Id { get; set; }
-        public Guid ModelId { get; set; }
     }
 
     public class AddVehicleValidator : ICommandValidator<AddVehicle>
@@ -23,6 +23,9 @@ namespace Commands.VehicleCommands
         public void Validate(AddVehicle command)
         {
             if (command.Id == Guid.Empty)
+                throw new InvalidModelIdException();
+
+            if (command.ModelId == Guid.Empty)
                 throw new InvalidModelIdException();
         }
     }
@@ -48,7 +51,7 @@ namespace Commands.VehicleCommands
                 {
                     var newVehicle = new Vehicle()
                     {
-                        Id = command.ModelId,
+                        Id = command.Id,
                         ModelNameId = command.ModelId,
                     };
 

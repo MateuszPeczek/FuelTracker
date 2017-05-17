@@ -13,7 +13,7 @@ namespace Commands.EngineCommands
     {
         public UpdateEngine(Guid id, string name, int? power, int? torque, int? cylinders, float? displacement)
         {
-            ModelId = id;
+            Id = id;
             Name = name;
             Power = power;
             Torque = torque;
@@ -21,7 +21,7 @@ namespace Commands.EngineCommands
             Displacement = Displacement;
         }
 
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public int? Power { get; set; }
         public int? Torque { get; set; }
@@ -33,7 +33,7 @@ namespace Commands.EngineCommands
     {
         public void Validate(UpdateEngine command)
         {
-            if (command.ModelId == new Guid())
+            if (command.Id == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
@@ -57,10 +57,10 @@ namespace Commands.EngineCommands
             {
                 try
                 {
-                    var engineToUpdate = context.Engine.Single(e => e.Id == command.ModelId);
+                    var engineToUpdate = context.Engine.Single(e => e.Id == command.Id);
 
                     if (engineToUpdate == null)
-                        throw new EngineNotFoundException(command.ModelId);
+                        throw new EngineNotFoundException(command.Id);
 
                     engineToUpdate.Name = command.Name;
                     engineToUpdate.Power = command.Power;

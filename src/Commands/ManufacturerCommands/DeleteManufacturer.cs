@@ -11,11 +11,11 @@ namespace Commands.ManufacturerCommands
 {
     public class DeleteManufacturer : ICommand
     {
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
 
         public DeleteManufacturer(Guid id)
         {
-            ModelId = id;
+            Id = id;
         }
     }
 
@@ -23,7 +23,7 @@ namespace Commands.ManufacturerCommands
     {
         public void Validate(DeleteManufacturer command)
         {
-            if (command.ModelId == new Guid())
+            if (command.Id == new Guid())
                 throw new InvalidManufacturerIdException();
         }
     }
@@ -47,7 +47,7 @@ namespace Commands.ManufacturerCommands
             {
                 try
                 {
-                    var manufacturerToDelete = context.Manufacturer.Single(m => m.Id == command.ModelId);
+                    var manufacturerToDelete = context.Manufacturer.Single(m => m.Id == command.Id);
 
                     context.Entry(manufacturerToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 

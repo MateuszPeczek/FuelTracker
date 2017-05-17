@@ -1,5 +1,6 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.FuelStatistics;
+using CustomExceptions.Vehicle;
 using Domain.Common;
 using Persistence;
 using System;
@@ -11,14 +12,16 @@ namespace Commands.FuelStatisticsCommands
 {
     public class UpdateConsumptionReport : ICommand
     {
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
+        public Guid VehicleId{ get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
 
-        public UpdateConsumptionReport(Guid id, float distance, float fuelBurned, float pricePerUnit)
+        public UpdateConsumptionReport(Guid vehicleId, Guid modelId, float distance, float fuelBurned, float pricePerUnit)
         {
-            ModelId = id;
+            VehicleId = vehicleId;
+            Id = modelId;
             Distance = distance;
             FuelBurned = fuelBurned;
             PricePerUnit = pricePerUnit;
@@ -29,7 +32,10 @@ namespace Commands.FuelStatisticsCommands
     {
         public void Validate(UpdateConsumptionReport command)
         {
-            if (command.ModelId == null || command.ModelId == new Guid())
+            if (command.Id == null || command.Id == new Guid())
+                throw new InvalidVehicleIdException();
+
+            if (command.Id == null || command.Id == new Guid())
                 throw new InvalidConsumptionReportIdException();
 
             if (command.Distance <= 0)
@@ -65,9 +71,9 @@ namespace Commands.FuelStatisticsCommands
             {
                 try
                 {
-                    var reportToUpdate = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.ModelId);
+                    var reportToUpdate = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.Id);
                     if (reportToUpdate == null)
-                        throw new ConsumptionReportNotFoundException(command.ModelId);
+                        throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
 
                     var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToUpdate.VehicleId);
                     if (fuelSummaryToUpdate == null)

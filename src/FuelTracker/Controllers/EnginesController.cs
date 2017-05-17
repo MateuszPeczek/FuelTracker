@@ -13,21 +13,22 @@ using Common.Ordering.Shared;
 namespace FuelTracker.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("[controller]")]
-    public class EngineController : Controller
+    [Route("api/engines")]
+    public class EnginesController : Controller
     {
 
         private readonly ICommandSender commandBus;
         private readonly IQuerySender queryBus;
 
-        public EngineController(ICommandSender commandBus, IQuerySender queryBus)
+        public EnginesController(ICommandSender commandBus, IQuerySender queryBus)
         {
             this.commandBus = commandBus;
             this.queryBus = queryBus;
         }
 
 
-        [HttpGet]
+        //GET: api/engines
+        [HttpGet("")]
         [ProducesResponseType(typeof(PaginatedList<EngineDetails>), 200)]
         public IActionResult Get([FromQuery]int pageSize = 10,
                                  [FromQuery]int pageNo = 1,
@@ -40,53 +41,56 @@ namespace FuelTracker.Controllers
             return new JsonResult(result);
         }
 
-
-        [HttpGet("{guid}")]
-        public IActionResult Get(Guid guid)
+        //GET: api/engines/{engineId}
+        [HttpGet("{engineId}")]
+        public IActionResult Get(Guid engineId)
         {
-            var query = new GetSingleEngine(guid);
+            var query = new GetSingleEngine(engineId);
             var result = queryBus.Get<EngineDetails>(query);
 
             return new JsonResult(result);
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody]FuelType fuelType)
+        //POST: api/engines
+        [HttpPost("")]
+        public IActionResult Post([FromBody]PostEngine model)
         {
             if (ModelState.IsValid)
             {
-                var command = new AddEngine(fuelType);
+                var command = new AddEngine(model.FuelType);
 
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get(command.ModelId);
+                    return Get(command.Id);
             }
 
             return BadRequest(ModelState);
         }
 
-        [HttpPut]
-        public IActionResult Put([FromBody]PutEngine model)
+        //PUT: api/engines/{engineId}
+        [HttpPut("{engineId}")]
+        public IActionResult Put(Guid engineId, [FromBody]PutEngine model)
         {
             if (ModelState.IsValid)
             {
-                var command = new UpdateEngine(model.Id, model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement);
+                var command = new UpdateEngine(engineId, model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement);
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get(command.ModelId);
+                    return Get(command.Id);
 
             }
 
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
-        [HttpDelete("{guid}")]
-        public IActionResult Delete(Guid guid)
+        //DELETE: api/engines/{engineId}}
+        [HttpDelete("{engineId}")]
+        public IActionResult Delete(Guid engineId)
         {
             {
-                var command = new DeleteEngine(guid);
+                var command = new DeleteEngine(engineId);
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)

@@ -14,12 +14,12 @@ namespace Commands.ModelCommands
         public UpdateModel(Guid manufacturerId, Guid modelId, string name)
         {
             ManufacturerId = manufacturerId;
-            ModelId = modelId;
+            Id = modelId;
             Name = name;
         }
 
         public Guid ManufacturerId { get; set; }
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 
@@ -27,7 +27,7 @@ namespace Commands.ModelCommands
     {
         public void Validate(UpdateModel command)
         {
-            if (command.ModelId == new Guid())
+            if (command.Id == new Guid())
                 throw new InvalidModelIdException();
         }
     }
@@ -51,10 +51,10 @@ namespace Commands.ModelCommands
             {
                 try
                 {
-                    if (!context.Manufacturer.Any(m => m.Id == command.ModelId))
+                    if (!context.Manufacturer.Any(m => m.Id == command.Id))
                         throw new ManufacturerNotFoundException(command.ManufacturerId);
 
-                    var modelToUpdate = context.ModelName.Single(m => m.Id == command.ModelId);
+                    var modelToUpdate = context.ModelName.Single(m => m.Id == command.Id);
 
                     modelToUpdate.Name = command.Name;
                     modelToUpdate.ManufacturerId = command.ManufacturerId;

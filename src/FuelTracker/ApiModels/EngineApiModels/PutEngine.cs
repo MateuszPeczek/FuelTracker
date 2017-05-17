@@ -8,7 +8,6 @@ namespace FuelTracker.ApiModels.EngineApiModels
 {
     public class PutEngine
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public int Power { get; set; }
         public int Torque { get; set; }

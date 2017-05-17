@@ -13,12 +13,12 @@ namespace Commands.ModelCommands
     public class DeleteModel : ICommand
     {
         public Guid ManufacturerId { get; set; }
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
 
         public DeleteModel(Guid manufacturerId, Guid modelId)
         {
             ManufacturerId = manufacturerId;
-            ModelId = modelId;
+            Id = modelId;
         }
     }
 
@@ -26,7 +26,7 @@ namespace Commands.ModelCommands
     {
         public void Validate(DeleteModel command)
         {
-            if (command.ModelId == new Guid())
+            if (command.Id == new Guid())
                 throw new CustomExceptions.Model.InvalidModelIdException();
 
             if (command.ManufacturerId == new Guid())
@@ -53,10 +53,10 @@ namespace Commands.ModelCommands
             {
                 try
                 {
-                    var modelToDelete = context.ModelName.Where(m => m.ManufacturerId == command.ManufacturerId).Single(m => m.Id == command.ModelId);
+                    var modelToDelete = context.ModelName.Where(m => m.ManufacturerId == command.ManufacturerId).Single(m => m.Id == command.Id);
 
                     if (modelToDelete == null)
-                        throw new ModelNotFoundException(command.ManufacturerId, command.ModelId);
+                        throw new ModelNotFoundException(command.ManufacturerId, command.Id);
 
                     context.Entry(modelToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
 

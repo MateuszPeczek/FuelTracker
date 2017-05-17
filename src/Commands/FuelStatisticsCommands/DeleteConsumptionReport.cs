@@ -3,19 +3,19 @@ using CustomExceptions.FuelStatistics;
 using Domain.Common;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Commands.FuelStatisticsCommands
 {
     public class DeleteConsumptionReport : ICommand
     {
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
+        public Guid VehicleId { get; set; }
 
-        public DeleteConsumptionReport(Guid id)
+        public DeleteConsumptionReport(Guid vehicleId, Guid fuelReportId)
         {
-            ModelId = id;
+            Id = fuelReportId;
+            VehicleId = vehicleId;
         }
     }
 
@@ -23,7 +23,7 @@ namespace Commands.FuelStatisticsCommands
     {
         public void Validate(DeleteConsumptionReport command)
         {
-            if (command.ModelId == null || command.ModelId == new Guid())
+            if (command.Id == null || command.Id == new Guid())
                 throw new InvalidConsumptionReportIdException();
         }
     }
@@ -53,9 +53,9 @@ namespace Commands.FuelStatisticsCommands
             {
                 try
                 {
-                    var reportToDelete = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.ModelId);
+                    var reportToDelete = context.ConsumptionReport.Where(r => r.VehicleId == command.VehicleId).SingleOrDefault(r => r.Id == command.Id);
                     if (reportToDelete == null)
-                        throw new ConsumptionReportNotFoundException(command.ModelId);
+                        throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
 
                     var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToDelete.VehicleId);
                     if (fuelSummaryToUpdate == null)

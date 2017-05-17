@@ -7,6 +7,6 @@ namespace Common.Interfaces
 {
     public interface ICommand
     {
-        Guid ModelId { get;}
+        Guid Id { get;}
     }
 }

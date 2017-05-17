@@ -13,7 +13,7 @@ namespace Commands.FuelStatisticsCommands
 {
     public class CalculateFuelConsumption : ICommand
     {
-        public Guid ModelId { get; set; }
+        public Guid Id { get; set; }
         public Guid VehicleId { get; set; }
         public Guid UserId { get; set; }
         public float Distance { get; set; }
@@ -22,7 +22,7 @@ namespace Commands.FuelStatisticsCommands
 
         public CalculateFuelConsumption(Guid vehicleId, Guid userId, float distance, float fuelBurned, float pricePerUnit)
         {
-            ModelId = Guid.NewGuid();
+            Id = Guid.NewGuid();
             VehicleId = vehicleId;
             UserId = userId;
             Distance = distance;
@@ -81,7 +81,7 @@ namespace Commands.FuelStatisticsCommands
 
                     var report = new ConsumptionReport()
                     {
-                        Id = command.ModelId,
+                        Id = command.Id,
                         VehicleId = command.VehicleId,
                         Distance = command.Distance,
                         FuelBurned = command.FuelBurned,
