@@ -38,7 +38,7 @@ namespace FuelTracker.Controllers
             var query = new GetEnginesList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.Get<PaginatedList<EngineDetails>>(query);
 
-            return new JsonResult(result);
+            return Ok(result);
         }
 
         //GET: api/engines/{engineId}
@@ -48,7 +48,10 @@ namespace FuelTracker.Controllers
             var query = new GetSingleEngine(engineId);
             var result = queryBus.Get<EngineDetails>(query);
 
-            return new JsonResult(result);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         //POST: api/engines

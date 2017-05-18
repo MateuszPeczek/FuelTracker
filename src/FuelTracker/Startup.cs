@@ -12,6 +12,8 @@ using Persistence;
 using Domain.UserDomain;
 using Infrastructure.InversionOfControl;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace FuelTracker
 {
@@ -48,7 +50,11 @@ namespace FuelTracker
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
             
-            services.AddMvc();
+            services.AddMvc(setupAction =>
+            {
+                setupAction.ReturnHttpNotAcceptable = true;
+                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+            });
 
             services.AddApiVersioning(options =>
                 {
@@ -81,7 +87,14 @@ namespace FuelTracker
             }
             else
             {
-                app.UseExceptionHandler("/error");
+                app.UseExceptionHandler(appBuilder =>
+                {
+                    appBuilder.Run(async context =>
+                    {
+                        context.Response.StatusCode = 500;
+                        await context.Response.WriteAsync("Unexpected exception happened");
+                    });
+                });
             }
 
             app.UseMvc(routes =>

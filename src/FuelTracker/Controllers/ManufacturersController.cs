@@ -32,13 +32,13 @@ namespace FuelTracker.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(PaginatedList<ManufacturerDetails>), 200)]
         public IActionResult GetManufacturers([FromQuery]int pageSize = 10,
-                                [FromQuery]int pageNo = 1,
-                                [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
+                                              [FromQuery]int pageNo = 1,
+                                              [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetManufacturersList(pageSize, pageNo, orderDirection);
             var result = queryBus.Get<PaginatedList<ManufacturerDetails>>(query);
 
-            return new JsonResult(result);
+            return Ok(result);
         }
 
         // GET api/manufacturers/{manufacturerId}
@@ -48,7 +48,10 @@ namespace FuelTracker.Controllers
             var query = new GetSingleManufacturer(manufacturerId);
             var result = queryBus.Get<ManufacturerDetails>(query);
 
-            return new JsonResult(result);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         // POST api/manufacturers
@@ -110,7 +113,7 @@ namespace FuelTracker.Controllers
             var query = new GetModelsList(manufacturerId, pageSize, pageNo, orderDirection);
             var result = queryBus.Get<PaginatedList<ModelDetails>>(query);
 
-            return new JsonResult(result);
+            return Ok(result);
         }
 
         // GET: api/manufacturers/{manufacturerId}/models
@@ -119,8 +122,11 @@ namespace FuelTracker.Controllers
         {
             var query = new GetSingleModel(manufacturerId, modelId);
             var result = queryBus.Get<ModelDetails>(query);
+            
+            if (result == null)
+                return NotFound();
 
-            return new JsonResult(result);
+            return Ok(result);
         }
 
         // POST api/manufacturers/{manufacturerId}/models

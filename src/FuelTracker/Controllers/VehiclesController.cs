@@ -7,6 +7,7 @@ using Common.Ordering.Shared;
 using Common.Ordering.Vehicle;
 using Common.Paging;
 using FuelTracker.ApiModels.FuelReportApiModels;
+using FuelTracker.ApiModels.VehicleApiModels;
 using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
 using Microsoft.AspNetCore.Mvc;
 using Queries.FuelStatisticsQueries;
@@ -43,7 +44,7 @@ namespace FuelTracker.Controllers
             var query = new GetVehicleDetailsList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.Get<PaginatedList<VehicleDetails>>(query);
 
-            return new JsonResult(result);
+            return Ok(result);
         }
 
         // GET: api/vehicles/vehicleId
@@ -53,7 +54,10 @@ namespace FuelTracker.Controllers
             var query = new GetSingleVehicleDetails(vehicleId);
             var result = queryBus.Get<VehicleDetails>(query);
 
-            return new JsonResult(result);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         //POST: api/vehicles
@@ -112,7 +116,10 @@ namespace FuelTracker.Controllers
             var query = new GetFuelSummary(vehicleId);
             var result = queryBus.Get<FuelSummaryDetails>(query);
 
-            return new JsonResult(result);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         //GET: api/vehicles/{vehicleId}/fuelreports
@@ -128,7 +135,7 @@ namespace FuelTracker.Controllers
             var query = new GetConsumptionReportsList(pageSize, pageNo, orderDirection, orderColumn, startDate, endDate);
             var result = queryBus.Get<PaginatedList<ConsumptionReportDetails>>(query);
 
-            return new JsonResult(result);
+            return Ok(result);
         }
 
         //GET: api/vehicles/{vehicleId}/fuelreports/{fuelreportId}
@@ -138,7 +145,10 @@ namespace FuelTracker.Controllers
             var query = new GetSingleConsumptionReport(vehicleId, fuelReportId);
             var result = queryBus.Get<ConsumptionReportDetails>(query);
 
-            return new JsonResult(result);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         //POST: api/vehicles/{vehicleId}/fuelreports
