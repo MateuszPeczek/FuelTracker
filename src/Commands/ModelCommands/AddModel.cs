@@ -53,7 +53,7 @@ namespace Commands.ModelCommands
             {
                 try
                 {
-                    if (!context.Manufacturer.Any(m => m.Id == command.Id))
+                    if (!context.Manufacturer.Any(m => m.Id == command.ManufacturerId))
                         throw new ManufacturerNotFoundException(command.ManufacturerId);
                     
                     var modelToAdd = new ModelName() {Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };

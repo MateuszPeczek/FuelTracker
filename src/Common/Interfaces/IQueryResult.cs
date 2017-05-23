@@ -6,5 +6,7 @@ namespace Common.Interfaces
 {
     public interface IQueryResult<T>
     {
+        T Data { get; set; }
+        string ExceptionMessage { get; set; }
     }
 }

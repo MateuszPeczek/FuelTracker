@@ -50,11 +50,11 @@ namespace FuelTracker
             services.AddDbContext<ApplicationContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
             
-            services.AddMvc(setupAction =>
+            services.AddMvc(/*setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true;
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
-            });
+            }*/);
 
             services.AddApiVersioning(options =>
                 {

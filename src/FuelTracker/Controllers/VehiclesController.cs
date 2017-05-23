@@ -47,12 +47,19 @@ namespace FuelTracker.Controllers
             return Ok(result);
         }
 
-        // GET: api/vehicles/vehicleId
-        [HttpGet("{vehicleId}")]
-        public IActionResult GetVehicles(Guid vehicleId)
+        private VehicleDetails GetVehicleDetails(Guid vehicleId)
         {
             var query = new GetSingleVehicleDetails(vehicleId);
             var result = queryBus.Get<VehicleDetails>(query);
+
+            return result.Data;
+        }
+
+        // GET: api/vehicles/vehicleId
+        [HttpGet("{vehicleId}", Name = "GetVehicle")]
+        public IActionResult GetVehicle(Guid vehicleId)
+        {
+            var result = GetVehicleDetails(vehicleId);
 
             if (result == null)
                 return NotFound();
@@ -71,7 +78,19 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetVehicles(command.Id);
+                {
+                    var result = GetVehicleDetails(command.Id);
+
+                    return CreatedAtRoute(
+                        "GetVehicle",
+                        new { vehicleId = command.Id },
+                        result
+                        );
+                }
+                else
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
             }
 
             return BadRequest(ModelState);
@@ -87,7 +106,7 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetVehicles(command.Id);
+                    return GetVehicle(command.Id);
 
             }
 
@@ -138,12 +157,19 @@ namespace FuelTracker.Controllers
             return Ok(result);
         }
 
-        //GET: api/vehicles/{vehicleId}/fuelreports/{fuelreportId}
-        [HttpGet("{vehicleId}/fuelreports/{fuelReportId}")]
-        public IActionResult GetConsumptionReport(Guid vehicleId, Guid fuelReportId)
+        private ConsumptionReportDetails GetConsumptionReportDetails(Guid vehicleId, Guid fuelReportId)
         {
             var query = new GetSingleConsumptionReport(vehicleId, fuelReportId);
             var result = queryBus.Get<ConsumptionReportDetails>(query);
+
+            return result.Data;
+        }
+
+        //GET: api/vehicles/{vehicleId}/fuelreports/{fuelreportId}
+        [HttpGet("{vehicleId}/fuelreports/{fuelReportId}", Name = "GetConsumptionReport")]
+        public IActionResult GetConsumptionReport(Guid vehicleId, Guid fuelReportId)
+        {
+            var result = GetConsumptionReportDetails(vehicleId, fuelReportId);
 
             if (result == null)
                 return NotFound();
@@ -153,7 +179,7 @@ namespace FuelTracker.Controllers
 
         //POST: api/vehicles/{vehicleId}/fuelreports
         [HttpPost("{vehicleId}/fuelreports")]
-        public IActionResult Post(Guid vehicleId, [FromBody]PostFuelReport model)
+        public IActionResult PostConsumptionReport(Guid vehicleId, [FromBody]PostFuelReport model)
         {
             if (ModelState.IsValid)
             {
@@ -162,9 +188,19 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return GetConsumptionReport(vehicleId, command.Id);
+                {
+                    var result = GetConsumptionReportDetails(vehicleId, command.Id);
+
+                    return CreatedAtRoute(
+                        "GetConsumptionReport",
+                        new { vehicleId = vehicleId, fuelReportId = command.Id },
+                        result
+                        );
+                }
                 else
-                    return new JsonResult(commandResult);
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
             }
 
             return BadRequest(ModelState);
@@ -172,7 +208,7 @@ namespace FuelTracker.Controllers
 
         //PUT: api/vehicles/{vehicleId}/fuelReport/{fuelReportId}
         [HttpPut("{vehicleId}/fuelReport/{fuelReportId}")]
-        public IActionResult Put(Guid vehicleId, Guid fuelReportId, [FromBody]PutFuelReport model)
+        public IActionResult PutConsumptionReport(Guid vehicleId, Guid fuelReportId, [FromBody]PutFuelReport model)
         {
             if (ModelState.IsValid)
             {
@@ -190,7 +226,7 @@ namespace FuelTracker.Controllers
 
         //DELETE: api/vehicles/{vehicleId}/fuelReport/{fuelReportId}
         [HttpDelete("{vehicleId}/fuelReport/{fuelReportId}")]
-        public IActionResult Delete(Guid vehicleId, Guid fuelReportId)
+        public IActionResult DeleteConsumptionReport(Guid vehicleId, Guid fuelReportId)
         {
             {
                 var command = new DeleteConsumptionReport(vehicleId, fuelReportId);

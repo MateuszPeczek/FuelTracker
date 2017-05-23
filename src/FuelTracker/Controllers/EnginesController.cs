@@ -9,6 +9,7 @@ using Domain.VehicleDomain;
 using Queries.EngineQueries;
 using Common.Ordering.Engine;
 using Common.Ordering.Shared;
+using Infrastructure.CommunicationModels;
 
 namespace FuelTracker.Controllers
 {
@@ -26,14 +27,13 @@ namespace FuelTracker.Controllers
             this.queryBus = queryBus;
         }
 
-
         //GET: api/engines
-        [HttpGet("")]
+        [HttpGet()]
         [ProducesResponseType(typeof(PaginatedList<EngineDetails>), 200)]
-        public IActionResult Get([FromQuery]int pageSize = 10,
-                                 [FromQuery]int pageNo = 1,
-                                 [FromQuery]EngineOrderColumn orderbyColumn = EngineOrderColumn.FuelType,
-                                 [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
+        public IActionResult GetEngines([FromQuery]int pageSize = 10,
+                                        [FromQuery]int pageNo = 1,
+                                        [FromQuery]EngineOrderColumn orderbyColumn = EngineOrderColumn.FuelType,
+                                        [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetEnginesList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.Get<PaginatedList<EngineDetails>>(query);
@@ -41,12 +41,19 @@ namespace FuelTracker.Controllers
             return Ok(result);
         }
 
-        //GET: api/engines/{engineId}
-        [HttpGet("{engineId}")]
-        public IActionResult Get(Guid engineId)
+        private EngineDetails GetEngineDetails(Guid engineId)
         {
             var query = new GetSingleEngine(engineId);
             var result = queryBus.Get<EngineDetails>(query);
+
+            return result.Data;
+        }
+
+        //GET: api/engines/{engineId}
+        [HttpGet("{engineId}", Name = "GetEngine")]
+        public IActionResult GetEngine(Guid engineId)
+        {
+            var result = GetEngineDetails(engineId);
 
             if (result == null)
                 return NotFound();
@@ -56,7 +63,7 @@ namespace FuelTracker.Controllers
 
         //POST: api/engines
         [HttpPost("")]
-        public IActionResult Post([FromBody]PostEngine model)
+        public IActionResult PostEngine([FromBody]PostEngine model)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +72,19 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get(command.Id);
+                {
+                    var result = GetEngineDetails(command.Id);
+
+                    return CreatedAtRoute(
+                        "GetEngine", 
+                        new { engineId = command.Id },
+                        result
+                        );  
+                }
+                else
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
             }
 
             return BadRequest(ModelState);
@@ -73,7 +92,7 @@ namespace FuelTracker.Controllers
 
         //PUT: api/engines/{engineId}
         [HttpPut("{engineId}")]
-        public IActionResult Put(Guid engineId, [FromBody]PutEngine model)
+        public IActionResult PutEngine(Guid engineId, [FromBody]PutEngine model)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +100,9 @@ namespace FuelTracker.Controllers
                 var commandResult = commandBus.Send(command);
 
                 if (commandResult.Status == CommandStatus.Success)
-                    return Get(command.Id);
+                    return GetEngine(command.Id);
+                else
+                    return StatusCode(500);
 
             }
 
@@ -90,7 +111,7 @@ namespace FuelTracker.Controllers
 
         //DELETE: api/engines/{engineId}}
         [HttpDelete("{engineId}")]
-        public IActionResult Delete(Guid engineId)
+        public IActionResult DeleteEngine(Guid engineId)
         {
             {
                 var command = new DeleteEngine(engineId);
