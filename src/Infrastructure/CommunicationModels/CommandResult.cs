@@ -8,7 +8,7 @@ namespace Infrastructure.CommunicationModels
 {
     public class CommandResult : ICommandResult
     {
-        public CommandStatus Status { get; set; }
+        public ActionStatus Status { get; set; }
         public string ExceptionMessage { get; set; }
     }
 }

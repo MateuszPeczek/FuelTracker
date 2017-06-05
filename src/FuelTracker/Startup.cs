@@ -14,6 +14,7 @@ using Infrastructure.InversionOfControl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Infrastructure.ExceptionHandling;
 
 namespace FuelTracker
 {
@@ -40,6 +41,7 @@ namespace FuelTracker
             services.AddSingleton<IEventPublisher, CommunicationBus>();
             services.AddSingleton<ICommandHandlerFactory, HandlerFactory>();
             services.AddSingleton<IQueryHandlerFactory, HandlerFactory>();
+            services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
             services.AddScoped((s) =>
             {
                 return services;

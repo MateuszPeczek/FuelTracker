@@ -47,7 +47,15 @@ namespace Commands.VehicleCommands
                 try
                 {
                     var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.Id);
+                    var consumptionReportsToDelete = context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
+                    var fuelSummaryToDelete = context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id);
+                    
                     context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    context.Entry(fuelSummaryToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    foreach (var consumptionReport in consumptionReportsToDelete)
+                    {
+                        context.Entry(consumptionReport).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    }
 
                     context.SaveChanges();
                     transaction.Commit();

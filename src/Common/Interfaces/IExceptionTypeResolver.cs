@@ -5,9 +5,8 @@ using System.Text;
 
 namespace Common.Interfaces
 {
-    public interface ICommandResult
+    public interface IExceptionTypeResolver
     {
-        ActionStatus Status { get; set; }
-        string ExceptionMessage { get; set; }
+        ActionStatus ReturnCommandStatusForException(Exception ex);
     }
 }

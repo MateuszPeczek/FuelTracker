@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 namespace Common.Enums
 {
-    public enum CommandStatus
+    public enum ActionStatus
     {
         Success,
-        Failure
+        Failure,
+        NotFound,
+        BadRequest
     }
 }

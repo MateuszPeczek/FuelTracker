@@ -13,12 +13,15 @@ namespace Infrastructure.Bus
     {
         private readonly ICommandHandlerFactory commandHandlerFactory;
         private readonly IQueryHandlerFactory queryHandlerFactory;
+        private readonly IExceptionTypeResolver exceptionTypeResolver;
 
         public CommunicationBus(ICommandHandlerFactory commandHandlerFactory,
-                                IQueryHandlerFactory queryHandlerFactory)
+                                IQueryHandlerFactory queryHandlerFactory,
+                                IExceptionTypeResolver exceptionTypeResolver)
         {
             this.commandHandlerFactory = commandHandlerFactory;
             this.queryHandlerFactory = queryHandlerFactory;
+            this.exceptionTypeResolver = exceptionTypeResolver;
         }
 
         public void Publish(IEvent applicationEvent)
@@ -37,14 +40,14 @@ namespace Infrastructure.Bus
                 if (sendingMethod != null)
                 {
                    result = (T)sendingMethod.Invoke(handler, new object[] { query });
-                   return new QueryResult<T>() { Data = result };
+                   return new QueryResult<T>() { Data = result , QueryStatus = ActionStatus.Success};
                 }
 
                 throw new Exception($"Handle method not found on {handler.ToString()} object");
             }
             catch (Exception ex)
             {
-                return new QueryResult<T>() { Data = default(T), ExceptionMessage = ex.Message };
+                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnCommandStatusForException(ex),  ExceptionMessage = ex.Message };
             }
         }
 
@@ -58,12 +61,12 @@ namespace Infrastructure.Bus
                 if (sendingMethod != null)
                     sendingMethod.Invoke(handler, new object[] { command });
 
-                return new CommandResult() { Status = CommandStatus.Success, ExceptionMessage = string.Empty};
+                return new CommandResult() { Status = ActionStatus.Success, ExceptionMessage = string.Empty};
             }
             catch (Exception ex)
             {
                 //TODO logging
-                return new CommandResult() { Status = CommandStatus.Failure, ExceptionMessage = ex.Message };
+                return new CommandResult() { Status = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = ex.Message };
             }
         }
     }

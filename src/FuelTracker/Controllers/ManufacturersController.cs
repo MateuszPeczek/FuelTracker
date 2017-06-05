@@ -71,7 +71,7 @@ namespace FuelTracker.Controllers
                 var command = new AddManufacturer(model.Name);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                 {
                     var result = GetManufacturerDetails(command.Id);
 
@@ -99,7 +99,7 @@ namespace FuelTracker.Controllers
                 var command = new UpdateManufacturer(manufacturerId, model.Name);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return GetManufacturer(command.Id);
                 else
                     return new JsonResult(commandResult.ExceptionMessage);
@@ -115,7 +115,7 @@ namespace FuelTracker.Controllers
             var command = new DeleteManufacturer(manufacturerId);
             var commandResult = commandBus.Send(command);
 
-            if (commandResult.Status == CommandStatus.Success)
+            if (commandResult.Status == ActionStatus.Success)
                 return Ok();
             else
                 return new JsonResult(commandResult.ExceptionMessage);
@@ -163,7 +163,7 @@ namespace FuelTracker.Controllers
                 var command = new AddModel(manufacturerId, model.ModelName);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                 {
                     var result = GetModelDetails(manufacturerId, command.Id);
 
@@ -191,7 +191,7 @@ namespace FuelTracker.Controllers
                 var command = new UpdateModel(manufactuerId, modelId, model.ModelName);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return GetModel(manufactuerId, command.Id);
                 else
                     return new JsonResult(commandResult.ExceptionMessage);
@@ -207,7 +207,7 @@ namespace FuelTracker.Controllers
             var command = new DeleteModel(manufactuerId, modelId);
             var commandResult = commandBus.Send(command);
 
-            if (commandResult.Status == CommandStatus.Success)
+            if (commandResult.Status == ActionStatus.Success)
                 return Ok();
             else
                 return new JsonResult(commandResult.ExceptionMessage);

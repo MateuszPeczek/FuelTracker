@@ -48,8 +48,13 @@ namespace Commands.ManufacturerCommands
                 try
                 {
                     var manufacturerToDelete = context.Manufacturer.Single(m => m.Id == command.Id);
-
+                    var modelsToDelete = context.ModelName.Where(m => m.ManufacturerId == manufacturerToDelete.Id);
+                    
                     context.Entry(manufacturerToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    foreach (var model in modelsToDelete)
+                    {
+                        context.Entry(model).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    }
 
                     context.SaveChanges();
                     transaction.Commit();

@@ -77,7 +77,7 @@ namespace FuelTracker.Controllers
 
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                 {
                     var result = GetVehicleDetails(command.Id);
 
@@ -105,7 +105,7 @@ namespace FuelTracker.Controllers
                 var command = new UpdateVehicle(vehicleId, model.ProductionYear, model.EngineId);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return GetVehicle(command.Id);
 
             }
@@ -121,7 +121,7 @@ namespace FuelTracker.Controllers
                 var command = new DeleteVehicle(vehicleId);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return Ok();
                 else
                     return BadRequest(ModelState);
@@ -187,7 +187,7 @@ namespace FuelTracker.Controllers
 
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                 {
                     var result = GetConsumptionReportDetails(vehicleId, command.Id);
 
@@ -215,7 +215,7 @@ namespace FuelTracker.Controllers
                 var command = new UpdateConsumptionReport(vehicleId, fuelReportId, model.Distance, model.FuelBurned, model.PricePerUnit);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return GetConsumptionReport(vehicleId, fuelReportId);
                 else
                     return new JsonResult(commandResult);
@@ -232,7 +232,7 @@ namespace FuelTracker.Controllers
                 var command = new DeleteConsumptionReport(vehicleId, fuelReportId);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return Ok();
                 else
                     return new JsonResult(commandResult);

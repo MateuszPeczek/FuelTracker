@@ -38,13 +38,22 @@ namespace FuelTracker.Controllers
             var query = new GetEnginesList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.Get<PaginatedList<EngineDetails>>(query);
 
-            return Ok(result);
+            if (result.QueryStatus == ActionStatus.Success)
+                return Ok(result);
+
+            if (result.QueryStatus == ActionStatus.BadRequest)
+                return BadRequest(result.ExceptionMessage);
+
+            return StatusCode(500, result.ExceptionMessage);
+
         }
 
         private EngineDetails GetEngineDetails(Guid engineId)
         {
             var query = new GetSingleEngine(engineId);
             var result = queryBus.Get<EngineDetails>(query);
+
+
 
             return result.Data;
         }
@@ -71,7 +80,7 @@ namespace FuelTracker.Controllers
 
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                 {
                     var result = GetEngineDetails(command.Id);
 
@@ -99,7 +108,7 @@ namespace FuelTracker.Controllers
                 var command = new UpdateEngine(engineId, model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return GetEngine(command.Id);
                 else
                     return StatusCode(500);
@@ -117,7 +126,7 @@ namespace FuelTracker.Controllers
                 var command = new DeleteEngine(engineId);
                 var commandResult = commandBus.Send(command);
 
-                if (commandResult.Status == CommandStatus.Success)
+                if (commandResult.Status == ActionStatus.Success)
                     return Ok();
                 else
                     return BadRequest(ModelState);

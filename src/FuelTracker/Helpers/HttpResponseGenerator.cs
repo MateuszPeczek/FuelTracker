@@ -1,26 +1,45 @@
-﻿using Common.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using Common.Enums;
+using Common.Interfaces;
+using FuelTracker.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace FuelTracker.Helpers
+namespace Infrastructure
 {
-    public static class HttpResponseGenerator
+    public class HttpResponseGenerator : ControllerBase, IHttpResponseGenerator
     {
-        public static IActionResult GetCommandRequestResponse(HttpRequest request, ICommandResult commandResult, bool redirectToObject = false)
+        public IActionResult GenerateCommandResponse(ICommandResult commandResult, )
         {
-            if (string.IsNullOrWhiteSpace(commandResult.ExceptionMessage))
+            switch (commandResult.Status)
             {
-                //exception mapper
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
-                return null;
+                case ActionStatus.Success:
+                    return 
+                case ActionStatus.NotFound:
+                    break;
+                case ActionStatus.BadRequest:
+                    break;
+                case ActionStatus.Failure:
+                default:
+                    break;
             }
+        }
 
-            return null;
+        public IActionResult GenerateQueryResponse<T>(IQueryResult<T> queryResult)
+        {
+            switch (queryResult.QueryStatus)
+            {
+                case ActionStatus.Success:
+                    return Ok(queryResult);
+                case ActionStatus.NotFound:
+                    return NotFound(queryResult.ExceptionMessage);
+                case ActionStatus.BadRequest:
+                    return BadRequest(queryResult.ExceptionMessage);
+                case ActionStatus.Failure:
+                default:
+                    return StatusCode(500, queryResult.ExceptionMessage);
+            }
         }
     }
 }

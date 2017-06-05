@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,5 +9,6 @@ namespace Common.Interfaces
     {
         T Data { get; set; }
         string ExceptionMessage { get; set; }
+        ActionStatus QueryStatus { get; set; }
     }
 }
