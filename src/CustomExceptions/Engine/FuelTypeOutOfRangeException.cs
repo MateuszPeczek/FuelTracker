@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.Engine
 {
-    public class FuelTypeOutOfRangeException : Exception, IBadReuestException
+    public class FuelTypeOutOfRangeException : Exception, IBadRequestException
     {
         private const string message = "Unsupported fuel type";
 

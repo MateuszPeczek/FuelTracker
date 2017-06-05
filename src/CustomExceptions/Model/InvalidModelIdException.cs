@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.Model
 {
-    public class InvalidModelIdException : Exception, IBadReuestException
+    public class InvalidModelIdException : Exception, IBadRequestException
     {
         private const string message = "Invalid model id";
 

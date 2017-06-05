@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.User
 {
-    public class UserSettingsNotFoundException : Exception, IBadReuestException
+    public class UserSettingsNotFoundException : Exception, IBadRequestException
     {
         private const string message = "Settings for user with id: {0} not exists";
 

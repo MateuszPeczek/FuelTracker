@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.Manufacturer
 {
-    public class InvalidManufacturerIdException : Exception, IBadReuestException
+    public class InvalidManufacturerIdException : Exception, IBadRequestException
     {
         private const string message = "Invalid manudfacturer id";
 

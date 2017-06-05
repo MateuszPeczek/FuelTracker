@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.User
 {
-   public  class InvalidUserIdException : Exception, IBadReuestException
+   public  class InvalidUserIdException : Exception, IBadRequestException
     {
         private const string message = "Invalid User id";
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.FuelStatistics
 {
-    public class InvalidDistanceException : Exception, IBadReuestException
+    public class InvalidDistanceException : Exception, IBadRequestException
     {
         private const string message = "Distance has to be greater than 0";
 

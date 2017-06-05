@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.Vehicle
 {
-    public class InvalidEngineIdException : Exception, IBadReuestException
+    public class InvalidEngineIdException : Exception, IBadRequestException
     {
     }
 }

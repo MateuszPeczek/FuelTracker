@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.FuelStatistics
 {
-    public class InvalidConsumptionReportIdException : Exception, IBadReuestException
+    public class InvalidConsumptionReportIdException : Exception, IBadRequestException
     {
         private const string message = "Invalid report id";
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CustomExceptions.GroupingIntefaces
 {
-    public interface IBadReuestException
+    public interface IBadRequestException
     {
     }
 }

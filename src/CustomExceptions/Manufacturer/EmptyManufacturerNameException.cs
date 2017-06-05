@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.Manufacturer
 {
-    public class EmptyManufacturerNameException : Exception, IBadReuestException
+    public class EmptyManufacturerNameException : Exception, IBadRequestException
     {
         private const string message = "Manufacturer name cannot be empty";
 

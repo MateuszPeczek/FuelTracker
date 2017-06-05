@@ -19,7 +19,7 @@ namespace Infrastructure.ExceptionHandling
             if (customExceptionType == typeof(INotFoundException))
                 return ActionStatus.NotFound;
 
-            if (customExceptionType == typeof(IBadReuestException))
+            if (customExceptionType == typeof(IBadRequestException))
                 return ActionStatus.BadRequest;
 
                 return ActionStatus.Failure;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomExceptions.Vehicle
 {
-    public class InvalidVehicleIdException : Exception, IBadReuestException
+    public class InvalidVehicleIdException : Exception, IBadRequestException
     {
         private const string message = "Vehicle id cannot by empty";
 
