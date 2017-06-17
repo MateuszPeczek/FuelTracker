@@ -3,9 +3,7 @@ using CustomExceptions.Engine;
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Commands.EngineCommands
 {
@@ -53,32 +51,19 @@ namespace Commands.EngineCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var engineToUpdate = context.Engine.Single(e => e.Id == command.Id);
+            var engineToUpdate = context.Engine.Single(e => e.Id == command.Id);
 
-                    if (engineToUpdate == null)
-                        throw new EngineNotFoundException(command.Id);
+            if (engineToUpdate == null)
+                throw new EngineNotFoundException(command.Id);
 
-                    engineToUpdate.Name = command.Name;
-                    engineToUpdate.Power = command.Power;
-                    engineToUpdate.Torque = command.Torque;
-                    engineToUpdate.Cylinders = command.Cylinders;
-                    engineToUpdate.Displacement = command.Displacement;
+            engineToUpdate.Name = command.Name;
+            engineToUpdate.Power = command.Power;
+            engineToUpdate.Torque = command.Torque;
+            engineToUpdate.Cylinders = command.Cylinders;
+            engineToUpdate.Displacement = command.Displacement;
 
-                    context.Entry(engineToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch(Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.Entry(engineToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }
+

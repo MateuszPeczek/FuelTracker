@@ -9,6 +9,7 @@ namespace Common.Interfaces
 {
     public interface ICommandSender
     {
-        ICommandResult Send(ICommand command);
+        void AddCommand(ICommand command);
+        ICommandResult InvokeCommandsQueue();
     }
 }

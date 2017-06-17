@@ -45,25 +45,11 @@ namespace Commands.ManufacturerCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var manufacturerToUpdate = context.Manufacturer.Single(e => e.Id == command.Id);
+            var manufacturerToUpdate = context.Manufacturer.Single(e => e.Id == command.Id);
 
-                    manufacturerToUpdate.Name = command.Name;
+            manufacturerToUpdate.Name = command.Name;
 
-                    context.Entry(manufacturerToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch(Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.Entry(manufacturerToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

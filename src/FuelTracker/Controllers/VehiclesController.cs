@@ -42,7 +42,7 @@ namespace FuelTracker.Controllers
                                          [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetVehicleDetailsList(pageSize, pageNo, orderbyColumn, orderDirection);
-            var result = queryBus.Get<PaginatedList<VehicleDetails>>(query);
+            var result = queryBus.InvokeQuery<PaginatedList<VehicleDetails>>(query);
 
             return Ok(result);
         }
@@ -50,7 +50,7 @@ namespace FuelTracker.Controllers
         private VehicleDetails GetVehicleDetails(Guid vehicleId)
         {
             var query = new GetSingleVehicleDetails(vehicleId);
-            var result = queryBus.Get<VehicleDetails>(query);
+            var result = queryBus.InvokeQuery<VehicleDetails>(query);
 
             return result.Data;
         }
@@ -74,8 +74,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new AddVehicle(model.ModelId);
-
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+                
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
@@ -103,7 +104,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new UpdateVehicle(vehicleId, model.ProductionYear, model.EngineId);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return GetVehicle(command.Id);
@@ -119,7 +122,9 @@ namespace FuelTracker.Controllers
         {
             {
                 var command = new DeleteVehicle(vehicleId);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return Ok();
@@ -133,7 +138,7 @@ namespace FuelTracker.Controllers
         public IActionResult GetFuelSummary(Guid vehicleId)
         {
             var query = new GetFuelSummary(vehicleId);
-            var result = queryBus.Get<FuelSummaryDetails>(query);
+            var result = queryBus.InvokeQuery<FuelSummaryDetails>(query);
 
             if (result == null)
                 return NotFound();
@@ -152,7 +157,7 @@ namespace FuelTracker.Controllers
                                                        [FromQuery]DateTime? endDate = null)
         {
             var query = new GetConsumptionReportsList(pageSize, pageNo, orderDirection, orderColumn, startDate, endDate);
-            var result = queryBus.Get<PaginatedList<ConsumptionReportDetails>>(query);
+            var result = queryBus.InvokeQuery<PaginatedList<ConsumptionReportDetails>>(query);
 
             return Ok(result);
         }
@@ -160,7 +165,7 @@ namespace FuelTracker.Controllers
         private ConsumptionReportDetails GetConsumptionReportDetails(Guid vehicleId, Guid fuelReportId)
         {
             var query = new GetSingleConsumptionReport(vehicleId, fuelReportId);
-            var result = queryBus.Get<ConsumptionReportDetails>(query);
+            var result = queryBus.InvokeQuery<ConsumptionReportDetails>(query);
 
             return result.Data;
         }
@@ -184,8 +189,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new CalculateFuelConsumption(vehicleId, model.UserId, model.Distance, model.FuelBurned, model.PricePerUnit);
+                commandBus.AddCommand(command);
 
-                var commandResult = commandBus.Send(command);
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
@@ -213,7 +219,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new UpdateConsumptionReport(vehicleId, fuelReportId, model.Distance, model.FuelBurned, model.PricePerUnit);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return GetConsumptionReport(vehicleId, fuelReportId);
@@ -230,7 +238,9 @@ namespace FuelTracker.Controllers
         {
             {
                 var command = new DeleteConsumptionReport(vehicleId, fuelReportId);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return Ok();

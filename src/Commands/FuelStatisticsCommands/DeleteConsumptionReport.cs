@@ -49,63 +49,49 @@ namespace Commands.FuelStatisticsCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
+            var reportToDelete = context.ConsumptionReport.Where(r => r.VehicleId == command.VehicleId).SingleOrDefault(r => r.Id == command.Id);
+            if (reportToDelete == null)
+                throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
+
+            var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToDelete.VehicleId);
+            if (fuelSummaryToUpdate == null)
+                throw new FuelSummaryNotFoundException(reportToDelete.VehicleId);
+
+            if (reportToDelete.Units == fuelSummaryToUpdate.Units)
             {
-                try
+                fuelSummaryToUpdate.DistanceDriven -= reportToDelete.Distance;
+                fuelSummaryToUpdate.FuelBurned -= reportToDelete.FuelBurned;
+                fuelSummaryToUpdate.MoneySpent -= (reportToDelete.PricePerUnit * reportToDelete.FuelBurned);
+
+                switch (fuelSummaryToUpdate.Units)
                 {
-                    var reportToDelete = context.ConsumptionReport.Where(r => r.VehicleId == command.VehicleId).SingleOrDefault(r => r.Id == command.Id);
-                    if (reportToDelete == null)
-                        throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
-
-                    var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToDelete.VehicleId);
-                    if (fuelSummaryToUpdate == null)
-                        throw new FuelSummaryNotFoundException(reportToDelete.VehicleId);
-
-                    if (reportToDelete.Units == fuelSummaryToUpdate.Units)
-                    {
-                        fuelSummaryToUpdate.DistanceDriven -= reportToDelete.Distance;
-                        fuelSummaryToUpdate.FuelBurned -= reportToDelete.FuelBurned;
-                        fuelSummaryToUpdate.MoneySpent -= (reportToDelete.PricePerUnit * reportToDelete.FuelBurned);
-
-                        switch (fuelSummaryToUpdate.Units)
-                        {
-                            case Units.Metric:
-                                fuelSummaryToUpdate.AverageConsumption = (fuelSummaryToUpdate.FuelBurned * 100) / fuelSummaryToUpdate.DistanceDriven;
-                                break;
-                            case Units.Imperial:
-                                fuelSummaryToUpdate.AverageConsumption = fuelSummaryToUpdate.DistanceDriven / fuelSummaryToUpdate.FuelBurned;
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        if (reportToDelete.Units == Units.Imperial && fuelSummaryToUpdate.Units == Units.Metric)
-                        {
-                            fuelSummaryToUpdate.DistanceDriven -= reportToDelete.Distance * milesToKilometersConst;
-                            fuelSummaryToUpdate.FuelBurned -= reportToDelete.FuelBurned * galonsToLitresConst;
-                            fuelSummaryToUpdate.AverageConsumption = (fuelSummaryToUpdate.FuelBurned * 100) / fuelSummaryToUpdate.DistanceDriven;
-                        }
-
-                        if (reportToDelete.Units == Units.Metric && fuelSummaryToUpdate.Units == Units.Imperial)
-                        {
-                            fuelSummaryToUpdate.DistanceDriven -= reportToDelete.Distance * kilometersToMilesConst;
-                            fuelSummaryToUpdate.FuelBurned -= reportToDelete.FuelBurned * litresToGalonsConst;
-                            fuelSummaryToUpdate.AverageConsumption = fuelSummaryToUpdate.DistanceDriven / fuelSummaryToUpdate.FuelBurned;
-                        }
-                    }
-
-                    context.Entry(reportToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-                    context.Entry(fuelSummaryToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw;
+                    case Units.Metric:
+                        fuelSummaryToUpdate.AverageConsumption = (fuelSummaryToUpdate.FuelBurned * 100) / fuelSummaryToUpdate.DistanceDriven;
+                        break;
+                    case Units.Imperial:
+                        fuelSummaryToUpdate.AverageConsumption = fuelSummaryToUpdate.DistanceDriven / fuelSummaryToUpdate.FuelBurned;
+                        break;
                 }
             }
+            else
+            {
+                if (reportToDelete.Units == Units.Imperial && fuelSummaryToUpdate.Units == Units.Metric)
+                {
+                    fuelSummaryToUpdate.DistanceDriven -= reportToDelete.Distance * milesToKilometersConst;
+                    fuelSummaryToUpdate.FuelBurned -= reportToDelete.FuelBurned * galonsToLitresConst;
+                    fuelSummaryToUpdate.AverageConsumption = (fuelSummaryToUpdate.FuelBurned * 100) / fuelSummaryToUpdate.DistanceDriven;
+                }
+
+                if (reportToDelete.Units == Units.Metric && fuelSummaryToUpdate.Units == Units.Imperial)
+                {
+                    fuelSummaryToUpdate.DistanceDriven -= reportToDelete.Distance * kilometersToMilesConst;
+                    fuelSummaryToUpdate.FuelBurned -= reportToDelete.FuelBurned * litresToGalonsConst;
+                    fuelSummaryToUpdate.AverageConsumption = fuelSummaryToUpdate.DistanceDriven / fuelSummaryToUpdate.FuelBurned;
+                }
+            }
+
+            context.Entry(reportToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            context.Entry(fuelSummaryToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

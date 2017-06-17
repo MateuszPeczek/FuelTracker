@@ -36,7 +36,7 @@ namespace FuelTracker.Controllers
                                         [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetEnginesList(pageSize, pageNo, orderbyColumn, orderDirection);
-            var result = queryBus.Get<PaginatedList<EngineDetails>>(query);
+            var result = queryBus.InvokeQuery<PaginatedList<EngineDetails>>(query);
 
             if (result.QueryStatus == ActionStatus.Success)
                 return Ok(result);
@@ -51,7 +51,7 @@ namespace FuelTracker.Controllers
         private EngineDetails GetEngineDetails(Guid engineId)
         {
             var query = new GetSingleEngine(engineId);
-            var result = queryBus.Get<EngineDetails>(query);
+            var result = queryBus.InvokeQuery<EngineDetails>(query);
 
 
 
@@ -77,8 +77,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new AddEngine(model.FuelType);
+                commandBus.AddCommand(command);
 
-                var commandResult = commandBus.Send(command);
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
@@ -106,7 +107,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new UpdateEngine(engineId, model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return GetEngine(command.Id);
@@ -124,7 +127,9 @@ namespace FuelTracker.Controllers
         {
             {
                 var command = new DeleteEngine(engineId);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return Ok();

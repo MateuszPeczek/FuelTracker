@@ -1,12 +1,9 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Engine;
 using CustomExceptions.Vehicle;
-using Domain.VehicleDomain;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Commands.VehicleCommands
 {
@@ -48,34 +45,20 @@ namespace Commands.VehicleCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
+            var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.Id);
+            if (vehicleToUpdate == null)
+                throw new VehicleNotFoundException(command.Id);
+
+            if (command.EngineId.HasValue)
             {
-                try
-                {
-                    var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.Id);
-                    if (vehicleToUpdate == null)
-                        throw new VehicleNotFoundException(command.Id);
+                var selectedEngine = context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
+                if (selectedEngine == null)
+                    throw new EngineNotFoundException(command.EngineId.Value);
 
-                    if (command.EngineId.HasValue)
-                    {
-                        var selectedEngine = context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
-                        if (selectedEngine == null)
-                            throw new EngineNotFoundException(command.EngineId.Value);
-
-                        vehicleToUpdate.EngineId = command.EngineId;
-                    }
-
-                    vehicleToUpdate.ProductionYear = command.ProductionYear;
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                vehicleToUpdate.EngineId = command.EngineId;
             }
+
+            vehicleToUpdate.ProductionYear = command.ProductionYear;
         }
     }
 }

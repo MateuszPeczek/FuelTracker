@@ -7,7 +7,6 @@ using Domain.FuelStatisticsDomain;
 using Persistence;
 using System;
 using System.Linq;
-using System.Text;
 
 namespace Commands.FuelStatisticsCommands
 {
@@ -65,105 +64,91 @@ namespace Commands.FuelStatisticsCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
+            if (!context.Vehicle.Any(v => v.Id == command.VehicleId))
+                throw new VehicleNotFoundException(command.VehicleId);
+
+            if (!context.User.Any(u => u.Id == command.UserId))
+                throw new UserNotFoundException(command.UserId);
+
+            var unitsSettings = context.UserSettings.Single(s => s.UserId == command.UserId);
+            if (unitsSettings == null)
+                throw new Exception();
+
+            var report = new ConsumptionReport()
             {
-                try
-                {
-                    if (!context.Vehicle.Any(v => v.Id == command.VehicleId))
-                        throw new VehicleNotFoundException(command.VehicleId);
+                Id = command.Id,
+                VehicleId = command.VehicleId,
+                Distance = command.Distance,
+                FuelBurned = command.FuelBurned,
+                DateCreated = DateTime.Now,
+                PricePerUnit = command.PricePerUnit,
+                LastChanged = DateTime.Now
+            };
 
-                    if (!context.User.Any(u => u.Id == command.UserId))
-                        throw new UserNotFoundException(command.UserId);
-
-                    var unitsSettings = context.UserSettings.Single(s => s.UserId == command.UserId);
-                    if (unitsSettings == null)
-                        throw new Exception();
-
-                    var report = new ConsumptionReport()
-                    {
-                        Id = command.Id,
-                        VehicleId = command.VehicleId,
-                        Distance = command.Distance,
-                        FuelBurned = command.FuelBurned,
-                        DateCreated = DateTime.Now,
-                        PricePerUnit = command.PricePerUnit,
-                        LastChanged = DateTime.Now
-                    };
-
-                    switch (unitsSettings.Units)
-                    {
-                        case Units.Imperial:
-                            report.Units = Units.Imperial;
-                            report.FuelEfficiency = command.Distance / command.FuelBurned;
-                            break;
-                        case Units.Metric:
-                            report.Units = Units.Metric;
-                            report.FuelEfficiency = (command.FuelBurned * 100) / command.Distance;
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-
-                    var fuelSummary = context.FuelSummary.SingleOrDefault(f => f.VehicleId == command.VehicleId);
-                    if (fuelSummary == null)
-                    {
-                        fuelSummary = new FuelSummary() { Id = Guid.NewGuid() };
-
-                        fuelSummary.DistanceDriven = report.Distance;
-                        fuelSummary.FuelBurned = report.FuelBurned;
-                        fuelSummary.MoneySpent = report.PricePerUnit * report.FuelBurned;
-                        fuelSummary.ReportsNumber = 1;
-                        fuelSummary.VehicleId = command.VehicleId;
-                        fuelSummary.AverageConsumption = report.FuelEfficiency;
-                        fuelSummary.Units = report.Units;
-
-                        switch (fuelSummary.Units)
-                        {
-                            case Units.Metric:
-                                fuelSummary.AverageConsumption = (fuelSummary.FuelBurned * 100) / fuelSummary.DistanceDriven;
-                                break;
-                            case Units.Imperial:
-                                fuelSummary.AverageConsumption = fuelSummary.DistanceDriven / fuelSummary.FuelBurned;
-                                break;
-                        }
-
-                        context.FuelSummary.Add(fuelSummary);
-                    }
-                    else
-                    {
-                        fuelSummary.ReportsNumber++;
-                        fuelSummary.DistanceDriven += report.Distance;
-                        fuelSummary.FuelBurned += report.FuelBurned;
-                        fuelSummary.MoneySpent += report.PricePerUnit * report.FuelBurned;
-
-                        switch (unitsSettings.Units)
-                        {
-                            case Units.Imperial:
-                                fuelSummary.Units = Units.Imperial;
-                                fuelSummary.AverageConsumption = fuelSummary.DistanceDriven / fuelSummary.FuelBurned;
-                                break;
-                            case Units.Metric:
-                                report.Units = Units.Metric;
-                                report.FuelEfficiency = (fuelSummary.FuelBurned * 100) / fuelSummary.DistanceDriven;
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-
-                        context.Entry(fuelSummary).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                    }
-
-                    context.ConsumptionReport.Add(report);
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+            switch (unitsSettings.Units)
+            {
+                case Units.Imperial:
+                    report.Units = Units.Imperial;
+                    report.FuelEfficiency = command.Distance / command.FuelBurned;
+                    break;
+                case Units.Metric:
+                    report.Units = Units.Metric;
+                    report.FuelEfficiency = (command.FuelBurned * 100) / command.Distance;
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
+
+            var fuelSummary = context.FuelSummary.SingleOrDefault(f => f.VehicleId == command.VehicleId);
+            if (fuelSummary == null)
+            {
+                fuelSummary = new FuelSummary() { Id = Guid.NewGuid() };
+
+                fuelSummary.DistanceDriven = report.Distance;
+                fuelSummary.FuelBurned = report.FuelBurned;
+                fuelSummary.MoneySpent = report.PricePerUnit * report.FuelBurned;
+                fuelSummary.ReportsNumber = 1;
+                fuelSummary.VehicleId = command.VehicleId;
+                fuelSummary.AverageConsumption = report.FuelEfficiency;
+                fuelSummary.Units = report.Units;
+
+                switch (fuelSummary.Units)
+                {
+                    case Units.Metric:
+                        fuelSummary.AverageConsumption = (fuelSummary.FuelBurned * 100) / fuelSummary.DistanceDriven;
+                        break;
+                    case Units.Imperial:
+                        fuelSummary.AverageConsumption = fuelSummary.DistanceDriven / fuelSummary.FuelBurned;
+                        break;
+                }
+
+                context.FuelSummary.Add(fuelSummary);
+            }
+            else
+            {
+                fuelSummary.ReportsNumber++;
+                fuelSummary.DistanceDriven += report.Distance;
+                fuelSummary.FuelBurned += report.FuelBurned;
+                fuelSummary.MoneySpent += report.PricePerUnit * report.FuelBurned;
+
+                switch (unitsSettings.Units)
+                {
+                    case Units.Imperial:
+                        fuelSummary.Units = Units.Imperial;
+                        fuelSummary.AverageConsumption = fuelSummary.DistanceDriven / fuelSummary.FuelBurned;
+                        break;
+                    case Units.Metric:
+                        report.Units = Units.Metric;
+                        report.FuelEfficiency = (fuelSummary.FuelBurned * 100) / fuelSummary.DistanceDriven;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                context.Entry(fuelSummary).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
+
+            context.ConsumptionReport.Add(report);
         }
     }
 }

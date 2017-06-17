@@ -1,35 +1,49 @@
-﻿using Common.Interfaces;
+﻿using Common.Enums;
+using Common.Interfaces;
+using Infrastructure.CommunicationModels;
 using System;
-using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Common.Enums;
-using Infrastructure.CommunicationModels;
+using System.Reflection;
 
 namespace Infrastructure.Bus
 {
-    public class CommunicationBus : ICommandSender, IEventPublisher, IQuerySender
+    public class CommunicationBus : ICommandSender, IQuerySender
     {
         private readonly ICommandHandlerFactory commandHandlerFactory;
         private readonly IQueryHandlerFactory queryHandlerFactory;
         private readonly IExceptionTypeResolver exceptionTypeResolver;
+        private readonly IUnitOfWork unitOfWork;
+
+        private ICollection<ICommand> commandsList;
 
         public CommunicationBus(ICommandHandlerFactory commandHandlerFactory,
                                 IQueryHandlerFactory queryHandlerFactory,
-                                IExceptionTypeResolver exceptionTypeResolver)
+                                IExceptionTypeResolver exceptionTypeResolver,
+                                IUnitOfWork unitOfWork)
         {
             this.commandHandlerFactory = commandHandlerFactory;
             this.queryHandlerFactory = queryHandlerFactory;
             this.exceptionTypeResolver = exceptionTypeResolver;
+            this.unitOfWork = unitOfWork;
+
+            commandsList = new List<ICommand>();
         }
 
-        public void Publish(IEvent applicationEvent)
+        public void AddCommand(ICommand command)
         {
-            throw new NotImplementedException();
+            try
+            {
+                commandsList.Add(command);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public IQueryResult<T> Get<T>(IQuery query)
+        public IQueryResult<T> InvokeQuery<T>(IQuery query)
         {
             try
             {
@@ -51,22 +65,35 @@ namespace Infrastructure.Bus
             }
         }
 
-        public ICommandResult Send(ICommand command)
+        public ICommandResult InvokeCommandsQueue()
         {
-            try
+            using (var transaction = unitOfWork.BeginTransaction())
             {
-                var handler = commandHandlerFactory.GetHandler(command);
-                var sendingMethod = handler.GetType().GetRuntimeMethods().FirstOrDefault(m => m.Name == "Handle");
+                try
+                {
+                    if (!commandsList.Any())
+                        throw new Exception("No commands in queue");
 
-                if (sendingMethod != null)
-                    sendingMethod.Invoke(handler, new object[] { command });
+                    foreach (var command in commandsList)
+                    {
+                        var handler = commandHandlerFactory.GetHandler(command);
+                        var sendingMethod = handler.GetType().GetRuntimeMethods().FirstOrDefault(m => m.Name == "Handle");
 
-                return new CommandResult() { Status = ActionStatus.Success, ExceptionMessage = string.Empty};
-            }
-            catch (Exception ex)
-            {
-                //TODO logging
-                return new CommandResult() { Status = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = ex.Message };
+                        if (sendingMethod != null)
+                            sendingMethod.Invoke(handler, new object[] { command });
+                    }
+
+                    unitOfWork.SaveChanges();
+                    unitOfWork.Commit();
+
+                    return new CommandResult() { Status = ActionStatus.Success, ExceptionMessage = string.Empty };
+                }
+                catch (Exception ex)
+                {
+                    //TODO logging
+                    unitOfWork.Rollback();
+                    return new CommandResult() { Status = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = ex.Message };
+                } 
             }
         }
     }

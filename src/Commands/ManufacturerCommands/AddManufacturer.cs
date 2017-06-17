@@ -1,13 +1,8 @@
 ﻿using Common.Interfaces;
-using CustomExceptions.Engine;
 using CustomExceptions.Manufacturer;
-using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Commands.ManudaturerCommands
 {
@@ -50,23 +45,9 @@ namespace Commands.ManudaturerCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var manufacturerToAdd = new Manufacturer() { Id = command.Id, Name = command.Name };
+            var manufacturerToAdd = new Manufacturer() { Id = command.Id, Name = command.Name };
 
-                    context.Manufacturer.Add(manufacturerToAdd);
-                    context.SaveChanges();
-
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.Manufacturer.Add(manufacturerToAdd);
         }
     }
 }

@@ -4,9 +4,7 @@ using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Commands.EngineCommands
 {
@@ -18,7 +16,7 @@ namespace Commands.EngineCommands
         public AddEngine(FuelType fuelType)
         {
             Id = Guid.NewGuid();
-            this.FuelType = fuelType;
+            FuelType = fuelType;
         }
     }
 
@@ -48,24 +46,9 @@ namespace Commands.EngineCommands
         public void Handle(AddEngine command)
         {
             commandValidator.Validate(command);
+            var engineToAdd = new Engine() { Id = command.Id, FuelType = command.FuelType };
 
-            using (var transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var engineToAdd = new Engine() { Id = command.Id, FuelType = command.FuelType };
-
-                    context.Engine.Add(engineToAdd);
-                    context.SaveChanges();
-
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.Engine.Add(engineToAdd);
         }
     }
 }

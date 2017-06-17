@@ -45,27 +45,13 @@ namespace Commands.VehicleCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
+            var newVehicle = new Vehicle()
             {
-                try
-                {
-                    var newVehicle = new Vehicle()
-                    {
-                        Id = command.Id,
-                        ModelNameId = command.ModelId,
-                    };
+                Id = command.Id,
+                ModelNameId = command.ModelId,
+            };
 
-                    context.Vehicle.Add(newVehicle);
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.Vehicle.Add(newVehicle);
         }
     }
 }

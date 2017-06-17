@@ -37,7 +37,7 @@ namespace FuelTracker.Controllers
                                               [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetManufacturersList(pageSize, pageNo, orderDirection);
-            var result = queryBus.Get<PaginatedList<ManufacturerDetails>>(query);
+            var result = queryBus.InvokeQuery<PaginatedList<ManufacturerDetails>>(query);
 
             return Ok(result);
         }
@@ -45,7 +45,7 @@ namespace FuelTracker.Controllers
         private ManufacturerDetails GetManufacturerDetails(Guid manufacturerId)
         {
             var query = new GetSingleManufacturer(manufacturerId);
-            var result = queryBus.Get<ManufacturerDetails>(query);
+            var result = queryBus.InvokeQuery<ManufacturerDetails>(query);
 
             return result.Data;
         }
@@ -69,7 +69,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new AddManufacturer(model.Name);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
@@ -97,7 +99,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new UpdateManufacturer(manufacturerId, model.Name);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return GetManufacturer(command.Id);
@@ -113,7 +117,9 @@ namespace FuelTracker.Controllers
         public IActionResult DeleteManufacturer(Guid manufacturerId)
         {
             var command = new DeleteManufacturer(manufacturerId);
-            var commandResult = commandBus.Send(command);
+            commandBus.AddCommand(command);
+
+            var commandResult = commandBus.InvokeCommandsQueue();
 
             if (commandResult.Status == ActionStatus.Success)
                 return Ok();
@@ -129,7 +135,7 @@ namespace FuelTracker.Controllers
                                                             [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetModelsList(manufacturerId, pageSize, pageNo, orderDirection);
-            var result = queryBus.Get<PaginatedList<ModelDetails>>(query);
+            var result = queryBus.InvokeQuery<PaginatedList<ModelDetails>>(query);
 
             return Ok(result);
         }
@@ -137,7 +143,7 @@ namespace FuelTracker.Controllers
         private ModelDetails GetModelDetails(Guid manufacturerId, Guid modelId)
         {
             var query = new GetSingleModel(manufacturerId, modelId);
-            var result = queryBus.Get<ModelDetails>(query);
+            var result = queryBus.InvokeQuery<ModelDetails>(query);
 
             return result.Data;
         }
@@ -161,7 +167,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new AddModel(manufacturerId, model.ModelName);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
@@ -189,7 +197,9 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new UpdateModel(manufactuerId, modelId, model.ModelName);
-                var commandResult = commandBus.Send(command);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                     return GetModel(manufactuerId, command.Id);
@@ -205,7 +215,9 @@ namespace FuelTracker.Controllers
         public IActionResult DeleteModel(Guid manufactuerId, Guid modelId)
         {
             var command = new DeleteModel(manufactuerId, modelId);
-            var commandResult = commandBus.Send(command);
+            commandBus.AddCommand(command);
+
+            var commandResult = commandBus.InvokeCommandsQueue();
 
             if (commandResult.Status == ActionStatus.Success)
                 return Ok();

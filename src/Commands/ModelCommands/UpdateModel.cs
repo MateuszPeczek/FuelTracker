@@ -3,9 +3,7 @@ using CustomExceptions.Manufacturer;
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Commands.ModelCommands
 {
@@ -47,29 +45,15 @@ namespace Commands.ModelCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    if (!context.Manufacturer.Any(m => m.Id == command.Id))
-                        throw new ManufacturerNotFoundException(command.ManufacturerId);
+            if (!context.Manufacturer.Any(m => m.Id == command.Id))
+                throw new ManufacturerNotFoundException(command.ManufacturerId);
 
-                    var modelToUpdate = context.ModelName.Single(m => m.Id == command.Id);
+            var modelToUpdate = context.ModelName.Single(m => m.Id == command.Id);
 
-                    modelToUpdate.Name = command.Name;
-                    modelToUpdate.ManufacturerId = command.ManufacturerId;
+            modelToUpdate.Name = command.Name;
+            modelToUpdate.ManufacturerId = command.ManufacturerId;
 
-                    context.Entry(modelToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch(Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.Entry(modelToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

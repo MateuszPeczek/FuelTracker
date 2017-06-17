@@ -2,9 +2,7 @@
 using CustomExceptions.Vehicle;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Commands.VehicleCommands
 {
@@ -41,32 +39,16 @@ namespace Commands.VehicleCommands
         public void Handle(DeleteVehicle command)
         {
             commandValidator.Validate(command);
+            var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.Id);
+            var consumptionReportsToDelete = context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
+            var fuelSummaryToDelete = context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id);
 
-            using (var transaction = context.Database.BeginTransaction())
+            context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            context.Entry(fuelSummaryToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            foreach (var consumptionReport in consumptionReportsToDelete)
             {
-                try
-                {
-                    var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.Id);
-                    var consumptionReportsToDelete = context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
-                    var fuelSummaryToDelete = context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id);
-                    
-                    context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-                    context.Entry(fuelSummaryToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-                    foreach (var consumptionReport in consumptionReportsToDelete)
-                    {
-                        context.Entry(consumptionReport).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-                    }
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                context.Entry(consumptionReport).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
             }
         }
     }
 }
-

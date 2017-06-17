@@ -38,7 +38,6 @@ namespace FuelTracker
         {
             services.AddSingleton<ICommandSender, CommunicationBus>();
             services.AddSingleton<IQuerySender, CommunicationBus>();
-            services.AddSingleton<IEventPublisher, CommunicationBus>();
             services.AddSingleton<ICommandHandlerFactory, HandlerFactory>();
             services.AddSingleton<IQueryHandlerFactory, HandlerFactory>();
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();

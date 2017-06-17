@@ -49,26 +49,12 @@ namespace Commands.ModelCommands
         {
             commandValidator.Validate(command);
 
-            using (var transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    if (!context.Manufacturer.Any(m => m.Id == command.ManufacturerId))
-                        throw new ManufacturerNotFoundException(command.ManufacturerId);
-                    
-                    var modelToAdd = new ModelName() {Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
+            if (!context.Manufacturer.Any(m => m.Id == command.ManufacturerId))
+                throw new ManufacturerNotFoundException(command.ManufacturerId);
 
-                    context.ModelName.Add(modelToAdd);
-                    context.SaveChanges();
+            var modelToAdd = new ModelName() { Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
 
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            context.ModelName.Add(modelToAdd);
         }
     }
 }
