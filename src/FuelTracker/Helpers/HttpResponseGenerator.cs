@@ -2,27 +2,27 @@
 using Common.Interfaces;
 using FuelTracker.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Infrastructure
 {
     public class HttpResponseGenerator : ControllerBase, IHttpResponseGenerator
     {
-        public IActionResult GenerateCommandResponse(ICommandResult commandResult, )
+        public IActionResult GenerateCommandResponse(ICommandResult commandResult, string identifier, string createdAtRouteName, object data)
         {
             switch (commandResult.Status)
             {
                 case ActionStatus.Success:
-                    return 
+                    return CreatedAtRoute(
+                        createdAtRouteName,
+                        new { engineId = identifier },
+                        data);
                 case ActionStatus.NotFound:
-                    break;
+                    return NotFound(commandResult.ExceptionMessage);
                 case ActionStatus.BadRequest:
-                    break;
+                    return BadRequest(commandResult.ExceptionMessage);
                 case ActionStatus.Failure:
                 default:
-                    break;
+                    return StatusCode(500, commandResult.ExceptionMessage);
             }
         }
 
