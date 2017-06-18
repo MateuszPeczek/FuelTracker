@@ -36,10 +36,12 @@ namespace FuelTracker
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ICommandSender, CommunicationBus>();
-            services.AddSingleton<IQuerySender, CommunicationBus>();
-            services.AddSingleton<ICommandHandlerFactory, HandlerFactory>();
-            services.AddSingleton<IQueryHandlerFactory, HandlerFactory>();
+            services.AddScoped<ICommandSender, CommandBus>();
+            services.AddScoped<IQuerySender, QueryBus>();
+            services.AddScoped<ICommandHandlerFactory, HandlerFactory>();
+            services.AddScoped<IQueryHandlerFactory, HandlerFactory>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            //services.AddSingleton<IUnitOfWork>(new UnitOfWork());
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
             services.AddScoped((s) =>
             {
@@ -49,8 +51,9 @@ namespace FuelTracker
             services.RegisterHandlersAndValidators(new List<string>() { "Commands", "Queries" });
 
             services.AddDbContext<ApplicationContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")));
-            
+                options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")),
+                ServiceLifetime.Scoped);
+                
             services.AddMvc(/*setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true;
