@@ -9,10 +9,10 @@ namespace Infrastructure.Factory
         private readonly IServiceCollection diContainer;
         private readonly IServiceProvider services;
 
-        public HandlerFactory(IServiceCollection diContainer)
+        public HandlerFactory(IServiceCollection diContainer, IServiceProvider services)
         {
             this.diContainer = diContainer;
-            services = diContainer.BuildServiceProvider();
+            this.services = services;
         }
 
         public object GetHandler(IQuery query)
