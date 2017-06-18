@@ -32,12 +32,12 @@ namespace Commands.VehicleCommands
 
     public class AddVehicleHandler : ICommandHandler<AddVehicle>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddVehicle> commandValidator;
 
-        public AddVehicleHandler(ApplicationContext context, ICommandValidator<AddVehicle> commandValidator)
+        public AddVehicleHandler(IUnitOfWork unitOfWork, ICommandValidator<AddVehicle> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -51,7 +51,7 @@ namespace Commands.VehicleCommands
                 ModelNameId = command.ModelId,
             };
 
-            context.Vehicle.Add(newVehicle);
+            unitOfWork.Context.Vehicle.Add(newVehicle);
         }
     }
 }

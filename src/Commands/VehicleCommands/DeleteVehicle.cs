@@ -27,27 +27,27 @@ namespace Commands.VehicleCommands
 
     public class DeleteVehicleHandler : ICommandHandler<DeleteVehicle>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<DeleteVehicle> commandValidator;
 
-        public DeleteVehicleHandler(ApplicationContext context, ICommandValidator<DeleteVehicle> commandValidator)
+        public DeleteVehicleHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteVehicle> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
         public void Handle(DeleteVehicle command)
         {
             commandValidator.Validate(command);
-            var vehicleToDelete = context.Vehicle.Single(s => s.Id == command.Id);
-            var consumptionReportsToDelete = context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
-            var fuelSummaryToDelete = context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id);
+            var vehicleToDelete = unitOfWork.Context.Vehicle.Single(s => s.Id == command.Id);
+            var consumptionReportsToDelete = unitOfWork.Context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
+            var fuelSummaryToDelete = unitOfWork.Context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id);
 
-            context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            context.Entry(fuelSummaryToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            unitOfWork.Context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            unitOfWork.Context.Entry(fuelSummaryToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
             foreach (var consumptionReport in consumptionReportsToDelete)
             {
-                context.Entry(consumptionReport).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                unitOfWork.Context.Entry(consumptionReport).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
             }
         }
     }

@@ -31,7 +31,7 @@ namespace Commands.FuelStatisticsCommands
     public class DeleteConsumptionReportHandler : ICommandHandler<DeleteConsumptionReport>
     {
         private readonly ICommandValidator<DeleteConsumptionReport> commandValidator;
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
 
         private float kilometersToMilesConst = 0.621371F;
         private float milesToKilometersConst = 1.609344F;
@@ -39,9 +39,9 @@ namespace Commands.FuelStatisticsCommands
         private float galonsToLitresConst = 4.54609188F;
 
         public DeleteConsumptionReportHandler(ICommandValidator<DeleteConsumptionReport> commandValidator,
-                                               ApplicationContext context)
+                                              IUnitOfWork unitOfWork)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -49,11 +49,11 @@ namespace Commands.FuelStatisticsCommands
         {
             commandValidator.Validate(command);
 
-            var reportToDelete = context.ConsumptionReport.Where(r => r.VehicleId == command.VehicleId).SingleOrDefault(r => r.Id == command.Id);
+            var reportToDelete = unitOfWork.Context.ConsumptionReport.Where(r => r.VehicleId == command.VehicleId).SingleOrDefault(r => r.Id == command.Id);
             if (reportToDelete == null)
                 throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
 
-            var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToDelete.VehicleId);
+            var fuelSummaryToUpdate = unitOfWork.Context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToDelete.VehicleId);
             if (fuelSummaryToUpdate == null)
                 throw new FuelSummaryNotFoundException(reportToDelete.VehicleId);
 
@@ -90,8 +90,8 @@ namespace Commands.FuelStatisticsCommands
                 }
             }
 
-            context.Entry(reportToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            context.Entry(fuelSummaryToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            unitOfWork.Context.Entry(reportToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            unitOfWork.Context.Entry(fuelSummaryToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

@@ -32,12 +32,12 @@ namespace Commands.ManufacturerCommands
 
     public class UpdateManufacturerHandler : ICommandHandler<UpdateManufacturer>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<UpdateManufacturer> commandValidator;
 
-        public UpdateManufacturerHandler(ApplicationContext context, ICommandValidator<UpdateManufacturer> commandValidator)
+        public UpdateManufacturerHandler(IUnitOfWork unitOfWork, ICommandValidator<UpdateManufacturer> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -45,11 +45,11 @@ namespace Commands.ManufacturerCommands
         {
             commandValidator.Validate(command);
 
-            var manufacturerToUpdate = context.Manufacturer.Single(e => e.Id == command.Id);
+            var manufacturerToUpdate = unitOfWork.Context.Manufacturer.Single(e => e.Id == command.Id);
 
             manufacturerToUpdate.Name = command.Name;
 
-            context.Entry(manufacturerToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            unitOfWork.Context.Entry(manufacturerToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

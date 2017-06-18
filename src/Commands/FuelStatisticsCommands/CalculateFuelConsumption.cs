@@ -51,12 +51,12 @@ namespace Commands.FuelStatisticsCommands
     public class CalculateFuelConsumptionHandler : ICommandHandler<CalculateFuelConsumption>
     {
         private readonly ICommandValidator<CalculateFuelConsumption> commandValidator;
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
 
         public CalculateFuelConsumptionHandler(ICommandValidator<CalculateFuelConsumption> commandValidator,
-                                               ApplicationContext context)
+                                               IUnitOfWork unitOfWork)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -64,13 +64,13 @@ namespace Commands.FuelStatisticsCommands
         {
             commandValidator.Validate(command);
 
-            if (!context.Vehicle.Any(v => v.Id == command.VehicleId))
+            if (!unitOfWork.Context.Vehicle.Any(v => v.Id == command.VehicleId))
                 throw new VehicleNotFoundException(command.VehicleId);
 
-            if (!context.User.Any(u => u.Id == command.UserId))
+            if (!unitOfWork.Context.User.Any(u => u.Id == command.UserId))
                 throw new UserNotFoundException(command.UserId);
 
-            var unitsSettings = context.UserSettings.Single(s => s.UserId == command.UserId);
+            var unitsSettings = unitOfWork.Context.UserSettings.Single(s => s.UserId == command.UserId);
             if (unitsSettings == null)
                 throw new Exception();
 
@@ -99,7 +99,7 @@ namespace Commands.FuelStatisticsCommands
                     throw new NotImplementedException();
             }
 
-            var fuelSummary = context.FuelSummary.SingleOrDefault(f => f.VehicleId == command.VehicleId);
+            var fuelSummary = unitOfWork.Context.FuelSummary.SingleOrDefault(f => f.VehicleId == command.VehicleId);
             if (fuelSummary == null)
             {
                 fuelSummary = new FuelSummary() { Id = Guid.NewGuid() };
@@ -122,7 +122,7 @@ namespace Commands.FuelStatisticsCommands
                         break;
                 }
 
-                context.FuelSummary.Add(fuelSummary);
+                unitOfWork.Context.FuelSummary.Add(fuelSummary);
             }
             else
             {
@@ -145,10 +145,10 @@ namespace Commands.FuelStatisticsCommands
                         throw new NotImplementedException();
                 }
 
-                context.Entry(fuelSummary).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                unitOfWork.Context.Entry(fuelSummary).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             }
 
-            context.ConsumptionReport.Add(report);
+            unitOfWork.Context.ConsumptionReport.Add(report);
         }
     }
 }

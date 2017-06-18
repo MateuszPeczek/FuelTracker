@@ -32,12 +32,12 @@ namespace Commands.VehicleCommands
 
     public class UpdateVehicleHandler : ICommandHandler<UpdateVehicle>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<UpdateVehicle> commandValidator;
 
-        public UpdateVehicleHandler(ApplicationContext context, ICommandValidator<UpdateVehicle> commandValidator)
+        public UpdateVehicleHandler(IUnitOfWork unitOfWork, ICommandValidator<UpdateVehicle> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -45,13 +45,13 @@ namespace Commands.VehicleCommands
         {
             commandValidator.Validate(command);
 
-            var vehicleToUpdate = context.Vehicle.Single(v => v.Id == command.Id);
+            var vehicleToUpdate = unitOfWork.Context.Vehicle.Single(v => v.Id == command.Id);
             if (vehicleToUpdate == null)
                 throw new VehicleNotFoundException(command.Id);
 
             if (command.EngineId.HasValue)
             {
-                var selectedEngine = context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
+                var selectedEngine = unitOfWork.Context.Engine.FirstOrDefault(e => e.Id == command.EngineId);
                 if (selectedEngine == null)
                     throw new EngineNotFoundException(command.EngineId.Value);
 

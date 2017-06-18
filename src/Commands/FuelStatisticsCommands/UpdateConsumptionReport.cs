@@ -47,7 +47,7 @@ namespace Commands.FuelStatisticsCommands
     public class UpdateConsumptionReportHandler : ICommandHandler<UpdateConsumptionReport>
     {
         private readonly ICommandValidator<UpdateConsumptionReport> commandValidator;
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
 
         private float kilometersToMilesConst = 0.621371F;
         private float milesToKilometersConst = 1.609344F;
@@ -55,9 +55,9 @@ namespace Commands.FuelStatisticsCommands
         private float galonsToLitresConst = 4.54609188F;
 
         public UpdateConsumptionReportHandler(ICommandValidator<UpdateConsumptionReport> commandValidator,
-                                               ApplicationContext context)
+                                              IUnitOfWork unitOfWork)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -65,11 +65,11 @@ namespace Commands.FuelStatisticsCommands
         {
             commandValidator.Validate(command);
 
-            var reportToUpdate = context.ConsumptionReport.SingleOrDefault(r => r.Id == command.Id);
+            var reportToUpdate = unitOfWork.Context.ConsumptionReport.SingleOrDefault(r => r.Id == command.Id);
             if (reportToUpdate == null)
                 throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
 
-            var fuelSummaryToUpdate = context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToUpdate.VehicleId);
+            var fuelSummaryToUpdate = unitOfWork.Context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToUpdate.VehicleId);
             if (fuelSummaryToUpdate == null)
                 throw new FuelSummaryNotFoundException(reportToUpdate.VehicleId);
 
@@ -122,8 +122,8 @@ namespace Commands.FuelStatisticsCommands
                     break;
             }
 
-            context.Entry(reportToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            context.Entry(fuelSummaryToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            unitOfWork.Context.Entry(reportToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            unitOfWork.Context.Entry(fuelSummaryToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

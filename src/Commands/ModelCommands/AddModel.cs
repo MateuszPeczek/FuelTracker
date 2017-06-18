@@ -36,12 +36,12 @@ namespace Commands.ModelCommands
 
     public class AddModelHandler : ICommandHandler<AddModel>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddModel> commandValidator;
 
-        public AddModelHandler(ApplicationContext context, ICommandValidator<AddModel> commandValidator)
+        public AddModelHandler(IUnitOfWork unitOfWork, ICommandValidator<AddModel> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -49,12 +49,12 @@ namespace Commands.ModelCommands
         {
             commandValidator.Validate(command);
 
-            if (!context.Manufacturer.Any(m => m.Id == command.ManufacturerId))
+            if (!unitOfWork.Context.Manufacturer.Any(m => m.Id == command.ManufacturerId))
                 throw new ManufacturerNotFoundException(command.ManufacturerId);
 
             var modelToAdd = new ModelName() { Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
 
-            context.ModelName.Add(modelToAdd);
+            unitOfWork.Context.ModelName.Add(modelToAdd);
         }
     }
 }

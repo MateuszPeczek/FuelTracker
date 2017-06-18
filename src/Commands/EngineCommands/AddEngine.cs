@@ -34,21 +34,24 @@ namespace Commands.EngineCommands
 
     public class AddEngineHandler : ICommandHandler<AddEngine>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddEngine> commandValidator;
 
-        public AddEngineHandler(ApplicationContext context, ICommandValidator<AddEngine> commandValidator)
+        public AddEngineHandler(IUnitOfWork unitOfWork, ICommandValidator<AddEngine> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
         public void Handle(AddEngine command)
         {
             commandValidator.Validate(command);
-            var engineToAdd = new Engine() { Id = command.Id, FuelType = command.FuelType };
+            var engineToAdd = new Engine();
 
-            context.Engine.Add(engineToAdd);
+            engineToAdd.Id = command.Id;
+            
+
+            unitOfWork.Context.Add(engineToAdd);
         }
     }
 }

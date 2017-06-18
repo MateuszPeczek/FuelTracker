@@ -32,12 +32,12 @@ namespace Commands.ModelCommands
 
     public class UpdateModelHandler : ICommandHandler<UpdateModel>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<UpdateModel> commandValidator;
 
-        public UpdateModelHandler(ApplicationContext context, ICommandValidator<UpdateModel> commandValidator)
+        public UpdateModelHandler(IUnitOfWork unitOfWork, ICommandValidator<UpdateModel> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -45,15 +45,15 @@ namespace Commands.ModelCommands
         {
             commandValidator.Validate(command);
 
-            if (!context.Manufacturer.Any(m => m.Id == command.Id))
+            if (!unitOfWork.Context.Manufacturer.Any(m => m.Id == command.Id))
                 throw new ManufacturerNotFoundException(command.ManufacturerId);
 
-            var modelToUpdate = context.ModelName.Single(m => m.Id == command.Id);
+            var modelToUpdate = unitOfWork.Context.ModelName.Single(m => m.Id == command.Id);
 
             modelToUpdate.Name = command.Name;
             modelToUpdate.ManufacturerId = command.ManufacturerId;
 
-            context.Entry(modelToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            unitOfWork.Context.Entry(modelToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

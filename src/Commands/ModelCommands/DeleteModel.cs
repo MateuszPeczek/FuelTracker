@@ -33,24 +33,24 @@ namespace Commands.ModelCommands
 
     public class DeleteEngineHandler : ICommandHandler<DeleteModel>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<DeleteModel> commandValidator;
 
-        public DeleteEngineHandler(ApplicationContext context, ICommandValidator<DeleteModel> commandValidator)
+        public DeleteEngineHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteModel> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
         public void Handle(DeleteModel command)
         {
             commandValidator.Validate(command);
-            var modelToDelete = context.ModelName.Where(m => m.ManufacturerId == command.ManufacturerId).Single(m => m.Id == command.Id);
+            var modelToDelete = unitOfWork.Context.ModelName.Where(m => m.ManufacturerId == command.ManufacturerId).Single(m => m.Id == command.Id);
 
             if (modelToDelete == null)
                 throw new ModelNotFoundException(command.ManufacturerId, command.Id);
 
-            context.Entry(modelToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            unitOfWork.Context.Entry(modelToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
         }
     }
 }

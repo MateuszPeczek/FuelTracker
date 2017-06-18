@@ -32,12 +32,12 @@ namespace Commands.ManudaturerCommands
 
     public class AddManufacturerHandler : ICommandHandler<AddManufacturer>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddManufacturer> commandValidator;
 
-        public AddManufacturerHandler(ApplicationContext context, ICommandValidator<AddManufacturer> commandValidator)
+        public AddManufacturerHandler(IUnitOfWork unitOfWork, ICommandValidator<AddManufacturer> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -47,7 +47,7 @@ namespace Commands.ManudaturerCommands
 
             var manufacturerToAdd = new Manufacturer() { Id = command.Id, Name = command.Name };
 
-            context.Manufacturer.Add(manufacturerToAdd);
+            unitOfWork.Context.Manufacturer.Add(manufacturerToAdd);
         }
     }
 }

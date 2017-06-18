@@ -38,12 +38,12 @@ namespace Commands.EngineCommands
 
     public class UpdateEngineHandler : ICommandHandler<UpdateEngine>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<UpdateEngine> commandValidator;
 
-        public UpdateEngineHandler(ApplicationContext context, ICommandValidator<UpdateEngine> commandValidator)
+        public UpdateEngineHandler(IUnitOfWork unitOfWork, ICommandValidator<UpdateEngine> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -51,7 +51,7 @@ namespace Commands.EngineCommands
         {
             commandValidator.Validate(command);
 
-            var engineToUpdate = context.Engine.Single(e => e.Id == command.Id);
+            var engineToUpdate = unitOfWork.Context.Engine.Single(e => e.Id == command.Id);
 
             if (engineToUpdate == null)
                 throw new EngineNotFoundException(command.Id);
@@ -62,7 +62,7 @@ namespace Commands.EngineCommands
             engineToUpdate.Cylinders = command.Cylinders;
             engineToUpdate.Displacement = command.Displacement;
 
-            context.Entry(engineToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            unitOfWork.Context.Entry(engineToUpdate).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

@@ -28,12 +28,12 @@ namespace Commands.EngineCommands
 
     public class DeleteEngineHandler : ICommandHandler<DeleteEngine>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<DeleteEngine> commandValidator;
 
-        public DeleteEngineHandler(ApplicationContext context, ICommandValidator<DeleteEngine> commandValidator)
+        public DeleteEngineHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteEngine> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -41,12 +41,12 @@ namespace Commands.EngineCommands
         {
             commandValidator.Validate(command);
 
-            var engineToDelete = context.Engine.Single(e => e.Id == command.Id);
+            var engineToDelete = unitOfWork.Context.Engine.Single(e => e.Id == command.Id);
 
             if (engineToDelete == null)
                 throw new EngineNotFoundException(command.Id);
 
-            context.Entry(engineToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            unitOfWork.Context.Entry(engineToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
         }
     }
 }

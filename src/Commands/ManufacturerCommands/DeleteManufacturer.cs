@@ -27,12 +27,12 @@ namespace Commands.ManufacturerCommands
 
     public class DeleteManufacturerHandler : ICommandHandler<DeleteManufacturer>
     {
-        private readonly ApplicationContext context;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<DeleteManufacturer> commandValidator;
 
-        public DeleteManufacturerHandler(ApplicationContext context, ICommandValidator<DeleteManufacturer> commandValidator)
+        public DeleteManufacturerHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteManufacturer> commandValidator)
         {
-            this.context = context;
+            this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
@@ -40,13 +40,13 @@ namespace Commands.ManufacturerCommands
         {
             commandValidator.Validate(command);
 
-            var manufacturerToDelete = context.Manufacturer.Single(m => m.Id == command.Id);
-            var modelsToDelete = context.ModelName.Where(m => m.ManufacturerId == manufacturerToDelete.Id);
+            var manufacturerToDelete = unitOfWork.Context.Manufacturer.Single(m => m.Id == command.Id);
+            var modelsToDelete = unitOfWork.Context.ModelName.Where(m => m.ManufacturerId == manufacturerToDelete.Id);
 
-            context.Entry(manufacturerToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            unitOfWork.Context.Entry(manufacturerToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
             foreach (var model in modelsToDelete)
             {
-                context.Entry(model).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                unitOfWork.Context.Entry(model).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
             }
         }
     }
