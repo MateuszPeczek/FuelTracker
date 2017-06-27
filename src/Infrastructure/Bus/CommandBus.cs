@@ -16,6 +16,9 @@ namespace Infrastructure.Bus
         private readonly IExceptionTypeResolver exceptionTypeResolver;
         private readonly IUnitOfWork unitOfWork;
 
+        private ICollection<Guid> commandIds;
+        public IEnumerable<Guid> CommandIds { get { return commandIds; } }
+
         private ICollection<ICommand> commandsList;
 
         public CommandBus(ICommandHandlerFactory commandHandlerFactory,
@@ -27,11 +30,13 @@ namespace Infrastructure.Bus
             this.unitOfWork = unitOfWork;
 
             commandsList = new List<ICommand>();
+            commandIds = new List<Guid>();
         }
 
         public void AddCommand(ICommand command)
         {
             commandsList.Add(command);
+            commandIds.Add(command.Id);
         }
 
         public ICommandResult InvokeCommandsQueue()

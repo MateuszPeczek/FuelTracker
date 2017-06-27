@@ -11,6 +11,9 @@ using Queries.ModelQueries;
 using FuelTracker.ApiModels.ManufacturerApiModels;
 using Commands.ModelCommands;
 using Infrastructure.CommunicationModels;
+using System.Collections.Generic;
+using System.Linq;
+using FuelTracker.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -50,6 +53,14 @@ namespace FuelTracker.Controllers
             return result.Data;
         }
 
+        private IEnumerable<ManufacturerDetails> GetManufacturersDetails(IEnumerable<Guid> manufacturersIds)
+        {
+            var query = new GetManufacturersByIds(manufacturersIds);
+            var result = queryBus.InvokeQuery<IEnumerable<ManufacturerDetails>>(query);
+
+            return result.Data;
+        }
+
         // GET api/manufacturers/{manufacturerId}
         [HttpGet("{manufacturerId}", Name = "GetManufacturer")]
         public IActionResult GetManufacturer(Guid manufacturerId)
@@ -62,13 +73,30 @@ namespace FuelTracker.Controllers
             return Ok(result);
         }
 
+        // GET api/manufacturers/{manufacturerId}
+        [HttpGet("({ids})", Name = "GetManufacturersByIds")]
+        public IActionResult GetManufacturer([ModelBinder(BinderType = typeof(CollectionModelBinder))]IEnumerable<Guid> manufacturersIds)
+        {
+            var query = new GetManufacturersByIds(manufacturersIds);
+            var result = queryBus.InvokeQuery<IEnumerable<ManufacturerDetails>>(query);
+
+            if (result.QueryStatus == ActionStatus.Success)
+                return Ok(result);
+
+            if (result.QueryStatus == ActionStatus.BadRequest)
+                return BadRequest(result.ExceptionMessage);
+
+            return StatusCode(500, result.ExceptionMessage);
+            
+        }
+
         // POST api/manufacturers
         [HttpPost("")]
         public IActionResult PostManufacturer([FromBody]PostManufacturer model)
         {
             if (ModelState.IsValid)
             {
-                var command = new AddManufacturer(model.Name);
+                var command = new AddManufacturer(model.Name, model.ModelsNames);
                 commandBus.AddCommand(command);
 
                 var commandResult = commandBus.InvokeCommandsQueue();
@@ -90,6 +118,42 @@ namespace FuelTracker.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpPost("collection")]
+        public IActionResult PostManufacturersCollection([FromBody]IEnumerable<PostManufacturer> manufacturersCollection)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!manufacturersCollection.Any())
+                    return BadRequest("Empty collection");
+
+                foreach (var manufacturer in manufacturersCollection)
+                {
+                    var command = new AddManufacturer(manufacturer.Name, manufacturer.ModelsNames);
+                    commandBus.AddCommand(command);
+                }
+
+                var commandResult = commandBus.InvokeCommandsQueue();
+
+                if (commandResult.Status == ActionStatus.Success)
+                {
+                    var result = GetManufacturersDetails(commandBus.CommandIds);
+
+                    return CreatedAtRoute(
+                        "GetManufacturersByIds",
+                        new { ids = string.Join(",", commandBus.CommandIds) },
+                        result);
+                }
+                else
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
+            }
+            else
+            {
+                return BadRequest(manufacturersCollection);
+            }
         }
 
         // PUT api/manufacturers/{manufacturerId}

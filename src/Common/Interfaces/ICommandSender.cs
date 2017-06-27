@@ -11,5 +11,7 @@ namespace Common.Interfaces
     {
         void AddCommand(ICommand command);
         ICommandResult InvokeCommandsQueue();
+
+        IEnumerable<Guid> CommandIds { get; }
     }
 }

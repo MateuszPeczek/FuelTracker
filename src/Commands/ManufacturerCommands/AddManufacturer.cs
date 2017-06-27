@@ -3,6 +3,8 @@ using CustomExceptions.Manufacturer;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Commands.ManudaturerCommands
 {
@@ -10,11 +12,14 @@ namespace Commands.ManudaturerCommands
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public IEnumerable<string> ModelsNames { get; set; }
 
-        public AddManufacturer(string name)
+
+        public AddManufacturer(string name, IEnumerable<string> modelsNames = null)
         {
             Id = Guid.NewGuid();
             Name = name;
+            ModelsNames = modelsNames;
         }
     }
 
@@ -46,6 +51,15 @@ namespace Commands.ManudaturerCommands
             commandValidator.Validate(command);
 
             var manufacturerToAdd = new Manufacturer() { Id = command.Id, Name = command.Name };
+
+            if (command.ModelsNames != null && command.ModelsNames.Any())
+            {
+                foreach (var modelName in command.ModelsNames)
+                {
+                    var newModel = new ModelName() { Manufacturer = manufacturerToAdd, ManufacturerId = manufacturerToAdd.Id, Name = modelName };
+                    unitOfWork.Context.ModelName.Add(newModel);
+                }
+            }
 
             unitOfWork.Context.Manufacturer.Add(manufacturerToAdd);
         }
