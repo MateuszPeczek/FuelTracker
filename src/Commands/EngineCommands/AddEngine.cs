@@ -11,11 +11,26 @@ namespace Commands.EngineCommands
     public class AddEngine : ICommand
     {
         public Guid Id { get; set; }
+        public string Name { get; set; }
+        public int Power { get; set; }
+        public int Torque { get; set; }
+        public int Cylinders { get; set; }
+        public float Displacement { get; set; }
         public FuelType FuelType { get; set; }
 
-        public AddEngine(FuelType fuelType)
+        public AddEngine(string name, 
+                         int power, 
+                         int torque, 
+                         int cylinders, 
+                         float displacement, 
+                         FuelType fuelType)
         {
             Id = Guid.NewGuid();
+            Name = name;
+            Power = power;
+            Torque = torque;
+            Cylinders = cylinders;
+            Displacement = displacement;
             FuelType = fuelType;
         }
     }
@@ -49,7 +64,12 @@ namespace Commands.EngineCommands
             var engineToAdd = new Engine();
 
             engineToAdd.Id = command.Id;
-            
+            engineToAdd.Name = command.Name;
+            engineToAdd.Power = command.Power;
+            engineToAdd.Torque = command.Torque;
+            engineToAdd.Cylinders = command.Cylinders;
+            engineToAdd.Displacement = command.Displacement;
+            engineToAdd.FuelType = command.FuelType;            
 
             unitOfWork.Context.Add(engineToAdd);
         }

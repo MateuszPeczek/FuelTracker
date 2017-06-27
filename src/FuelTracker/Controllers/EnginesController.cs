@@ -1,15 +1,16 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using Common.Paging;
-using FuelTracker.ApiModels.EngineApiModels;
-using Common.Interfaces;
-using Commands.EngineCommands;
+﻿using Commands.EngineCommands;
 using Common.Enums;
-using Domain.VehicleDomain;
-using Queries.EngineQueries;
+using Common.Interfaces;
 using Common.Ordering.Engine;
 using Common.Ordering.Shared;
-using Infrastructure.CommunicationModels;
+using Common.Paging;
+using FuelTracker.ApiModels.EngineApiModels;
+using FuelTracker.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using Queries.EngineQueries;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FuelTracker.Controllers
 {
@@ -25,6 +26,35 @@ namespace FuelTracker.Controllers
         {
             this.commandBus = commandBus;
             this.queryBus = queryBus;
+
+        }
+
+        private EngineDetails GetEngineDetails(Guid engineId)
+        {
+            var query = new GetSingleEngine(engineId);
+            var result = queryBus.InvokeQuery<EngineDetails>(query);
+
+            return result.Data;
+        }
+
+        private IEnumerable<EngineDetails> GetEngineDetails(IEnumerable<Guid> enginesIds)
+        {
+            var query = new GetEnginesByIds(enginesIds);
+            var result = queryBus.InvokeQuery<IEnumerable<EngineDetails>>(query);
+
+            return result.Data;
+        }
+
+        //GET: api/engines/{engineId}
+        [HttpGet("{engineId}", Name = "GetEngine")]
+        public IActionResult GetEngine([ModelBinder(BinderType = typeof(CollectionModelBinder))]Guid engineId)
+        {
+            var result = GetEngineDetails(engineId);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         //GET: api/engines
@@ -48,26 +78,21 @@ namespace FuelTracker.Controllers
 
         }
 
-        private EngineDetails GetEngineDetails(Guid engineId)
+        //GET: api/engines/(engineId, engineId, ...)
+        [HttpGet("({ids})", Name = "GetEnginesByIds")]
+        [ProducesResponseType(typeof(IEnumerable<EngineDetails>), 200)]
+        public IActionResult GetEnginesByIds([ModelBinder(BinderType = typeof(CollectionModelBinder))] IEnumerable<Guid> ids)
         {
-            var query = new GetSingleEngine(engineId);
-            var result = queryBus.InvokeQuery<EngineDetails>(query);
+            var query = new GetEnginesByIds(ids);
+            var result = queryBus.InvokeQuery<IEnumerable<EngineDetails>>(query);
+            
+            if (result.QueryStatus == ActionStatus.Success)
+                return Ok(result);
 
+            if (result.QueryStatus == ActionStatus.BadRequest)
+                return BadRequest(result.ExceptionMessage);
 
-
-            return result.Data;
-        }
-
-        //GET: api/engines/{engineId}
-        [HttpGet("{engineId}", Name = "GetEngine")]
-        public IActionResult GetEngine(Guid engineId)
-        {
-            var result = GetEngineDetails(engineId);
-
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return StatusCode(500, result.ExceptionMessage);
         }
 
         //POST: api/engines
@@ -76,7 +101,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new AddEngine(model.FuelType);
+                var command = new AddEngine(model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement, model.FuelType);
                 commandBus.AddCommand(command);
 
                 var commandResult = commandBus.InvokeCommandsQueue();
@@ -90,6 +115,42 @@ namespace FuelTracker.Controllers
                         new { engineId = command.Id },
                         result
                         );  
+                }
+                else
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        //POST: api/engines/collection
+        [HttpPost("collection")]
+        public IActionResult PostEnginesCollection([FromBody]IEnumerable<PostEngine> modelsCollection)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!modelsCollection.Any())
+                    return BadRequest("Empty collection");
+
+                foreach (var model in modelsCollection)
+                {
+                    var command = new AddEngine(model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement, model.FuelType);
+                    commandBus.AddCommand(command);
+                }
+
+                var commandResult = commandBus.InvokeCommandsQueue();
+
+                if (commandResult.Status == ActionStatus.Success)
+                {
+                    var result = GetEngineDetails(commandBus.CommandIds);
+
+                    return CreatedAtRoute(
+                        "GetEnginesByIds",
+                        new { ids = string.Join(",", commandBus.CommandIds) },
+                        result
+                        );
                 }
                 else
                 {

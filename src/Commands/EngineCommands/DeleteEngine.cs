@@ -41,7 +41,7 @@ namespace Commands.EngineCommands
         {
             commandValidator.Validate(command);
 
-            var engineToDelete = unitOfWork.Context.Engine.Single(e => e.Id == command.Id);
+            var engineToDelete = unitOfWork.Context.Engine.SingleOrDefault(e => e.Id == command.Id);
 
             if (engineToDelete == null)
                 throw new EngineNotFoundException(command.Id);

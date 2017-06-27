@@ -72,6 +72,7 @@ namespace FuelTracker
                 options.DescribeAllEnumsAsStrings();
                 options.DescribeStringEnumsInCamelCase();
             });
+            
 
             services.AddIdentity<User, UserRole>(
                 options =>
@@ -106,6 +107,8 @@ namespace FuelTracker
                 routes.MapRoute(name: "default",
                     template: "api/v{version:apiVersion}/{controller=Default}/{action=Get}/{id?}");
             });
+
+
             app.UseSwagger();
             app.UseSwaggerUi();
         } 
