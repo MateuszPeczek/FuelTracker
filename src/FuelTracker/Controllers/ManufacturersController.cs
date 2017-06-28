@@ -75,7 +75,7 @@ namespace FuelTracker.Controllers
 
         // GET api/manufacturers/{manufacturerId}
         [HttpGet("({ids})", Name = "GetManufacturersByIds")]
-        public IActionResult GetManufacturer([ModelBinder(BinderType = typeof(CollectionModelBinder))]IEnumerable<Guid> manufacturersIds)
+        public IActionResult GetManufacturersByIds([ModelBinder(BinderType = typeof(CollectionModelBinder))]IEnumerable<Guid> manufacturersIds)
         {
             var query = new GetManufacturersByIds(manufacturersIds);
             var result = queryBus.InvokeQuery<IEnumerable<ManufacturerDetails>>(query);
@@ -212,6 +212,14 @@ namespace FuelTracker.Controllers
             return result.Data;
         }
 
+        private IEnumerable<ModelDetails> GetModelDetailsByIdsData(Guid manufacturerId, IEnumerable<Guid> ids)
+        {
+            var query = new GetModelsDetailsByIds(manufacturerId, ids);
+            var result = queryBus.InvokeQuery<IEnumerable<ModelDetails>>(query);
+
+            return result.Data;
+        }
+
         // GET: api/manufacturers/{manufacturerId}/models
         [HttpGet("{manufacturerId}/models/{modelId}", Name = "GetModel")]
         public IActionResult GetModel(Guid manufacturerId, Guid modelId)
@@ -222,6 +230,22 @@ namespace FuelTracker.Controllers
                 return NotFound();
 
             return Ok(result);
+        }
+
+        // GET: api/manufacturers/{manufacturerId}/models
+        [HttpGet("{manufacturerId}/models/({ids})", Name = "GetModelsByIds")]
+        public IActionResult GetModelsByIds(Guid manufacturerId, IEnumerable<Guid> ids)
+        {
+            var query = new GetModelsDetailsByIds(manufacturerId, ids);
+            var result = queryBus.InvokeQuery<IEnumerable<ModelDetails>>(query);
+
+            if (result.QueryStatus == ActionStatus.Success)
+                return Ok(result);
+
+            if (result.QueryStatus == ActionStatus.BadRequest)
+                return BadRequest(result.ExceptionMessage);
+
+            return StatusCode(500, result.ExceptionMessage);
         }
 
         // POST api/manufacturers/{manufacturerId}/models
@@ -252,6 +276,43 @@ namespace FuelTracker.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        // POST api/manufacturers/{manufacturerId}/models/collection
+        [HttpPost("{manufacturerId}/models/collection")]
+        public IActionResult PostModelsCollection(Guid manufacturerId, [FromBody]IEnumerable<PostModelName> modelsCollection)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!modelsCollection.Any())
+                    return BadRequest("Empty collection");
+
+                foreach (var model in modelsCollection)
+                {
+                    var command = new AddModel(manufacturerId, model.ModelName);
+                    commandBus.AddCommand(command);
+                }
+
+                var commandResult = commandBus.InvokeCommandsQueue();
+
+                if (commandResult.Status == ActionStatus.Success)
+                {
+                    var result = GetModelDetailsByIdsData(manufacturerId, commandBus.CommandIds);
+
+                    return CreatedAtRoute(
+                        "GetModelsByIds",
+                        new { ids = string.Join(",", commandBus.CommandIds) },
+                        result);
+                }
+                else
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
+            }
+            else
+            {
+                return BadRequest(modelsCollection);
+            }
         }
 
         // PUT api/manufacturers/{manufacturerId}/models/{modelId}
