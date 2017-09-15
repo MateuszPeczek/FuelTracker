@@ -42,7 +42,7 @@ namespace Commands.EngineCommands
             if (command.FuelType > Enum.GetValues(typeof(FuelType)).Cast<FuelType>().Last())
                 throw new FuelTypeOutOfRangeException();
 
-            if (command.Id == new Guid())
+            if (command.Id == null || command.Id == new Guid())
                 throw new InvalidEngineIdException();
         }
     }
