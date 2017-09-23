@@ -16,7 +16,7 @@ namespace Commands.EngineCommands
             Power = power;
             Torque = torque;
             Cylinders = cylinders;
-            Displacement = Displacement;
+            Displacement = displacement;
         }
 
         public Guid Id { get; set; }

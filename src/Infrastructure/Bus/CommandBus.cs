@@ -1,9 +1,9 @@
 ﻿using Common.Enums;
 using Common.Interfaces;
+using CustomExceptions.CommandBus;
 using Infrastructure.CommunicationModels;
 using Persistence;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,10 +16,10 @@ namespace Infrastructure.Bus
         private readonly IExceptionTypeResolver exceptionTypeResolver;
         private readonly IUnitOfWork unitOfWork;
 
-        private ICollection<Guid> commandIds;
+        private readonly ICollection<Guid> commandIds;
         public IEnumerable<Guid> CommandIds { get { return commandIds; } }
 
-        private ICollection<ICommand> commandsList;
+        private readonly ICollection<ICommand> commandsList;
 
         public CommandBus(ICommandHandlerFactory commandHandlerFactory,
                           IExceptionTypeResolver exceptionTypeResolver,
@@ -44,7 +44,7 @@ namespace Infrastructure.Bus
             try
             {
                 if (!commandsList.Any())
-                    throw new Exception("No commands in queue");
+                    throw new EmptyCommandsQueueException("No commands in queue");
 
                 foreach (var command in commandsList)
                 {
@@ -60,8 +60,7 @@ namespace Infrastructure.Bus
                 return new CommandResult() { Status = ActionStatus.Success, ExceptionMessage = string.Empty };
             }
             catch (Exception ex)
-            {
-                //TODO logging           
+            {         
                 return new CommandResult() { Status = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = ex.InnerException == null ? ex.Message : ex.InnerException.Message };
             }
         }

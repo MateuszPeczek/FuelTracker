@@ -34,13 +34,13 @@ namespace Commands.FuelStatisticsCommands
     {
         public void Validate(CalculateFuelConsumption command)
         {
-            if (command.Id == null || command.Id == new Guid())
+            if (command.Id == new Guid())
                 throw new InvalidCalculateFuelConsumptionIdException();
 
-            if (command.VehicleId == null || command.VehicleId == new Guid())
+            if (command.VehicleId == new Guid())
                 throw new InvalidVehicleIdException();
 
-            if (command.UserId == null || command.UserId == new Guid())
+            if (command.UserId == new Guid())
                 throw new InvalidUserIdException();
 
             if (command.Distance <= 0)

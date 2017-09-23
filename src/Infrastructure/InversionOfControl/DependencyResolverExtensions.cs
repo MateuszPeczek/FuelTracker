@@ -1,11 +1,9 @@
 ﻿using Common.Interfaces;
-using Infrastructure.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Infrastructure.InversionOfControl
 {
@@ -25,7 +23,7 @@ namespace Infrastructure.InversionOfControl
                     if (assemblyName != null)
                         assemblies.Add(Assembly.Load(assemblyName));
                     else
-                        throw new ArgumentNullException();
+                        throw new ArgumentNullException(name.ToString());
                 }
 
                 foreach (var assembly in assemblies)
@@ -36,8 +34,8 @@ namespace Infrastructure.InversionOfControl
                     }
                 }
 
-                var handlersTypes = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)).Any()).ToList() //all command handlers
-                    .Concat(types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)).Any()).ToList()); //all query handlers
+                var handlersTypes = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Any(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>))) //all command handlers
+                    .Concat(types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Any(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>))).ToList()); //all query handlers
 
                 var validators = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandValidator<>)).Any()).ToList();
 
@@ -45,14 +43,12 @@ namespace Infrastructure.InversionOfControl
                 {
 
                     var handledCommand = type.GetTypeInfo().ImplementedInterfaces.First().GenericTypeArguments.First();
-                    var handler = type;
                     services.AddScoped(handledCommand, type);
                 }
 
                 foreach (var type in validators)
                 {
                     var implementedInterface = type.GetTypeInfo().ImplementedInterfaces.First();
-                    var validatorImplementation = type;
                     services.AddScoped(implementedInterface, type);
                 }
 
@@ -62,7 +58,7 @@ namespace Infrastructure.InversionOfControl
             catch (Exception ex)
             {
                 //TODO: logging
-                throw ex;
+                throw;
             }
         }
 
@@ -74,8 +70,6 @@ namespace Infrastructure.InversionOfControl
             {
                 if (assemblyName.ToLower().Trim().Equals(assembly.Name.ToLower().Trim()))
                     return assembly;
-
-                continue;
             }
 
             return null;

@@ -23,7 +23,7 @@ namespace Commands.FuelStatisticsCommands
     {
         public void Validate(DeleteConsumptionReport command)
         {
-            if (command.Id == null || command.Id == new Guid())
+            if (command.Id == new Guid())
                 throw new InvalidConsumptionReportIdException();
         }
     }
@@ -33,10 +33,10 @@ namespace Commands.FuelStatisticsCommands
         private readonly ICommandValidator<DeleteConsumptionReport> commandValidator;
         private readonly IUnitOfWork unitOfWork;
 
-        private float kilometersToMilesConst = 0.621371F;
-        private float milesToKilometersConst = 1.609344F;
-        private float litresToGalonsConst = 0.21996916F;
-        private float galonsToLitresConst = 4.54609188F;
+        private const float kilometersToMilesConst = 0.621371F;
+        private const float milesToKilometersConst = 1.609344F;
+        private const float litresToGalonsConst = 0.21996916F;
+        private const float galonsToLitresConst = 4.54609188F;
 
         public DeleteConsumptionReportHandler(ICommandValidator<DeleteConsumptionReport> commandValidator,
                                               IUnitOfWork unitOfWork)

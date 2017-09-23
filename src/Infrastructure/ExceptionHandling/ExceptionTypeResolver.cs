@@ -1,11 +1,9 @@
-﻿using Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Common.Enums;
-using System.Reflection;
-using System.Linq;
+﻿using Common.Enums;
+using Common.Interfaces;
 using CustomExceptions.GroupingIntefaces;
+using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Infrastructure.ExceptionHandling
 {
@@ -14,14 +12,13 @@ namespace Infrastructure.ExceptionHandling
         public ActionStatus ReturnCommandStatusForException(Exception ex)
         {
             var exceptionTypeInfo = ex.InnerException == null ? ex.GetType().GetTypeInfo() : ex.InnerException.GetType().GetTypeInfo();
-            var customExceptionType = exceptionTypeInfo.ImplementedInterfaces.Where(i => i.Namespace.Contains("CustomExceptions")).FirstOrDefault();
+            var customExceptionType = exceptionTypeInfo.ImplementedInterfaces.FirstOrDefault(i => i.Namespace.Contains("CustomExceptions"));
 
             if (customExceptionType == typeof(INotFoundException))
                 return ActionStatus.NotFound;
-
-            if (customExceptionType == typeof(IBadRequestException))
+            else if (customExceptionType == typeof(IBadRequestException))
                 return ActionStatus.BadRequest;
-
+            else
                 return ActionStatus.Failure;
         }
     }

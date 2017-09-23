@@ -20,7 +20,7 @@ namespace UnitTests.Validators.FuelStatistics
 
         #region Setup
 
-        private CalculateFuelConsumption GetValidCalculateFuelConsumptionCommand()
+        public CalculateFuelConsumption GetValidCalculateFuelConsumptionCommand()
         {
             return new CalculateFuelConsumption(Guid.NewGuid(), Guid.NewGuid(), 100, 5, 4);
         }
@@ -28,7 +28,7 @@ namespace UnitTests.Validators.FuelStatistics
         #endregion
 
         [Fact]
-        private void EmptyIdGuidValue_ThrowsInvalidVehicleIdException()
+        public void EmptyIdGuidValue_ThrowsInvalidVehicleIdException()
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
             stubCommand.Id = new Guid();
@@ -37,7 +37,7 @@ namespace UnitTests.Validators.FuelStatistics
         }
 
         [Fact]
-        private void EmptyUserGuidValue_ThrowsInvalidVehicleIdException()
+        public void EmptyUserGuidValue_ThrowsInvalidVehicleIdException()
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
             stubCommand.UserId = new Guid();
@@ -46,7 +46,7 @@ namespace UnitTests.Validators.FuelStatistics
         }
 
         [Fact]
-        private void EmptyVehicleGuidValue_ThrowsInvalidVehicleIdException()
+        public void EmptyVehicleGuidValue_ThrowsInvalidVehicleIdException()
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
             stubCommand.VehicleId = new Guid();
@@ -57,7 +57,7 @@ namespace UnitTests.Validators.FuelStatistics
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        private void DistanceLessThanZero_ThrowsInvalidDistanceException(int distance)
+        public void DistanceLessThanZero_ThrowsInvalidDistanceException(int distance)
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
             stubCommand.Distance = distance;
@@ -68,7 +68,7 @@ namespace UnitTests.Validators.FuelStatistics
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        private void FuelBurnedLessThanZero_ThrowsInvalidFuelBurnedException(float fuelBurned)
+        public void FuelBurnedLessThanZero_ThrowsInvalidFuelBurnedException(float fuelBurned)
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
             stubCommand.FuelBurned = fuelBurned;
@@ -77,7 +77,7 @@ namespace UnitTests.Validators.FuelStatistics
         }
 
         [Fact]
-        private void ValidCommand_NotThrowsAnyExceptions()
+        public void ValidCommand_NotThrowsAnyExceptions()
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
 

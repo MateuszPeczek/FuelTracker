@@ -18,7 +18,7 @@ namespace UnitTests.Validators.Engine
 
         #region Setup
 
-        private DeleteEngine GetValidDeleteEngineCommand()
+        public DeleteEngine GetValidDeleteEngineCommand()
         {
             return new DeleteEngine(Guid.NewGuid());
         }
@@ -26,7 +26,7 @@ namespace UnitTests.Validators.Engine
         #endregion
 
         [Fact]
-        private void EmptyGuidValue_ThrowsInvalidEngineIdException()
+        public void EmptyGuidValue_ThrowsInvalidEngineIdException()
         {
             var stubCommand = GetValidDeleteEngineCommand();
             stubCommand.Id = new Guid();
@@ -35,7 +35,7 @@ namespace UnitTests.Validators.Engine
         }
 
         [Fact]
-        private void ValidCommand_NotTrowsAnyExceptions()
+        public void ValidCommand_NotTrowsAnyExceptions()
         {
             var stubCommand = GetValidDeleteEngineCommand();
 

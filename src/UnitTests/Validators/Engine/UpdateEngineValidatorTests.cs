@@ -18,7 +18,7 @@ namespace UnitTests.Validators.Engine
 
         #region Setup
 
-        private UpdateEngine GetValidUpdateEngineCommand()
+        public UpdateEngine GetValidUpdateEngineCommand()
         {
             return new UpdateEngine(Guid.NewGuid(), "TestEngine", 100,200,4,2000);
         }
@@ -26,7 +26,7 @@ namespace UnitTests.Validators.Engine
         #endregion
 
         [Fact]
-        private void EmptyGuidValue_TrowsInvalidEngineIdException()
+        public void EmptyGuidValue_TrowsInvalidEngineIdException()
         {
             var stubCommand = GetValidUpdateEngineCommand();
             stubCommand.Id = new Guid();
@@ -35,7 +35,7 @@ namespace UnitTests.Validators.Engine
         }
 
         [Fact]
-        private void ValidCommand_NotThrowsAnyExceptions()
+        public void ValidCommand_NotThrowsAnyExceptions()
         {
             var stubCommand = GetValidUpdateEngineCommand();
 

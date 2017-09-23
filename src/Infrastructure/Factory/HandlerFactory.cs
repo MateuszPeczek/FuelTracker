@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.HandlerFactory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -6,12 +7,10 @@ namespace Infrastructure.Factory
 {
     public class HandlerFactory : ICommandHandlerFactory, IQueryHandlerFactory
     {
-        private readonly IServiceCollection diContainer;
         private readonly IServiceProvider services;
 
-        public HandlerFactory(IServiceCollection diContainer, IServiceProvider services)
+        public HandlerFactory(IServiceProvider services)
         {
-            this.diContainer = diContainer;
             this.services = services;
         }
 
@@ -27,21 +26,13 @@ namespace Infrastructure.Factory
 
         private object ResolveHandlers(object item)
         {
-            try
-            {
-                var itemType = item.GetType();
-                var handlerObject = services.GetRequiredService(itemType);
+            var itemType = item.GetType();
+            var handlerObject = services.GetRequiredService(itemType);
 
-                if (handlerObject == null)
-                    throw new Exception("Handler not found");
+            if (handlerObject == null)
+                throw new HandlerNotFoundException("Handler not found");
 
-                return handlerObject;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-                //TODO logging
-            }
+            return handlerObject;
         }
 
     }

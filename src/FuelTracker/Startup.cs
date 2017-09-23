@@ -41,7 +41,6 @@ namespace FuelTracker
             services.AddScoped<ICommandHandlerFactory, HandlerFactory>();
             services.AddScoped<IQueryHandlerFactory, HandlerFactory>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            //services.AddSingleton<IUnitOfWork>(new UnitOfWork());
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
             services.AddScoped((s) =>
             {

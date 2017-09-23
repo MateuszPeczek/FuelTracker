@@ -1,14 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Persistence
+﻿namespace Persistence
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private ApplicationContext context;
+        private readonly ApplicationContext context;
 
         public UnitOfWork(ApplicationContext context)
         {

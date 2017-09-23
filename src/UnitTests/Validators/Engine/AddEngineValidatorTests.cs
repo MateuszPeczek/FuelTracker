@@ -33,7 +33,7 @@ namespace UnitTests.Validators.Engine
         #endregion
 
         [Fact]
-        private void FuelTypeValueOutOfEnumRange_ThrowsInvalidFuelTypeException()
+        public void FuelTypeValueOutOfEnumRange_ThrowsInvalidFuelTypeException()
         {
             var stubCommand = GetStubValidCommand();
             stubCommand.FuelType = (FuelType)3;
@@ -42,7 +42,7 @@ namespace UnitTests.Validators.Engine
         }
         
         [Fact]
-        private void EmptyGuidValue_ThrowsInvalidEngineIdException()
+        public void EmptyGuidValue_ThrowsInvalidEngineIdException()
         {
             var stubCommand = GetStubValidCommand();
             stubCommand.Id = new Guid();
@@ -51,7 +51,7 @@ namespace UnitTests.Validators.Engine
         }
 
         [Fact]
-        private void ValidCommand_DoNotThrowsException()
+        public void ValidCommand_DoNotThrowsException()
         {
             var stubCommand = GetStubValidCommand();
             

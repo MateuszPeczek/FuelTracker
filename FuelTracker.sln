@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Queries", "src\Queries\Quer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomExceptions", "src\CustomExceptions\CustomExceptions.csproj", "{E6F6DF07-D791-45C8-AE08-3646C2F0A7BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{132C638B-AE5D-4DB7-BA15-348850E05FE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "src\UnitTests\UnitTests.csproj", "{132C638B-AE5D-4DB7-BA15-348850E05FE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
