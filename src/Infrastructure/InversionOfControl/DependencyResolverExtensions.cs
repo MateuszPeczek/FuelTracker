@@ -55,7 +55,7 @@ namespace Infrastructure.InversionOfControl
                 return true;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //TODO: logging
                 throw;

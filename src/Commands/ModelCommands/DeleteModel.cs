@@ -19,24 +19,24 @@ namespace Commands.ModelCommands
         }
     }
 
-    public class DeleteEngineValidator : ICommandValidator<DeleteModel>
+    public class DeleteModelValidator : ICommandValidator<DeleteModel>
     {
         public void Validate(DeleteModel command)
         {
             if (command.Id == new Guid())
-                throw new CustomExceptions.Model.InvalidModelIdException();
+                throw new InvalidModelIdException();
 
             if (command.ManufacturerId == new Guid())
                 throw new InvalidManufacturerIdException();
         }
     }
 
-    public class DeleteEngineHandler : ICommandHandler<DeleteModel>
+    public class DeleteModelHandler : ICommandHandler<DeleteModel>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<DeleteModel> commandValidator;
 
-        public DeleteEngineHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteModel> commandValidator)
+        public DeleteModelHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteModel> commandValidator)
         {
             this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;

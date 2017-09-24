@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CustomExceptions.GroupingIntefaces
+﻿namespace CustomExceptions.GroupingIntefaces
 {
     public interface IBadRequestException
     {

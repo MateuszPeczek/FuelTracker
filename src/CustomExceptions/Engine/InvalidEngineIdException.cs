@@ -1,9 +1,7 @@
 ﻿using CustomExceptions.GroupingIntefaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CustomExceptions.Vehicle
+namespace CustomExceptions.Engine
 {
     public class InvalidEngineIdException : Exception, IBadRequestException
     {

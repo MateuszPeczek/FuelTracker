@@ -48,6 +48,9 @@ namespace Commands.FuelStatisticsCommands
 
             if (command.FuelBurned <= 0)
                 throw new InvalidFuelBurnedException();
+
+            if (command.PricePerUnit <= 0)
+                throw new InvalidPricePerUnitException();
         }
     }
 

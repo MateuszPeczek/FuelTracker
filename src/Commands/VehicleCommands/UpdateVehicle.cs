@@ -25,6 +25,9 @@ namespace Commands.VehicleCommands
     {
         public void Validate(UpdateVehicle command)
         {
+            if (command.Id == new Guid())
+                throw new InvalidVehicleIdException();
+
             if (command.EngineId.HasValue && command.EngineId.Value == Guid.Empty)
                 throw new InvalidEngineIdException();
         }
@@ -55,6 +58,7 @@ namespace Commands.VehicleCommands
                 if (selectedEngine == null)
                     throw new EngineNotFoundException(command.EngineId.Value);
 
+                vehicleToUpdate.ProductionYear = command.ProductionYear;
                 vehicleToUpdate.EngineId = command.EngineId;
             }
 

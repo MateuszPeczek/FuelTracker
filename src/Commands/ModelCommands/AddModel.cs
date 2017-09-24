@@ -1,6 +1,6 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Manufacturer;
-using CustomExceptions.Vehicle;
+using CustomExceptions.Model;
 using Domain.VehicleDomain;
 using Persistence;
 using System;
@@ -31,6 +31,9 @@ namespace Commands.ModelCommands
 
             if (command.Id == new Guid())
                 throw new InvalidModelIdException();
+
+            if (string.IsNullOrWhiteSpace(command.Name))
+                throw new EmptyModelNameException();
         }
     }
 

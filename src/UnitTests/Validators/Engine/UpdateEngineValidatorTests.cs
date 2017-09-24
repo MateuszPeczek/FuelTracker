@@ -1,6 +1,6 @@
 ﻿using Commands.EngineCommands;
 using Common.Interfaces;
-using CustomExceptions.Vehicle;
+using CustomExceptions.Engine;
 using System;
 using UnitTests.Extensions;
 using Xunit;

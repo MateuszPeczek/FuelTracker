@@ -4,7 +4,9 @@ namespace CustomExceptions.HandlerFactory
 {
     public class HandlerNotFoundException : Exception
     {
-        public HandlerNotFoundException(string message) : base(message)
+        private const string message = "Handler {0} not found";
+
+        public HandlerNotFoundException(string handlerName) : base(string.Format(message, handlerName))
         {
 
         }

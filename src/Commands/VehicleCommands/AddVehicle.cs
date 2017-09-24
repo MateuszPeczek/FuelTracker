@@ -1,4 +1,5 @@
 ﻿using Common.Interfaces;
+using CustomExceptions.Model;
 using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
@@ -23,7 +24,7 @@ namespace Commands.VehicleCommands
         public void Validate(AddVehicle command)
         {
             if (command.Id == Guid.Empty)
-                throw new InvalidModelIdException();
+                throw new InvalidVehicleIdException();
 
             if (command.ModelId == Guid.Empty)
                 throw new InvalidModelIdException();

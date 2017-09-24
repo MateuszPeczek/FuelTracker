@@ -1,6 +1,6 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Manufacturer;
-using CustomExceptions.Vehicle;
+using CustomExceptions.Model;
 using Persistence;
 using System;
 using System.Linq;
@@ -21,12 +21,18 @@ namespace Commands.ModelCommands
         public string Name { get; set; }
     }
 
-    public class UpdateModelValidaotr : ICommandValidator<UpdateModel>
+    public class UpdateModelValidator : ICommandValidator<UpdateModel>
     {
         public void Validate(UpdateModel command)
         {
             if (command.Id == new Guid())
                 throw new InvalidModelIdException();
+
+            if (command.ManufacturerId == new Guid())
+                throw new InvalidManufacturerIdException();
+
+            if (string.IsNullOrWhiteSpace(command.Name))
+                throw new EmptyModelNameException();
         }
     }
 

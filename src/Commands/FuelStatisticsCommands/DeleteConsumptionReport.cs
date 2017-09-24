@@ -1,5 +1,6 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.FuelStatistics;
+using CustomExceptions.Vehicle;
 using Domain.Common;
 using Persistence;
 using System;
@@ -25,6 +26,9 @@ namespace Commands.FuelStatisticsCommands
         {
             if (command.Id == new Guid())
                 throw new InvalidConsumptionReportIdException();
+
+            if (command.VehicleId == new Guid())
+                throw new InvalidVehicleIdException();
         }
     }
 

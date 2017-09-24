@@ -28,7 +28,7 @@ namespace UnitTests.Validators.FuelStatistics
         #endregion
 
         [Fact]
-        public void EmptyIdGuidValue_ThrowsInvalidVehicleIdException()
+        public void EmptyIdGuidValue_ThrowsInvalidCalculateFuelConsumptionIdException()
         {
             var stubCommand = GetValidCalculateFuelConsumptionCommand();
             stubCommand.Id = new Guid();
@@ -74,6 +74,17 @@ namespace UnitTests.Validators.FuelStatistics
             stubCommand.FuelBurned = fuelBurned;
 
             Assert.Throws<InvalidFuelBurnedException>(() => calculateFuelConsumptionValidator.Validate(stubCommand));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void PricePerUnitLessThanZero_ThrowsInvalidPricePerUnitException(float pricePerUnit)
+        {
+            var stubCommand = GetValidCalculateFuelConsumptionCommand();
+            stubCommand.PricePerUnit = pricePerUnit;
+
+            Assert.Throws<InvalidPricePerUnitException>(() => calculateFuelConsumptionValidator.Validate(stubCommand));
         }
 
         [Fact]

@@ -16,10 +16,10 @@ namespace Commands.FuelStatisticsCommands
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
 
-        public UpdateConsumptionReport(Guid vehicleId, Guid modelId, float distance, float fuelBurned, float pricePerUnit)
+        public UpdateConsumptionReport(Guid consumptionReportId, Guid vehicleId, float distance, float fuelBurned, float pricePerUnit)
         {
+            Id = consumptionReportId;
             VehicleId = vehicleId;
-            Id = modelId;
             Distance = distance;
             FuelBurned = fuelBurned;
             PricePerUnit = pricePerUnit;
@@ -31,16 +31,19 @@ namespace Commands.FuelStatisticsCommands
         public void Validate(UpdateConsumptionReport command)
         {
             if (command.Id == new Guid())
-                throw new InvalidVehicleIdException();
-
-            if (command.Id == new Guid())
                 throw new InvalidConsumptionReportIdException();
+
+            if (command.VehicleId == new Guid())
+                throw new InvalidVehicleIdException();
 
             if (command.Distance <= 0)
                 throw new InvalidDistanceException();
 
             if (command.FuelBurned <= 0)
                 throw new InvalidFuelBurnedException();
+
+            if (command.PricePerUnit <= 0)
+                throw new InvalidPricePerUnitException();
         }
     }
 

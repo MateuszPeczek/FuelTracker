@@ -1,11 +1,8 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Manufacturer;
-using CustomExceptions.Vehicle;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Commands.ManufacturerCommands
 {
@@ -21,12 +18,15 @@ namespace Commands.ManufacturerCommands
         public string Name { get; set; }
     }
 
-    public class UpdateManufacturerValidaotr : ICommandValidator<UpdateManufacturer>
+    public class UpdateManufacturerValidator : ICommandValidator<UpdateManufacturer>
     {
         public void Validate(UpdateManufacturer command)
         {
             if (command.Id == new Guid())
                 throw new InvalidManufacturerIdException();
+
+            if (string.IsNullOrWhiteSpace(command.Name))
+                throw new EmptyManufacturerNameException();
         }
     }
 
