@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>CustomExceptions</AssemblyName>
+    <PackageId>CustomExceptions</PackageId>
+    <AssetTargetFallback>$(AssetTargetFallback);dnxcore50</AssetTargetFallback>
   </PropertyGroup>
 
 </Project>

@@ -6,7 +6,7 @@
     <AssemblyName>FuelTracker</AssemblyName>
     <OutputType>Library</OutputType>
     <PackageId>UnitTests</PackageId>
-    <PackageTargetFallback>$(AssetTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <AssetTargetFallback>$(AssetTargetFallback);dotnet5.6;portable-net45+win8</AssetTargetFallback>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
