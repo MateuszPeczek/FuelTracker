@@ -23,7 +23,7 @@ namespace Infrastructure.InversionOfControl
                     if (assemblyName != null)
                         assemblies.Add(Assembly.Load(assemblyName));
                     else
-                        throw new ArgumentNullException(name.ToString());
+                        return false; //cannot throw exception - it leads to break creation of migrations by EF Core 2.0. Probably it's not loading all assemblies
                 }
 
                 foreach (var assembly in assemblies)
@@ -37,7 +37,7 @@ namespace Infrastructure.InversionOfControl
                 var handlersTypes = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Any(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>))) //all command handlers
                     .Concat(types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Any(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>))).ToList()); //all query handlers
 
-                var validators = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Where(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandValidator<>)).Any()).ToList();
+                var validators = types.Where(t => t.GetTypeInfo().ImplementedInterfaces.Any(i => i.GetTypeInfo().IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandValidator<>))).ToList();
 
                 foreach (var type in handlersTypes)
                 {

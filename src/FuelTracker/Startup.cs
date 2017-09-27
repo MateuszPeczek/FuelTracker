@@ -1,20 +1,19 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Common.Interfaces;
+using Domain.UserDomain;
+using Infrastructure.Bus;
+using Infrastructure.ExceptionHandling;
+using Infrastructure.Factory;
+using Infrastructure.InversionOfControl;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using Common.Interfaces;
-using Infrastructure.Bus;
-using Infrastructure.Factory;
 using Persistence;
-using Domain.UserDomain;
-using Infrastructure.InversionOfControl;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Infrastructure.ExceptionHandling;
+using System.Collections.Generic;
 
 namespace FuelTracker
 {
@@ -53,11 +52,7 @@ namespace FuelTracker
                 options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")),
                 ServiceLifetime.Scoped);
                 
-            services.AddMvc(/*setupAction =>
-            {
-                setupAction.ReturnHttpNotAcceptable = true;
-                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
-            }*/);
+            services.AddMvc();
 
             services.AddApiVersioning(options =>
                 {
@@ -77,6 +72,7 @@ namespace FuelTracker
                 options =>
                     options.User.RequireUniqueEmail = true
                 );
+
             services.SeedData();
         }
 
