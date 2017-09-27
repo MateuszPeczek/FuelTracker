@@ -1,6 +1,5 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Engine;
-using CustomExceptions.Vehicle;
 using Domain.VehicleDomain;
 using Persistence;
 using System;

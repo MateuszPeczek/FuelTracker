@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Common.Interfaces;
 using Domain.VehicleDomain;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Common.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
 
 namespace Domain.UserDomain
 {
