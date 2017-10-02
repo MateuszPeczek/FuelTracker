@@ -25,33 +25,60 @@ namespace UnitTests.CommandsHandlers
                             .Options;
         }
 
-        protected const int expectedCylinders = 4;
-        protected const int expectedDisplacement = 2000;
-        protected const FuelType expectedFuelType = FuelType.Diesel;
-        protected const string expectedName = "Test";
-        protected const int expectedPower = 100;
-        protected const int expectedTorque = 200;
+        #region Engine
 
+        protected const int expectedEngineCylinders = 4;
+        protected const int expectedEngineDisplacement = 2000;
+        protected const FuelType expectedEngineFuelType = FuelType.Diesel;
+        protected const string expectedEngineName = "TestEngine";
+        protected const int expectedEnginePower = 100;
+        protected const int expectedEngineTorque = 200;
+        
         protected Guid InsertEngineToDatabase()
         {
             var id = Guid.NewGuid();
 
             var newEngine = new Domain.VehicleDomain.Engine()
             {
-                Cylinders = expectedCylinders,
-                Displacement = expectedDisplacement,
-                FuelType = expectedFuelType,
+                Cylinders = expectedEngineCylinders,
+                Displacement = expectedEngineDisplacement,
+                FuelType = expectedEngineFuelType,
                 Id = id,
-                Name = expectedName,
-                Power = expectedPower,
-                Torque = expectedTorque
+                Name = expectedEngineName,
+                Power = expectedEnginePower,
+                Torque = expectedEngineTorque
             };
 
             unitOfWork.Context.Engine.Add(newEngine);
+            context.SaveChanges();
+            
+            return id;
+        }
 
+        #endregion
+
+        #region Manufacturer
+
+        protected const string expectedManufacturerName = "TestManufacturer";
+        
+        protected Guid InsertManufacturerToDatabase()
+        {
+            var id = Guid.NewGuid();
+
+            var newManufacturer = new Manufacturer()
+            {
+                Id = id,
+                Name = expectedManufacturerName
+            };
+
+            unitOfWork.Context.Manufacturer.Add(newManufacturer);
             context.SaveChanges();
 
             return id;
         }
+
+        #endregion
+
+
     }
 }

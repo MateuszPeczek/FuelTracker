@@ -1,4 +1,4 @@
-﻿using Commands.ManudaturerCommands;
+﻿using Commands.ManufacturerCommands;
 using Common.Interfaces;
 using CustomExceptions.Manufacturer;
 using System;

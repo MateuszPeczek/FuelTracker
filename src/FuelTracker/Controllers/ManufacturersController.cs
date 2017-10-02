@@ -1,19 +1,17 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using Common.Interfaces;
-using Queries.ManufacturerQueries;
-using Common.Paging;
-using Common.Ordering.Shared;
-using Commands.ManudaturerCommands;
-using Common.Enums;
-using Commands.ManufacturerCommands;
-using Queries.ModelQueries;
-using FuelTracker.ApiModels.ManufacturerApiModels;
+﻿using Commands.ManufacturerCommands;
 using Commands.ModelCommands;
-using Infrastructure.CommunicationModels;
+using Common.Enums;
+using Common.Interfaces;
+using Common.Ordering.Shared;
+using Common.Paging;
+using FuelTracker.ApiModels.ManufacturerApiModels;
+using FuelTracker.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using Queries.ManufacturerQueries;
+using Queries.ModelQueries;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using FuelTracker.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

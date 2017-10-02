@@ -19,7 +19,7 @@ namespace UnitTests.CommandsHandlers.Engine
         }
 
         [Fact]
-        public void CommandValid_EngineAdded()
+        public void CommandValid_EngineUpdated()
         {
             var engineId = InsertEngineToDatabase();
             var updateEngineCommand = new UpdateEngine(engineId, "Updated", power: 150, torque: 300, cylinders: 6, displacement: 3000);
@@ -56,12 +56,12 @@ namespace UnitTests.CommandsHandlers.Engine
             var result = context.Engine.FirstOrDefault(e => e.Id == updateEngineCommand.Id);
             Assert.NotNull(result);
             Assert.Equal(engineId, result.Id);
-            Assert.Equal(expectedCylinders, result.Cylinders);
-            Assert.Equal(expectedDisplacement, result.Displacement);
-            Assert.Equal(expectedFuelType, result.FuelType);
-            Assert.Equal(expectedName, result.Name);
-            Assert.Equal(expectedPower, result.Power);
-            Assert.Equal(expectedTorque, result.Torque);
+            Assert.Equal(expectedEngineCylinders, result.Cylinders);
+            Assert.Equal(expectedEngineDisplacement, result.Displacement);
+            Assert.Equal(expectedEngineFuelType, result.FuelType);
+            Assert.Equal(expectedEngineName, result.Name);
+            Assert.Equal(expectedEnginePower, result.Power);
+            Assert.Equal(expectedEngineTorque, result.Torque);
         }
     }
 }

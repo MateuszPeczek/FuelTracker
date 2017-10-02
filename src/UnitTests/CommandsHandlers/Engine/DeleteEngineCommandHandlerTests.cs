@@ -51,12 +51,12 @@ namespace UnitTests.CommandsHandlers.Engine
             
             Assert.NotNull(result);
             Assert.Equal(engineId, result.Id);
-            Assert.Equal(expectedCylinders, result.Cylinders);
-            Assert.Equal(expectedDisplacement, result.Displacement);
-            Assert.Equal(expectedFuelType, result.FuelType);
-            Assert.Equal(expectedName, result.Name);
-            Assert.Equal(expectedPower, result.Power);
-            Assert.Equal(expectedTorque, result.Torque);
+            Assert.Equal(expectedEngineCylinders, result.Cylinders);
+            Assert.Equal(expectedEngineDisplacement, result.Displacement);
+            Assert.Equal(expectedEngineFuelType, result.FuelType);
+            Assert.Equal(expectedEngineName, result.Name);
+            Assert.Equal(expectedEnginePower, result.Power);
+            Assert.Equal(expectedEngineTorque, result.Torque);
         }
     }
 }
