@@ -1,6 +1,5 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Engine;
-using CustomExceptions.Vehicle;
 using Persistence;
 using System;
 using System.Linq;

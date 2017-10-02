@@ -1,9 +1,7 @@
 ﻿using Commands.EngineCommands;
 using Common.Interfaces;
-using CustomExceptions.Engine;
 using Domain.VehicleDomain;
 using FakeItEasy;
-using Persistence;
 using System;
 using System.Linq;
 using Xunit;
@@ -13,17 +11,11 @@ namespace UnitTests.CommandsHandlers.Engine
     public class AddEngineCommandHandlerTests : BaseHandlersUnitTests
     {
         protected readonly ICommandValidator<AddEngine> addEngineValidator;
-        protected readonly IUnitOfWork unitOfWork;
-
         protected readonly ICommandHandler<AddEngine> addEngineHandler;
+
         public AddEngineCommandHandlerTests()
         {
             addEngineValidator = A.Fake<ICommandValidator<AddEngine>>();
-            unitOfWork = A.Fake<IUnitOfWork>();
-            context = new ApplicationContext(GetContextBuilderOptions());
-
-            A.CallTo(() => unitOfWork.Context).Returns(context);
-
             addEngineHandler = new AddEngineHandler(unitOfWork, addEngineValidator);
         }
 
