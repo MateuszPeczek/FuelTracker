@@ -39,7 +39,7 @@ namespace UnitTests.Validators.Vehicle
         public void EmptyGuidModelIdValue_ThrowsInvalidModelIdException()
         {
             var stubCommand = GetValidAddVehicleCommand();
-            stubCommand.ModelId = new Guid();
+            stubCommand.ModelNameId = new Guid();
 
             Assert.Throws<InvalidModelIdException>(() => addVehicleValidator.Validate(stubCommand));
         }

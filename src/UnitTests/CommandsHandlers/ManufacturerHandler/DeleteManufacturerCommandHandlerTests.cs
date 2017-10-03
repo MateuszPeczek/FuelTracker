@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace UnitTests.CommandsHandlers.ManufacturerCommands
+namespace UnitTests.CommandsHandlers.ManufacturerHandler
 {
     public class DeleteManufacturerCommandHandlerTests : BaseHandlersUnitTests
     {
@@ -19,7 +19,7 @@ namespace UnitTests.CommandsHandlers.ManufacturerCommands
         }
 
         [Fact]
-        public void CommandValid_ManufacturerDeleted()
+        public void CommandValid_OnlyParentAdded_ManufacturerDeleted()
         {
             var manufacturerId = InsertManufacturerToDatabase();
             var deleteManufacturerCommand = new DeleteManufacturer(manufacturerId);
@@ -33,6 +33,25 @@ namespace UnitTests.CommandsHandlers.ManufacturerCommands
 
             A.CallTo(() => deleteManufacturerValidator.Validate(deleteManufacturerCommand)).MustHaveHappened(Repeated.Exactly.Once);
             Assert.Null(result);
+        }
+
+        [Fact]
+        public void CommandValid_AddedWithChildren_ManufacturerWithModelNamesDeleted()
+        {
+            var manufacturerId = InsertManufacturerWithModelNamesToDatabase();
+            var deleteManufacturerCommand = new DeleteManufacturer(manufacturerId);
+            Assert.Equal(3, context.ModelName.Count(m => m.ManufacturerId == manufacturerId)); //check if children exists
+            
+            A.CallTo(() => deleteManufacturerValidator.Validate(deleteManufacturerCommand)).DoesNothing();
+
+            deleteManufacturerHandler.Handle(deleteManufacturerCommand);
+
+            context.SaveChanges();
+            var result = context.Manufacturer.FirstOrDefault(m => m.Id == deleteManufacturerCommand.Id);
+
+            A.CallTo(() => deleteManufacturerValidator.Validate(deleteManufacturerCommand)).MustHaveHappened(Repeated.Exactly.Once);
+            Assert.Null(result);
+            Assert.False(context.ModelName.Any(m => m.ManufacturerId == manufacturerId));
         }
 
         [Fact]

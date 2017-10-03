@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace UnitTests.CommandsHandlers.ManufacturerCommands
+namespace UnitTests.CommandsHandlers.ManufacturerHandler
 {
     public class AddManufacturerCommandHandlerTests : BaseHandlersUnitTests
     {
@@ -19,7 +19,7 @@ namespace UnitTests.CommandsHandlers.ManufacturerCommands
         }
 
         [Fact]
-        public void CommandValid_ManufacturerAdded()
+        public void CommandValid_AddParentOnly_ManufacturerAdded()
         {
             var addManufacturerCommand = new AddManufacturer(expectedManufacturerName);
 
@@ -37,6 +37,27 @@ namespace UnitTests.CommandsHandlers.ManufacturerCommands
         }
 
         [Fact]
+        public void CommandValid_AddWithChildren_ManufacturerWithModelNamesAdded()
+        {
+            var modelNames = new string[] { "TestModel1", "TestModel2", "TestModel3" };
+            var addManufacturerCommand = new AddManufacturer(expectedManufacturerName, modelNames);
+
+            A.CallTo(() => addManufacturerValidator.Validate(addManufacturerCommand)).DoesNothing();
+
+            addManufacturerHandler.Handle(addManufacturerCommand);
+
+            context.SaveChanges();
+            var result = context.Manufacturer.FirstOrDefault(m => m.Id == addManufacturerCommand.Id);
+
+            A.CallTo(() => addManufacturerValidator.Validate(addManufacturerCommand)).MustHaveHappened(Repeated.Exactly.Once);
+            Assert.NotNull(result);
+            Assert.Equal(addManufacturerCommand.Id, result.Id);
+            Assert.Equal(addManufacturerCommand.Name, result.Name);
+            Assert.Equal(modelNames.Count(), result.ModelNames.Count);
+            Assert.True(StringCollectionsEqual(result.ModelNames.Select(s => s.Name).AsEnumerable(), modelNames));
+        }
+
+        [Fact]
         public void ValidatorThrowsException_HandlerThrowsException()
         {
             var addManufacturerCommand = new AddManufacturer(expectedManufacturerName);
@@ -51,4 +72,6 @@ namespace UnitTests.CommandsHandlers.ManufacturerCommands
             Assert.Null(result);
         }
     }
+
 }
+

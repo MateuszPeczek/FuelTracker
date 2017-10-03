@@ -10,6 +10,6 @@ namespace Domain.UserDomain
     {
         public Guid UserSettingsId { get; set; }
         public virtual UserSettings UserSettings { get; set; }
-        public virtual List<Vehicle> Vehicles { get; set; }        
+        public virtual List<Vehicle> Vehicles { get; set; } = new List<Vehicle>(); 
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.VehicleDomain
 {
@@ -13,6 +12,6 @@ namespace Domain.VehicleDomain
         [StringLength(20)]
         public string Name { get; set; }
 
-        public virtual List<ModelName> ModelName { get; set; }
+        public virtual List<ModelName> ModelNames { get; set; } = new List<ModelName>();
     }
 }

@@ -10,18 +10,18 @@ namespace UnitTests.Validators.Model
 {
     public class AddModelValidatorTests
     {
-        private readonly ICommandValidator<AddModel> addModelValidator;
+        private readonly ICommandValidator<AddModelName> addModelValidator;
 
         public AddModelValidatorTests()
         {
-            addModelValidator = new AddModelValidator();
+            addModelValidator = new AddModelNameValidator();
         }
 
         #region Setup
 
-        private AddModel GetValidAddModelCommand()
+        private AddModelName GetValidAddModelCommand()
         {
-            return new AddModel(Guid.NewGuid(), "Test");
+            return new AddModelName(Guid.NewGuid(), "Test");
         }
 
         #endregion  

@@ -1,8 +1,10 @@
 ﻿using Domain.VehicleDomain;
 using FakeItEasy;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using System;
+using System.Collections.Generic;
 
 namespace UnitTests.CommandsHandlers
 {
@@ -25,6 +27,20 @@ namespace UnitTests.CommandsHandlers
                             .Options;
         }
 
+        protected bool StringCollectionsEqual(IEnumerable<string> firstCollection, IEnumerable<string> secondCollection)
+        {
+            if (firstCollection.Count() != secondCollection.Count())
+                return false;
+
+            for (int i = 0; i < firstCollection.Count(); i++)
+            {
+                if (firstCollection.ElementAt(i) != secondCollection.ElementAt(i))
+                    return false;
+            }
+
+            return true;
+        }
+
         #region Engine
 
         protected const int expectedEngineCylinders = 4;
@@ -38,7 +54,7 @@ namespace UnitTests.CommandsHandlers
         {
             var id = Guid.NewGuid();
 
-            var newEngine = new Domain.VehicleDomain.Engine()
+            var newEngine = new Engine()
             {
                 Cylinders = expectedEngineCylinders,
                 Displacement = expectedEngineDisplacement,
@@ -77,8 +93,88 @@ namespace UnitTests.CommandsHandlers
             return id;
         }
 
+        protected Guid InsertManufacturerWithModelNamesToDatabase()
+        {
+            var id = Guid.NewGuid();
+
+            var newManufacturer = new Manufacturer()
+            {
+                Id = id,
+                Name = expectedManufacturerName,
+                ModelNames = new List<ModelName>()
+                {
+                   new ModelName()
+                   {
+                       Id = Guid.NewGuid(),
+                       ManufacturerId = id,
+                       Name = "TestName1"
+                   },
+                   new ModelName()
+                   {
+                       Id = Guid.NewGuid(),
+                       ManufacturerId = id,
+                       Name = "TestName2"
+                   },
+                   new ModelName()
+                   {
+                       Id = Guid.NewGuid(),
+                       ManufacturerId = id,
+                       Name = "TestName3"
+                   },
+                }
+            };
+
+            unitOfWork.Context.Manufacturer.Add(newManufacturer);
+            context.SaveChanges();
+
+            return id;
+        }
+
         #endregion
 
+        #region ModelName
+
+        protected const string expectedModelName = "TestModel";
+
+        protected Guid InsertModelToDatabase(Guid? manufacturerId = null)
+        {
+            var id = Guid.NewGuid();
+
+            var newModel = new ModelName()
+            {
+                Id = id,
+                Name = expectedModelName,
+                ManufacturerId = manufacturerId ?? Guid.NewGuid()
+            };
+
+            unitOfWork.Context.ModelName.Add(newModel);
+            context.SaveChanges();
+
+            return id;
+        }
+
+        #endregion
+
+        #region Vehicle
+
+        protected Guid InsertVehicleToDatabase(Guid? modelId = null)
+        {
+            var id = Guid.NewGuid();
+
+            var newVehicle = new Vehicle()
+            {
+                Id = id,
+                ModelNameId = modelId ?? Guid.NewGuid(),
+               
+            };
+
+            unitOfWork.Context.Vehicle.Add(newVehicle);
+            context.SaveChanges();
+
+            return id;
+        }
+
+        #endregion
 
     }
 }

@@ -7,21 +7,21 @@ using System.Linq;
 
 namespace Commands.ModelCommands
 {
-    public class DeleteModel : ICommand
+    public class DeleteModelName : ICommand
     {
         public Guid ManufacturerId { get; set; }
         public Guid Id { get; set; }
 
-        public DeleteModel(Guid manufacturerId, Guid modelId)
+        public DeleteModelName(Guid manufacturerId, Guid modelId)
         {
             ManufacturerId = manufacturerId;
             Id = modelId;
         }
     }
 
-    public class DeleteModelValidator : ICommandValidator<DeleteModel>
+    public class DeleteModelNameValidator : ICommandValidator<DeleteModelName>
     {
-        public void Validate(DeleteModel command)
+        public void Validate(DeleteModelName command)
         {
             if (command.Id == new Guid())
                 throw new InvalidModelIdException();
@@ -31,18 +31,18 @@ namespace Commands.ModelCommands
         }
     }
 
-    public class DeleteModelHandler : ICommandHandler<DeleteModel>
+    public class DeleteModelNameHandler : ICommandHandler<DeleteModelName>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly ICommandValidator<DeleteModel> commandValidator;
+        private readonly ICommandValidator<DeleteModelName> commandValidator;
 
-        public DeleteModelHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteModel> commandValidator)
+        public DeleteModelNameHandler(IUnitOfWork unitOfWork, ICommandValidator<DeleteModelName> commandValidator)
         {
             this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(DeleteModel command)
+        public void Handle(DeleteModelName command)
         {
             commandValidator.Validate(command);
             var modelToDelete = unitOfWork.Context.ModelName.Where(m => m.ManufacturerId == command.ManufacturerId).Single(m => m.Id == command.Id);

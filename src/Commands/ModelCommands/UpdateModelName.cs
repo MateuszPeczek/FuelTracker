@@ -7,12 +7,12 @@ using System.Linq;
 
 namespace Commands.ModelCommands
 {
-    public class UpdateModel : ICommand
+    public class UpdateModelName : ICommand
     {
-        public UpdateModel(Guid manufacturerId, Guid modelId, string name)
+        public UpdateModelName(Guid modelId, Guid manufacturerId, string name)
         {
-            ManufacturerId = manufacturerId;
             Id = modelId;
+            ManufacturerId = manufacturerId;
             Name = name;
         }
 
@@ -21,9 +21,9 @@ namespace Commands.ModelCommands
         public string Name { get; set; }
     }
 
-    public class UpdateModelValidator : ICommandValidator<UpdateModel>
+    public class UpdateModelNameValidator : ICommandValidator<UpdateModelName>
     {
-        public void Validate(UpdateModel command)
+        public void Validate(UpdateModelName command)
         {
             if (command.Id == new Guid())
                 throw new InvalidModelIdException();
@@ -36,22 +36,22 @@ namespace Commands.ModelCommands
         }
     }
 
-    public class UpdateModelHandler : ICommandHandler<UpdateModel>
+    public class UpdateModelNameHandler : ICommandHandler<UpdateModelName>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly ICommandValidator<UpdateModel> commandValidator;
+        private readonly ICommandValidator<UpdateModelName> commandValidator;
 
-        public UpdateModelHandler(IUnitOfWork unitOfWork, ICommandValidator<UpdateModel> commandValidator)
+        public UpdateModelNameHandler(IUnitOfWork unitOfWork, ICommandValidator<UpdateModelName> commandValidator)
         {
             this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(UpdateModel command)
+        public void Handle(UpdateModelName command)
         {
             commandValidator.Validate(command);
 
-            if (!unitOfWork.Context.Manufacturer.Any(m => m.Id == command.Id))
+            if (!unitOfWork.Context.Manufacturer.Any(m => m.Id == command.ManufacturerId))
                 throw new ManufacturerNotFoundException(command.ManufacturerId);
 
             var modelToUpdate = unitOfWork.Context.ModelName.Single(m => m.Id == command.Id);

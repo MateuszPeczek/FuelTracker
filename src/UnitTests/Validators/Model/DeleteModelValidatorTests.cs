@@ -10,18 +10,18 @@ namespace UnitTests.Validators.Model
 {
     public class DeleteModelValidatorTests
     {
-        private readonly ICommandValidator<DeleteModel> deleteModelValidator;
+        private readonly ICommandValidator<DeleteModelName> deleteModelValidator;
 
         public DeleteModelValidatorTests()
         {
-            deleteModelValidator = new DeleteModelValidator();
+            deleteModelValidator = new DeleteModelNameValidator();
         }
 
         #region Setup
 
-        private DeleteModel GetValidDeleteModelCommand()
+        private DeleteModelName GetValidDeleteModelCommand()
         {
-            return new DeleteModel(Guid.NewGuid(), Guid.NewGuid());
+            return new DeleteModelName(Guid.NewGuid(), Guid.NewGuid());
         }
 
         #endregion

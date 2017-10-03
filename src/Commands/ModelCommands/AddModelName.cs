@@ -8,13 +8,13 @@ using System.Linq;
 
 namespace Commands.ModelCommands
 {
-    public class AddModel : ICommand
+    public class AddModelName : ICommand
     {
         public Guid Id { get; set; }
         public Guid ManufacturerId { get; set; }
         public string Name { get; set; }
 
-        public AddModel(Guid manufacturerId, string name)
+        public AddModelName(Guid manufacturerId, string name)
         {
             Id = Guid.NewGuid();
             ManufacturerId = manufacturerId;
@@ -22,9 +22,9 @@ namespace Commands.ModelCommands
         }
     }
 
-    public class AddModelValidator : ICommandValidator<AddModel>
+    public class AddModelNameValidator : ICommandValidator<AddModelName>
     {
-        public void Validate(AddModel command)
+        public void Validate(AddModelName command)
         {
             if (command.ManufacturerId == new Guid())
                 throw new InvalidManufacturerIdException();
@@ -37,18 +37,18 @@ namespace Commands.ModelCommands
         }
     }
 
-    public class AddModelHandler : ICommandHandler<AddModel>
+    public class AddModelNameHandler : ICommandHandler<AddModelName>
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly ICommandValidator<AddModel> commandValidator;
+        private readonly ICommandValidator<AddModelName> commandValidator;
 
-        public AddModelHandler(IUnitOfWork unitOfWork, ICommandValidator<AddModel> commandValidator)
+        public AddModelNameHandler(IUnitOfWork unitOfWork, ICommandValidator<AddModelName> commandValidator)
         {
             this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
         }
 
-        public void Handle(AddModel command)
+        public void Handle(AddModelName command)
         {
             commandValidator.Validate(command);
 

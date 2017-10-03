@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace UnitTests.CommandsHandlers.Engine
+namespace UnitTests.CommandsHandlers.EngineHandler
 {
     public class AddEngineCommandHandlerTests : BaseHandlersUnitTests
     {

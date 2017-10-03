@@ -252,7 +252,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new AddModel(manufacturerId, model.ModelName);
+                var command = new AddModelName(manufacturerId, model.ModelName);
                 commandBus.AddCommand(command);
 
                 var commandResult = commandBus.InvokeCommandsQueue();
@@ -287,7 +287,7 @@ namespace FuelTracker.Controllers
 
                 foreach (var model in modelsCollection)
                 {
-                    var command = new AddModel(manufacturerId, model.ModelName);
+                    var command = new AddModelName(manufacturerId, model.ModelName);
                     commandBus.AddCommand(command);
                 }
 
@@ -319,7 +319,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new UpdateModel(manufactuerId, modelId, model.ModelName);
+                var command = new UpdateModelName(modelId, manufactuerId, model.ModelName);
                 commandBus.AddCommand(command);
 
                 var commandResult = commandBus.InvokeCommandsQueue();
@@ -337,7 +337,7 @@ namespace FuelTracker.Controllers
         [HttpDelete("{manufacturerId}/models/{modelId}")]
         public IActionResult DeleteModel(Guid manufactuerId, Guid modelId)
         {
-            var command = new DeleteModel(manufactuerId, modelId);
+            var command = new DeleteModelName(manufactuerId, modelId);
             commandBus.AddCommand(command);
 
             var commandResult = commandBus.InvokeCommandsQueue();

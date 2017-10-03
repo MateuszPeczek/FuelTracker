@@ -10,12 +10,12 @@ namespace Commands.VehicleCommands
     public class AddVehicle : ICommand
     {
         public Guid Id { get; set; }
-        public Guid ModelId { get; set; }
+        public Guid ModelNameId { get; set; }
 
         public AddVehicle(Guid modelId)
         {
             Id = Guid.NewGuid();
-            ModelId = modelId;
+            ModelNameId = modelId;
         }
     }
 
@@ -26,7 +26,7 @@ namespace Commands.VehicleCommands
             if (command.Id == Guid.Empty)
                 throw new InvalidVehicleIdException();
 
-            if (command.ModelId == Guid.Empty)
+            if (command.ModelNameId == Guid.Empty)
                 throw new InvalidModelIdException();
         }
     }
@@ -49,7 +49,7 @@ namespace Commands.VehicleCommands
             var newVehicle = new Vehicle()
             {
                 Id = command.Id,
-                ModelNameId = command.ModelId,
+                ModelNameId = command.ModelNameId,
             };
 
             unitOfWork.Context.Vehicle.Add(newVehicle);

@@ -40,15 +40,18 @@ namespace Commands.VehicleCommands
         {
             commandValidator.Validate(command);
             var vehicleToDelete = unitOfWork.Context.Vehicle.Single(s => s.Id == command.Id);
-            var consumptionReportsToDelete = unitOfWork.Context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
-            var fuelSummaryToDelete = unitOfWork.Context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id);
 
-            unitOfWork.Context.Entry(vehicleToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            unitOfWork.Context.Entry(fuelSummaryToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            foreach (var consumptionReport in consumptionReportsToDelete)
-            {
-                unitOfWork.Context.Entry(consumptionReport).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            }
+            var consumptionReportsToDelete = unitOfWork.Context.ConsumptionReport.Where(c => c.VehicleId == vehicleToDelete.Id);
+            unitOfWork.Context.ConsumptionReport.RemoveRange(consumptionReportsToDelete);
+            
+            var fuelSummaryToDelete = unitOfWork.Context.FuelSummary.Where(f => f.VehicleId == vehicleToDelete.Id).SingleOrDefault();
+            if (fuelSummaryToDelete != null)
+                unitOfWork.Context.FuelSummary.Remove(fuelSummaryToDelete);
+
+            if (vehicleToDelete != null)
+                unitOfWork.Context.Vehicle.Remove(vehicleToDelete);
+            else
+                throw new VehicleNotFoundException(command.Id);
         }
     }
 }

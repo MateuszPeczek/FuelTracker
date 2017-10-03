@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace UnitTests.CommandsHandlers.ManufacturerCommands
+namespace UnitTests.CommandsHandlers.ManufacturerHandler
 {
     public class UpdateManufacturerCommandHandlerTests : BaseHandlersUnitTests
     {
@@ -29,7 +29,7 @@ namespace UnitTests.CommandsHandlers.ManufacturerCommands
             updateManufacturerHandler.Handle(updateManufacturerCommand);
 
             context.SaveChanges();
-            var result = context.Manufacturer.FirstOrDefault(e => e.Id == updateManufacturerCommand.Id);
+            var result = context.Manufacturer.FirstOrDefault(m => m.Id == updateManufacturerCommand.Id);
 
             A.CallTo(() => updateManufacturerValidator.Validate(updateManufacturerCommand)).MustHaveHappened(Repeated.Exactly.Once);
             Assert.NotNull(result);

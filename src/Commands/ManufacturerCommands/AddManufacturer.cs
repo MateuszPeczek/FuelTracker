@@ -57,7 +57,7 @@ namespace Commands.ManufacturerCommands
                 foreach (var modelName in command.ModelsNames)
                 {
                     var newModel = new ModelName() { Manufacturer = manufacturerToAdd, ManufacturerId = manufacturerToAdd.Id, Name = modelName };
-                    unitOfWork.Context.ModelName.Add(newModel);
+                    manufacturerToAdd.ModelNames.Add(newModel);
                 }
             }
 
