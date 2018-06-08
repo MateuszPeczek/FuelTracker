@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Consts;
+using Common.Interfaces;
 using CustomExceptions.FuelStatistics;
 using CustomExceptions.Vehicle;
 using Domain.Common;
@@ -52,10 +53,7 @@ namespace Commands.FuelStatisticsCommands
         private readonly ICommandValidator<UpdateConsumptionReport> commandValidator;
         private readonly IUnitOfWork unitOfWork;
 
-        private const float kilometersToMilesConst = 0.621371F;
-        private const float milesToKilometersConst = 1.609344F;
-        private const float litresToGalonsConst = 0.21996916F;
-        private const float galonsToLitresConst = 4.54609188F;
+        
 
         public UpdateConsumptionReportHandler(ICommandValidator<UpdateConsumptionReport> commandValidator,
                                               IUnitOfWork unitOfWork)
@@ -97,15 +95,15 @@ namespace Commands.FuelStatisticsCommands
             {
                 if (reportToUpdate.Units == Units.Imperial && fuelSummaryToUpdate.Units == Units.Metric)
                 {
-                    fuelSummaryToUpdate.DistanceDriven -= (reportToUpdate.Distance - command.Distance) * milesToKilometersConst;
-                    fuelSummaryToUpdate.FuelBurned -= (reportToUpdate.FuelBurned - command.FuelBurned) * galonsToLitresConst;
+                    fuelSummaryToUpdate.DistanceDriven -= (reportToUpdate.Distance - command.Distance) * UnitsConverters.MilesToKilometersConst;
+                    fuelSummaryToUpdate.FuelBurned -= (reportToUpdate.FuelBurned - command.FuelBurned) * UnitsConverters.GalonsToLitresConst;
                     fuelSummaryToUpdate.AverageConsumption = (fuelSummaryToUpdate.FuelBurned * 100) / fuelSummaryToUpdate.DistanceDriven;
                 }
 
                 if (reportToUpdate.Units == Units.Metric && fuelSummaryToUpdate.Units == Units.Imperial)
                 {
-                    fuelSummaryToUpdate.DistanceDriven -= (reportToUpdate.Distance - command.Distance) * kilometersToMilesConst;
-                    fuelSummaryToUpdate.FuelBurned -= (reportToUpdate.FuelBurned - command.FuelBurned) * litresToGalonsConst;
+                    fuelSummaryToUpdate.DistanceDriven -= (reportToUpdate.Distance - command.Distance) * UnitsConverters.KilometersToMilesConst;
+                    fuelSummaryToUpdate.FuelBurned -= (reportToUpdate.FuelBurned - command.FuelBurned) * UnitsConverters.LitresToGalonsConst;
                     fuelSummaryToUpdate.AverageConsumption = fuelSummaryToUpdate.DistanceDriven / fuelSummaryToUpdate.FuelBurned;
                 }
             }

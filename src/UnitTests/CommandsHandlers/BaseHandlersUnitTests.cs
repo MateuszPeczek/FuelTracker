@@ -157,7 +157,9 @@ namespace UnitTests.CommandsHandlers
 
         #region Vehicle
 
-        protected Guid InsertVehicleToDatabase(Guid? modelId = null)
+        protected const int expectedVehicleProductionYear = 2000;
+
+        protected Guid InsertVehicleToDatabase(Guid? modelId = null, Guid? engineId = null)
         {
             var id = Guid.NewGuid();
 
@@ -165,7 +167,8 @@ namespace UnitTests.CommandsHandlers
             {
                 Id = id,
                 ModelNameId = modelId ?? Guid.NewGuid(),
-               
+                ProductionYear = expectedVehicleProductionYear,
+                EngineId = engineId ?? Guid.NewGuid()
             };
 
             unitOfWork.Context.Vehicle.Add(newVehicle);

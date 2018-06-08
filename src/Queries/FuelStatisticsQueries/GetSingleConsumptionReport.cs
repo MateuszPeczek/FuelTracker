@@ -27,7 +27,7 @@ namespace Queries.FuelStatisticsQueries
         {
             using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
             {
-                var sqlQuery = @"SELECT Id, VehicleId DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport WHERE VehicleId = @vehicleId AND Id = @fuelReportId";
+                var sqlQuery = @"SELECT Id, VehicleId, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport WHERE VehicleId = @vehicleId AND Id = @fuelReportId";
 
                 var result = db.Query<ConsumptionReportDetails>(sqlQuery, new { VehicleId = query.VehicleId, FuelReportId = query.FuelReportId }).SingleOrDefault();
 
