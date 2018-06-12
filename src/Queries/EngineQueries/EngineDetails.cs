@@ -1,13 +1,9 @@
 ﻿using Domain.VehicleDomain;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Queries.EngineQueries
 {
-    public class EngineDetails 
+    public class EngineDetails : BaseDetails
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public int? Power { get; set; }
         public int? Torque { get; set; }

@@ -3,7 +3,10 @@ using Common.Ordering.Engine;
 using Common.Ordering.Shared;
 using Common.Paging;
 using Dapper;
-using System.Data.SqlClient;
+using Domain.VehicleDomain;
+using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Queries.EngineQueries
@@ -31,17 +34,18 @@ namespace Queries.EngineQueries
     {
         public PaginatedList<EngineDetails> Handle(GetEnginesList query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = $@"SELECT Id, Cylinders, Displacement, FuelType, Name, Power, Torque 
                                  FROM Engine
                                  ORDER BY {query.OrderByColumn.ToString()} {query.OrderDirection.ToString()}
-                                 OFFSET {query.PageSize * (query.PageNo - 1)} ROWS 
-                                 FETCH NEXT {query.PageSize} ROWS ONLY";
+                                 LIMIT {query.PageSize}
+                                 OFFSET {query.PageSize * (query.PageNo - 1)}";
 
-                var result = db.Query<EngineDetails>(sqlQuery).ToList();
+                var queryResult = db.Query<EngineDetails>(sqlQuery).ToList();
+                
 
-                return new PaginatedList<EngineDetails>() { Data = result, PageNo = query.PageNo, PageSize = query.PageSize };
+                return new PaginatedList<EngineDetails>() { Data = queryResult, PageNo = query.PageNo, PageSize = query.PageSize };
             }
         }
     }

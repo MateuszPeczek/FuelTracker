@@ -1,12 +1,9 @@
 ﻿using Common.Interfaces;
-using CustomExceptions.Manufacturer;
-using CustomExceptions.Model;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Queries.ModelQueries
 {
@@ -26,7 +23,7 @@ namespace Queries.ModelQueries
     {
         public IEnumerable<ModelDetails> Handle(GetModelsDetailsByIds query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = $@"SELECT Id, Name FROM ModelName WHERE ManufacturerId = '{query.ManufacturerId}' and Id IN @ids";
 

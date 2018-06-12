@@ -40,8 +40,8 @@ namespace Commands.FuelStatisticsCommands
             if (command.VehicleId == new Guid())
                 throw new InvalidVehicleIdException();
 
-            if (command.UserId == new Guid())
-                throw new InvalidUserIdException();
+            //if (command.UserId == new Guid())
+            //    throw new InvalidUserIdException();
 
             if (command.Distance <= 0)
                 throw new InvalidDistanceException();

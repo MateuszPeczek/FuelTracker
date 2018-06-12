@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using System;
 using System.Collections.Generic;
+using Domain.UserDomain;
 
 namespace UnitTests.CommandsHandlers
 {
@@ -17,14 +18,17 @@ namespace UnitTests.CommandsHandlers
         {
             unitOfWork = A.Fake<IUnitOfWork>();
             context = new ApplicationContext(GetContextBuilderOptions());
+            context.Database.EnsureCreated();
             A.CallTo(() => unitOfWork.Context).Returns(context);
         }
 
         protected DbContextOptions<ApplicationContext> GetContextBuilderOptions()
         {
-            return new DbContextOptionsBuilder<ApplicationContext>()
-                            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            var builder = new DbContextOptionsBuilder<ApplicationContext>()
+                            .UseSqlite("DataSource=:memory:")
                             .Options;
+
+            return builder;
         }
 
         protected bool StringCollectionsEqual(IEnumerable<string> firstCollection, IEnumerable<string> secondCollection)
@@ -139,12 +143,14 @@ namespace UnitTests.CommandsHandlers
         protected Guid InsertModelToDatabase(Guid? manufacturerId = null)
         {
             var id = Guid.NewGuid();
+            manufacturerId = manufacturerId ?? Guid.NewGuid();
 
             var newModel = new ModelName()
             {
                 Id = id,
                 Name = expectedModelName,
-                ManufacturerId = manufacturerId ?? Guid.NewGuid()
+                ManufacturerId = manufacturerId.Value,
+                Manufacturer = new Manufacturer() { Id = manufacturerId.Value }
             };
 
             unitOfWork.Context.ModelName.Add(newModel);
@@ -162,13 +168,30 @@ namespace UnitTests.CommandsHandlers
         protected Guid InsertVehicleToDatabase(Guid? modelId = null, Guid? engineId = null)
         {
             var id = Guid.NewGuid();
+            var manufacturerId = Guid.NewGuid();
+            //var userId = Guid.NewGuid();
+            modelId = modelId ?? Guid.NewGuid();
+            engineId = engineId ?? Guid.NewGuid();
+
 
             var newVehicle = new Vehicle()
             {
                 Id = id,
-                ModelNameId = modelId ?? Guid.NewGuid(),
+                ModelNameId = modelId.Value,
+                ModelName = new ModelName()
+                {
+                        Id = modelId.Value,
+                        Manufacturer = new Manufacturer()
+                        {
+                            Id = manufacturerId
+                        },
+                        ManufacturerId = manufacturerId
+                },
                 ProductionYear = expectedVehicleProductionYear,
-                EngineId = engineId ?? Guid.NewGuid()
+                EngineId = engineId.Value,
+                Engine = new Engine() { Id = engineId.Value},
+                //UserId = userId,
+                //User = new User() { Id = userId }
             };
 
             unitOfWork.Context.Vehicle.Add(newVehicle);

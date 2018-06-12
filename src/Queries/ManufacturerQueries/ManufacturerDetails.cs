@@ -2,9 +2,8 @@
 
 namespace Queries.ManufacturerQueries
 {
-    public class ManufacturerDetails
+    public class ManufacturerDetails : BaseDetails
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 }

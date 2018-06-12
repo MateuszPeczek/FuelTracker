@@ -23,7 +23,7 @@ namespace UnitTests.CommandsHandlers.VehicleHandlerUnitTests
         {
             var modelId = InsertModelToDatabase();
             var addVehicleCommand = new AddVehicle(modelId);
-
+            
             A.CallTo(() => addVehicleValidator.Validate(addVehicleCommand)).DoesNothing();
 
             addVehicleHandler.Handle(addVehicleCommand);

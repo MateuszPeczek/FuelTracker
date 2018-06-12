@@ -1,11 +1,9 @@
 ﻿using Common.Interfaces;
-using CustomExceptions.Manufacturer;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Queries.ManufacturerQueries
 {
@@ -23,7 +21,7 @@ namespace Queries.ManufacturerQueries
     {
         public IEnumerable<ManufacturerDetails> Handle(GetManufacturersByIds query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = @"SELECT Id, Name FROM Manufacturer WHERE Id IN @ids";
 

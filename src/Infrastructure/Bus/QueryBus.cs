@@ -4,6 +4,7 @@ using Infrastructure.CommunicationModels;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Infrastructure.Bus
 {
@@ -37,7 +38,16 @@ namespace Infrastructure.Bus
             }
             catch (Exception ex)
             {
-                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = ex.Message };
+                var message = new StringBuilder();
+
+                message.Append(ex.Message);
+                
+                if (ex.InnerException != null)
+                {
+                    message.Append($" Inner: -> {ex.InnerException.Message}");
+                }
+
+                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = message.ToString()};
             }
         }
     }

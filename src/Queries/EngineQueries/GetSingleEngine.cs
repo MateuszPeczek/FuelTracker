@@ -1,11 +1,9 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Engine;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Queries.EngineQueries
 {
@@ -23,7 +21,7 @@ namespace Queries.EngineQueries
     {
         public EngineDetails Handle(GetSingleEngine query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = $@"SELECT Id, Cylinders, Displacement, FuelType, Name, Power, Torque 
                                  FROM Engine

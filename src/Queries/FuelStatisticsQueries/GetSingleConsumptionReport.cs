@@ -1,11 +1,9 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.FuelStatistics;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Queries.FuelStatisticsQueries
 {
@@ -25,9 +23,9 @@ namespace Queries.FuelStatisticsQueries
     {
         public ConsumptionReportDetails Handle(GetSingleConsumptionReport query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
-                var sqlQuery = @"SELECT Id, VehicleId, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport WHERE VehicleId = @vehicleId AND Id = @fuelReportId";
+                var sqlQuery = @"SELECT Id, VehicleId, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport WHERE VehicleId = @VehicleId AND Id = @FuelReportId";
 
                 var result = db.Query<ConsumptionReportDetails>(sqlQuery, new { VehicleId = query.VehicleId, FuelReportId = query.FuelReportId }).SingleOrDefault();
 

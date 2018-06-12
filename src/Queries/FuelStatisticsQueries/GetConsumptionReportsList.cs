@@ -3,6 +3,7 @@ using Common.Ordering.FuelStatistics;
 using Common.Ordering.Shared;
 using Common.Paging;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace Queries.FuelStatisticsQueries
     {
         public PaginatedList<ConsumptionReportDetails> Handle(GetConsumptionReportsList query)
         {
-            using (var db = new System.Data.SqlClient.SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var startDateFilterValue = query.StartDate ?? DateTime.MinValue;
                 var endDateFilterValue = query.EndDate ?? DateTime.MaxValue;
@@ -44,8 +45,8 @@ namespace Queries.FuelStatisticsQueries
                 var sqlQuery = $@"SELECT Id, VehicleId, DateCreated, Distance, FuelBurned, FuelEfficiency, PricePerUnit, Units FROM ConsumptionReport
                                   WHERE DateCreated > '{startDateFilterValue.ToString("yyyy-MM-dd HH:mm:ss.fff")}' AND DateCreated < '{endDateFilterValue.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
                                   ORDER BY {query.OrderColumn.ToString()} {query.OrderDirection.ToString()}
-                                  OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
-                                  FETCH NEXT {query.PageSize} ROWS ONLY";
+                                  LIMIT {query.PageSize}
+                                  OFFSET {query.PageSize * (query.PageNo - 1)}";
 
                 var result = db.Query<ConsumptionReportDetails>(sqlQuery).ToList();
 

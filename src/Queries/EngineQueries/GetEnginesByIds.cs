@@ -1,8 +1,8 @@
 ﻿using Common.Interfaces;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace Queries.EngineQueries
 {
@@ -21,14 +21,14 @@ namespace Queries.EngineQueries
 
         public IEnumerable<EngineDetails> Handle(GetEnginesByIds query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = $@"SELECT Id, Cylinders, Displacement, FuelType, Name, Power, Torque 
                                  FROM Engine
                                  WHERE ID IN @ids";
 
                 var result = db.Query<EngineDetails>(sqlQuery, new { ids = query.EngineIds }).AsList();
-                
+
                 return result;
             }
         }

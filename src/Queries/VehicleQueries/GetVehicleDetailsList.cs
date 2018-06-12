@@ -3,14 +3,9 @@ using Common.Ordering.Shared;
 using Common.Ordering.Vehicle;
 using Common.Paging;
 using Dapper;
-using Domain.VehicleDomain;
+using Microsoft.Data.Sqlite;
 using Queries.VehicleQueries;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Queries.VehicleDetailsQueries
 {
@@ -37,19 +32,17 @@ namespace Queries.VehicleDetailsQueries
     {
         public PaginatedList<VehicleDetails> Handle(GetVehicleDetailsList query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
-                
-
-                var sqlQuery = $@"select  v.id, v.UserId,  mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
+                var sqlQuery = $@"select  v.id, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
                                  from vehicle v
                                  join ModelName md on md.Id = v.ModelNameId
                                  left join manufacturer mf on mf.Id = md.manufacturerId
                                  left join engine e on e.Id = v.EngineId
                                  order by {query.OrderByColumn.ToString()} {query.OrderDirection.ToString()}
-                                 offset {query.PageSize * (query.PageNo - 1)} rows 
-                                 fetch next {query.PageSize} rows only";
-                
+                                 LIMIT {query.PageSize}
+                                 OFFSET {query.PageSize * (query.PageNo - 1)}";
+
                 var result = db.Query<VehicleDetails>(sqlQuery).ToList();
                 
                 return new PaginatedList<VehicleDetails>() {Data = result, PageNo = query.PageNo, PageSize = query.PageSize };

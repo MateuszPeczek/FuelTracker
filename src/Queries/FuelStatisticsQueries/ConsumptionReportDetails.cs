@@ -1,15 +1,24 @@
 ﻿using Domain.Common;
-using Domain.VehicleDomain;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Queries.FuelStatisticsQueries
 {
-    public class ConsumptionReportDetails
+    public class ConsumptionReportDetails : BaseDetails
     {
-        public Guid Id { get; set; }
-        public Guid VehicleId { get; set; }
+        private dynamic _vehicleId;
+        public dynamic VehicleId
+        {
+            get
+            {
+                var guid = new Guid((byte[])_vehicleId);
+                return guid.ToString();
+            }
+            set
+            {
+                _vehicleId = value;
+            }
+        }
+
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float FuelEfficiency { get; set; }

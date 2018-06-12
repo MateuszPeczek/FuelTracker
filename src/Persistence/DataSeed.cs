@@ -128,20 +128,20 @@ namespace Persistence
         {
             if (!context.Vehicle.Any())
             {
-                var vehciles = new List<Vehicle>()
+                var vehicles = new List<Vehicle>()
                 {
                     new Vehicle
                     {
                         Id = new Guid("d51b848f-c1b8-4a74-afb5-6730dd2554f5"),
                         EngineId = new Guid("5b6a048a-ce00-48f9-815b-9e287efe2588"),
                         ModelNameId = new Guid("f31b62aa-22fb-49dc-8fdf-c9576a657a3b"),
-                        UserId = userId,
+                        //UserId = userId,
                         ProductionYear = 2008,
                         VehicleType = VehicleType.Car
                     }
                 };
 
-                context.Vehicle.AddRange(vehciles);
+                context.Vehicle.AddRange(vehicles);
                 context.SaveChanges();
             }
         }

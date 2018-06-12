@@ -1,14 +1,11 @@
 ﻿using Domain.VehicleDomain;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Queries.VehicleQueries
 {
-    public class VehicleDetails
+    public class VehicleDetails : BaseDetails
     {
-        public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        //public Guid UserId { get; set; }
         public string Manufacturer { get; set; }
 
         public string Model { get; set; }

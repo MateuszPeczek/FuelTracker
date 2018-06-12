@@ -13,6 +13,11 @@ namespace Persistence
         : base(options)
         { }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Data Source=fuelTracker.db");
+        }
+
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<UserSettings> UserSettings { get; set; }

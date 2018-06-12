@@ -19,7 +19,7 @@ namespace FuelTracker
 
             var connectionString = configuration.GetConnectionString("ApplicationStateDatabase");
 
-            builder.UseSqlServer(connectionString);
+            builder.UseSqlite(connectionString);
 
             return new ApplicationContext(builder.Options);
         }

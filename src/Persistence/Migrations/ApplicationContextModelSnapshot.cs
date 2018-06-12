@@ -19,8 +19,7 @@ namespace Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.0.0-rtm-26452");
 
             modelBuilder.Entity("Domain.FuelStatisticsDomain.ConsumptionReport", b =>
                 {
@@ -127,8 +126,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -151,8 +149,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -238,8 +235,6 @@ namespace Persistence.Migrations
 
                     b.Property<int?>("ProductionYear");
 
-                    b.Property<Guid>("UserId");
-
                     b.Property<int?>("VehicleType");
 
                     b.HasKey("Id");
@@ -247,8 +242,6 @@ namespace Persistence.Migrations
                     b.HasIndex("EngineId");
 
                     b.HasIndex("ModelNameId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Vehicle");
                 });
@@ -375,11 +368,6 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.VehicleDomain.ModelName", "ModelName")
                         .WithMany("Vehicles")
                         .HasForeignKey("ModelNameId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.UserDomain.User", "User")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

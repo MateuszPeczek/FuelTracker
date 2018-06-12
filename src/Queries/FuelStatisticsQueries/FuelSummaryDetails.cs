@@ -1,13 +1,9 @@
-﻿using Domain.VehicleDomain;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Queries.FuelStatisticsQueries
 {
-    public class FuelSummaryDetails
+    public class FuelSummaryDetails : BaseDetails
     {
-        public Guid Id { get; set; }
         public Guid VehicleId { get; set; }
         public float AverageConsumption { get; set; }
         public long ReportsNumber { get; set; }

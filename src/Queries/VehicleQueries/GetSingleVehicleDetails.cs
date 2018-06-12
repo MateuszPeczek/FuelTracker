@@ -1,8 +1,8 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.Vehicle;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using System;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace Queries.VehicleQueries
@@ -21,7 +21,7 @@ namespace Queries.VehicleQueries
     {
         public VehicleDetails Handle(GetSingleVehicleDetails query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = @"select v.id, v.userid, mf.name as manufacturer, md.name as model, v.productionyear, e.name as enginename, e.power, e.torque, e.cylinders, e.displacement, e.fueltype
                                  from vehicle v

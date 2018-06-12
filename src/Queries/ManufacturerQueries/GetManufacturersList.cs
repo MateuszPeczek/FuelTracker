@@ -2,11 +2,8 @@
 using Common.Ordering.Shared;
 using Common.Paging;
 using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System.Linq;
-using System.Text;
 
 namespace Queries.ManufacturerQueries
 {
@@ -30,12 +27,12 @@ namespace Queries.ManufacturerQueries
     {
         public PaginatedList<ManufacturerDetails> Handle(GetManufacturersList query)
         {
-            using (var db = new SqlConnection(@"Server=.;Database=FuelTracker;Trusted_Connection=True;MultipleActiveResultSets=true"))
+            using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
                 var sqlQuery = $@"SELECT Id, Name from Manufacturer
                                   ORDER BY Name {query.OrderDirection.ToString()}
-                                  OFFSET {query.PageSize * (query.PageNo - 1)} ROWS
-                                  FETCH NEXT {query.PageSize} ROWS ONLY";
+                                  LIMIT {query.PageSize}
+                                  OFFSET {query.PageSize * (query.PageNo - 1)}";
 
                 var result = db.Query<ManufacturerDetails>(sqlQuery).ToList();
 
