@@ -49,7 +49,7 @@ namespace FuelTracker
             services.RegisterHandlersAndValidators(new List<string>() { "Commands", "Queries" });
 
             services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ApplicationStateDatabase")),
+                options.UseInMemoryDatabase(Configuration.GetConnectionString("ApplicationStateDatabase")),
                 ServiceLifetime.Scoped);
                 
             services.AddMvc();
