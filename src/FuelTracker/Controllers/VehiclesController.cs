@@ -9,12 +9,13 @@ using Common.Paging;
 using FuelTracker.ApiModels.FuelReportApiModels;
 using FuelTracker.ApiModels.VehicleApiModels;
 using FuelTracker.ApiModels.VehicleApiModels.RESTCommunication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.FuelStatisticsQueries;
 using Queries.VehicleDetailsQueries;
 using Queries.VehicleQueries;
 using System;
-using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,6 +23,7 @@ namespace FuelTracker.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/vehicles")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class VehiclesController : Controller
     {
         private readonly ICommandSender commandBus;

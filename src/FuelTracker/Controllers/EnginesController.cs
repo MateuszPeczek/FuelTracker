@@ -6,6 +6,8 @@ using Common.Ordering.Shared;
 using Common.Paging;
 using FuelTracker.ApiModels.EngineApiModels;
 using FuelTracker.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.EngineQueries;
 using System;
@@ -16,6 +18,7 @@ namespace FuelTracker.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/engines")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class EnginesController : Controller
     {
 

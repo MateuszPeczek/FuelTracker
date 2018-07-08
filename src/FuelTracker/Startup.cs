@@ -4,16 +4,20 @@ using Infrastructure.Bus;
 using Infrastructure.ExceptionHandling;
 using Infrastructure.Factory;
 using Infrastructure.InversionOfControl;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using System.Collections.Generic;
+using System.Text;
 
 namespace FuelTracker
 {
@@ -41,6 +45,7 @@ namespace FuelTracker
             services.AddScoped<IQueryHandlerFactory, HandlerFactory>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
+            services.AddScoped<UserManager<User>>();
             services.AddScoped((s) =>
             {
                 return services;
@@ -48,10 +53,25 @@ namespace FuelTracker
 
             services.RegisterHandlersAndValidators(new List<string>() { "Commands", "Queries" });
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
+
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("ApplicationStateDatabase")),
                 ServiceLifetime.Scoped);
-                
+
             services.AddMvc();
 
             services.AddApiVersioning(options =>
@@ -66,7 +86,7 @@ namespace FuelTracker
                 options.DescribeAllEnumsAsStrings();
                 options.DescribeStringEnumsInCamelCase();
             });
-            
+
 
             services.AddIdentity<User, UserRole>(
                 options =>
@@ -97,6 +117,8 @@ namespace FuelTracker
                 });
             }
 
+            app.UseAuthentication();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "default",
@@ -106,6 +128,6 @@ namespace FuelTracker
 
             app.UseSwagger();
             app.UseSwaggerUi();
-        } 
+        }
     }
 }
