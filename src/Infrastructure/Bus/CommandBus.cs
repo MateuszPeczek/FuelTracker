@@ -45,7 +45,7 @@ namespace Infrastructure.Bus
             {
                 if (!commandsList.Any())
                     throw new EmptyCommandsQueueException("No commands in queue");
-
+                
                 foreach (var command in commandsList)
                 {
                     var handler = commandHandlerFactory.GetHandler(command);

@@ -1,77 +1,74 @@
-﻿using Commands.UserCommands;
-using Common.Enums;
-using Common.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using Domain.UserDomain;
 using FuelTracker.ApiModels.AuthorisationApiModels;
-using FuelTracker.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Queries.UserQueries;
-using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Persistence.UserStore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FuelTracker.Controllers
 {
-    [ApiVersion("1.0")]
-    [Route("api/users")]
+    [Route("api/auth")]
     public class AuthController : Controller
     {
-        private readonly ICommandSender commandBus;
-        private readonly IQuerySender queryBus;
-
-        public AuthController(ICommandSender commandBus, IQuerySender queryBus)
+        public AuthController(UserManager<User> userManager,
+                              GuidSignInManager signInManager,
+                              IConfiguration config)
         {
-            this.commandBus = commandBus;
-            this.queryBus = queryBus;
-
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.config = config;
         }
 
-        private UserDetails GetUserDetails(Guid userId)
-        {
-            var query = new GetSingleUser(userId);
-            var result = queryBus.InvokeQuery<UserDetails>(query);
+        private readonly UserManager<User> userManager;
+        private readonly GuidSignInManager signInManager;
+        private readonly IConfiguration config;
 
-            return result.Data;
-        }
-
+        [AllowAnonymous]
         [HttpPost]
-        public IActionResult CreateUser([FromBody]PostUser model)
+        public async Task<IActionResult> GenerateToken([FromBody] PostUser model)
         {
             if (ModelState.IsValid)
             {
-                var command = new AddUser(model.Email, model.Password);
-                commandBus.AddCommand(command);
+                var user = await userManager.FindByEmailAsync(model.Email);
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
+                if (user != null)
                 {
-                    var result = GetUserDetails(command.Id);
+                    var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                    if (result.Succeeded)
+                    {
 
-                    return CreatedAtRoute(
-                        "GetUser",
-                        new { userId = command.Id },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
+                        var claims = new[]
+                        {
+                            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        };
+
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                        var token = new JwtSecurityToken(config["Jwt:Issuer"],
+                          config["Jwt:Issuer"],
+                          claims,
+                          expires: DateTime.Now.AddMinutes(30),
+                          signingCredentials: creds);
+
+                        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+                    }
                 }
             }
 
-            return BadRequest(ModelState);
-        }
-
-        //GET: api/users/{userId}
-        [HttpGet("{userId}", Name = "GetSingleUser")]
-        public IActionResult GetUser([ModelBinder(BinderType = typeof(CollectionModelBinder))]Guid userId)
-        {
-            var result = GetUserDetails(userId);
-
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return BadRequest("Could not create token");
         }
     }
 }

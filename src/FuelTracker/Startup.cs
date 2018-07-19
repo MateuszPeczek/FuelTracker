@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using Persistence.UserStore;
+using Swashbuckle.Swagger.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -49,28 +50,15 @@ namespace FuelTracker
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
             services.AddScoped<IUserStore<User>, GuidUserStore>();
+            services.AddScoped<IRoleStore<UserRole>, GuidRoleStore>();
+            //services.AddScoped<GuidSignInManager>();
             services.AddScoped((s) =>
             {
                 return services;
             });
 
             services.RegisterHandlersAndValidators(new List<string>() { "Commands", "Queries" });
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                    };
-                });
-
+            
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("ApplicationStateDatabase")),
                 ServiceLifetime.Scoped);
@@ -88,6 +76,14 @@ namespace FuelTracker
             {
                 options.DescribeAllEnumsAsStrings();
                 options.DescribeStringEnumsInCamelCase();
+
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "Authorization: Bearer {token}",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
             });
 
 
@@ -101,7 +97,23 @@ namespace FuelTracker
                     options.User.RequireUniqueEmail = true;
                     options.Password.RequiredLength = 6;
                 }
-            );
+            ).AddSignInManager<GuidSignInManager>()
+            .AddRoleManager<GuidUserRoleManager>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
 
             services.SeedData();
         }
