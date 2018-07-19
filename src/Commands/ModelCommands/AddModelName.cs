@@ -58,6 +58,7 @@ namespace Commands.ModelCommands
             var modelToAdd = new ModelName() { Id = command.Id, ManufacturerId = command.ManufacturerId, Name = command.Name };
 
             unitOfWork.Context.ModelName.Add(modelToAdd);
+            unitOfWork.SaveChanges();
         }
     }
 }

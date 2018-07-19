@@ -1,49 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Commands.UserCommands;
+using Common.Enums;
+using Common.Interfaces;
 using FuelTracker.ApiModels.AuthorisationApiModels;
-using Microsoft.AspNetCore.Identity;
-using Domain.UserDomain;
 using FuelTracker.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using Queries.UserQueries;
+using System;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FuelTracker.Controllers
 {
-    [Route("[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/users")]
     public class AuthController : Controller
     {
-        private UserManager<User> _userManager;
+        private readonly ICommandSender commandBus;
+        private readonly IQuerySender queryBus;
 
-        public AuthController(UserManager<User> userManager)
+        public AuthController(ICommandSender commandBus, IQuerySender queryBus)
         {
-            _userManager = userManager;
+            this.commandBus = commandBus;
+            this.queryBus = queryBus;
+
+        }
+
+        private UserDetails GetUserDetails(Guid userId)
+        {
+            var query = new GetSingleUser(userId);
+            var result = queryBus.InvokeQuery<UserDetails>(query);
+
+            return result.Data;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody]PostUser model)
+        public IActionResult CreateUser([FromBody]PostUser model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var command = new AddUser(model.Email, model.Password);
+                commandBus.AddCommand(command);
+
+                var commandResult = commandBus.InvokeCommandsQueue();
+
+                if (commandResult.Status == ActionStatus.Success)
+                {
+                    var result = GetUserDetails(command.Id);
+
+                    return CreatedAtRoute(
+                        "GetUser",
+                        new { userId = command.Id },
+                        result
+                        );
+                }
+                else
+                {
+                    return StatusCode(500, commandResult.ExceptionMessage);
+                }
             }
 
-            var userIdentity = new User()
-            {
-                Email = model.Email
-            };
+            return BadRequest(ModelState);
+        }
 
-            var result = await _userManager.CreateAsync(userIdentity, model.Password);
+        //GET: api/users/{userId}
+        [HttpGet("{userId}", Name = "GetSingleUser")]
+        public IActionResult GetUser([ModelBinder(BinderType = typeof(CollectionModelBinder))]Guid userId)
+        {
+            var result = GetUserDetails(userId);
 
-            if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
+            if (result == null)
+                return NotFound();
 
-            await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
-            await _appDbContext.SaveChangesAsync();
-
-            return new OkObjectResult("Account created");
+            return Ok(result);
         }
     }
 }

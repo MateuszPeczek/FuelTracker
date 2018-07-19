@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
+using Persistence.UserStore;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -45,7 +48,7 @@ namespace FuelTracker
             services.AddScoped<IQueryHandlerFactory, HandlerFactory>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
-            services.AddScoped<UserManager<User>>();
+            services.AddScoped<IUserStore<User>, GuidUserStore>();
             services.AddScoped((s) =>
             {
                 return services;
@@ -90,8 +93,15 @@ namespace FuelTracker
 
             services.AddIdentity<User, UserRole>(
                 options =>
-                    options.User.RequireUniqueEmail = true
-                );
+                {
+                    options.User.RequireUniqueEmail = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = false;
+                    options.User.RequireUniqueEmail = true;
+                    options.Password.RequiredLength = 6;
+                }
+            );
 
             services.SeedData();
         }

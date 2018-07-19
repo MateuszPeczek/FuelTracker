@@ -1,8 +1,9 @@
 ﻿using Common.Interfaces;
 using CustomExceptions.User;
+using Domain.UserDomain;
+using Microsoft.AspNetCore.Identity;
 using Persistence;
 using System;
-using System.Collections.Generic;
 using System.Net.Mail;
 using System.Text;
 
@@ -14,7 +15,7 @@ namespace Commands.UserCommands
         public string Email { get; set; }
         public string Password { get; set; }
 
-        public AddUser(Guid userId, string email, string password)
+        public AddUser(string email, string password)
         {
             Id = Guid.NewGuid();
             Email = email;
@@ -50,12 +51,40 @@ namespace Commands.UserCommands
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddUser> commandValidator;
+        private readonly UserManager<User> userManager;
+        
+        public AddUserCommandHandler(IUnitOfWork unitOfWork, ICommandValidator<AddUser> commandValidator, UserManager<User> userManager)
+        {
+            this.unitOfWork = unitOfWork;
+            this.commandValidator = commandValidator;
+            this.userManager = userManager;
+        }
 
         public void Handle(AddUser command)
         {
             commandValidator.Validate(command);
 
-            //create user logic
+            var newUser = new User()
+            {
+                UserName = "Default",
+                Email = command.Email,
+                Id = command.Id
+            };
+            
+            var result = userManager.CreateAsync(newUser, command.Password);
+            result.Wait();
+
+            if (result.Status == System.Threading.Tasks.TaskStatus.Faulted)
+            {
+                var sb = new StringBuilder();
+
+                foreach (var error in result.Result.Errors)
+                {
+                    sb.AppendLine(error.Description);
+                }
+
+                throw new Exception(sb.ToString());
+            }
         }
     }
 }
