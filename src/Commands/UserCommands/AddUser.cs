@@ -2,7 +2,9 @@
 using CustomExceptions.User;
 using Domain.UserDomain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Persistence;
+using Persistence.UserStore;
 using System;
 using System.Net.Mail;
 using System.Text;
@@ -52,12 +54,20 @@ namespace Commands.UserCommands
         private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddUser> commandValidator;
         private readonly UserManager<User> userManager;
-        
-        public AddUserCommandHandler(IUnitOfWork unitOfWork, ICommandValidator<AddUser> commandValidator, UserManager<User> userManager)
+        private readonly GuidSignInManager signInManager;
+        private readonly IConfiguration config;
+
+        public AddUserCommandHandler(IUnitOfWork unitOfWork, 
+                                     ICommandValidator<AddUser> commandValidator, 
+                                     UserManager<User> userManager,
+                                     GuidSignInManager signInManager,
+                                     IConfiguration config)
         {
             this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
             this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.config = config;
         }
 
         public void Handle(AddUser command)
@@ -66,7 +76,7 @@ namespace Commands.UserCommands
 
             var newUser = new User()
             {
-                UserName = "Default",
+                UserName = command.Email,
                 Email = command.Email,
                 Id = command.Id
             };

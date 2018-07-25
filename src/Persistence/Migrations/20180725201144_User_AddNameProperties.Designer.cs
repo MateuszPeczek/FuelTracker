@@ -13,9 +13,10 @@ using System;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20180725201144_User_AddNameProperties")]
+    partial class User_AddNameProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,11 +95,9 @@ namespace Persistence.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<string>("FirstName")
-                        .HasMaxLength(20);
+                    b.Property<string>("FirstName");
 
-                    b.Property<string>("LastName")
-                        .HasMaxLength(20);
+                    b.Property<string>("LastName");
 
                     b.Property<bool>("LockoutEnabled");
 

@@ -2,10 +2,13 @@
 using Common.Enums;
 using Common.Interfaces;
 using FuelTracker.ApiModels.AuthorisationApiModels;
-using FuelTracker.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.UserQueries;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +16,7 @@ namespace FuelTracker.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/users")]
+    
     public class UserController : Controller
     {
         private readonly ICommandSender commandBus;
@@ -49,7 +53,7 @@ namespace FuelTracker.Controllers
 
                     return CreatedAtRoute(
                         "GetUser",
-                        new { userId = command.Id },
+                        new { userEmail = command.Email },
                         result
                         );
                 }
@@ -62,16 +66,21 @@ namespace FuelTracker.Controllers
             return BadRequest(ModelState);
         }
 
-        //GET: api/users/{userId}
-        [HttpGet("{userId}", Name = "GetSingleUser")]
-        public IActionResult GetUser([ModelBinder(BinderType = typeof(CollectionModelBinder))]Guid userId)
+        //GET: api/users
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(Name = "GetUser")]
+        public IActionResult GetUser()
         {
-            var result = GetUserDetails(userId);
+            var currentUser = HttpContext.User;
 
-            if (result == null)
+            if (currentUser == null || !currentUser.Claims.Any())
                 return NotFound();
 
-            return Ok(result);
+            var id = currentUser.Claims.First(c => c.Type == "UserId").Value;
+
+            var user = GetUserDetails(new Guid(id));
+
+            return Ok(user);
         }
     }
 }
