@@ -10,8 +10,8 @@ namespace Domain.FuelStatisticsDomain
     {
         public Guid Id { get; set; }
 
-        [ForeignKey("VehicleId")]
         public Guid VehicleId { get; set; }
+        [ForeignKey("VehicleId")]
         public virtual Vehicle Vehicle{ get; set; }
 
         public float AverageConsumption { get; set; }

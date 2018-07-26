@@ -47,7 +47,7 @@ namespace Infrastructure.Bus
                     message.Append($" Inner: -> {ex.InnerException.Message}");
                 }
 
-                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = message.ToString()};
+                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnStatusForException(ex), ExceptionMessage = message.ToString()};
             }
         }
     }

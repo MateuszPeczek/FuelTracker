@@ -7,27 +7,27 @@ using System.Linq;
 
 namespace Queries.UserQueries
 {
-    public class GetSingleUser : IQuery
+    public class GetUserSettings : IQuery
     {
         public Guid Id { get; set; }
 
-        public GetSingleUser(Guid id)
+        public GetUserSettings(Guid id)
         {
             Id = id;
         }
     }
 
-    public class GetSingleUserHandler : IQueryHandler<GetSingleUser, UserDetails>
+    public class GetUserSettingsHandler : IQueryHandler<GetUserSettings, Settings>
     {
-        public UserDetails Handle(GetSingleUser query)
+        public Settings Handle(GetUserSettings query)
         {
             using (var db = new SqliteConnection($"Data Source=fueltracker.db"))
             {
-                var sqlQuery = $@"SELECT Id, Email, FirstName, LastName 
-                                 FROM AspNetUsers
-                                 WHERE ID = @Id";
+                var sqlQuery = $@"SELECT Units 
+                                 FROM UserSettings
+                                 WHERE UserId = @Id";
 
-                var result = db.Query<UserDetails>(sqlQuery, new { Id = query.Id }).SingleOrDefault();
+                var result = db.Query<Settings>(sqlQuery, new { Id = query.Id }).SingleOrDefault();
 
                 if (result == null)
                     throw new UserNotFoundException(query.Id);

@@ -74,7 +74,8 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId");
+                    b.HasIndex("VehicleId")
+                        .IsUnique();
 
                     b.ToTable("FuelSummary");
                 });
@@ -122,8 +123,6 @@ namespace Persistence.Migrations
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
-
-                    b.Property<Guid>("UserSettingsId");
 
                     b.HasKey("Id");
 
@@ -241,6 +240,8 @@ namespace Persistence.Migrations
 
                     b.Property<int?>("ProductionYear");
 
+                    b.Property<Guid>("UserId");
+
                     b.Property<int?>("VehicleType");
 
                     b.HasKey("Id");
@@ -248,6 +249,8 @@ namespace Persistence.Migrations
                     b.HasIndex("EngineId");
 
                     b.HasIndex("ModelNameId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Vehicle");
                 });
@@ -336,7 +339,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.FuelStatisticsDomain.ConsumptionReport", b =>
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
-                        .WithMany()
+                        .WithMany("ConsumptionReports")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -344,8 +347,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.FuelStatisticsDomain.FuelSummary", b =>
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
+                        .WithOne("FuelSummary")
+                        .HasForeignKey("Domain.FuelStatisticsDomain.FuelSummary", "VehicleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -374,6 +377,11 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.VehicleDomain.ModelName", "ModelName")
                         .WithMany("Vehicles")
                         .HasForeignKey("ModelNameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Domain.UserDomain.User", "User")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

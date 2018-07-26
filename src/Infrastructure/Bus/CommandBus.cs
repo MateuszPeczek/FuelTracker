@@ -61,7 +61,7 @@ namespace Infrastructure.Bus
             }
             catch (Exception ex)
             {         
-                return new CommandResult() { Status = exceptionTypeResolver.ReturnCommandStatusForException(ex), ExceptionMessage = ex.InnerException == null ? ex.Message : ex.InnerException.Message };
+                return new CommandResult() { Status = exceptionTypeResolver.ReturnStatusForException(ex), ExceptionMessage = ex.InnerException == null ? ex.Message : ex.InnerException.Message };
             }
         }
     }

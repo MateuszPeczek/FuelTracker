@@ -31,6 +31,8 @@ namespace Persistence.Migrations
                     ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    FirstName = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -40,8 +42,7 @@ namespace Persistence.Migrations
                     PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
                     SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
                     TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    UserSettingsId = table.Column<Guid>(type: "BLOB", nullable: false)
+                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -229,6 +230,7 @@ namespace Persistence.Migrations
                     EngineId = table.Column<Guid>(type: "BLOB", nullable: true),
                     ModelNameId = table.Column<Guid>(type: "BLOB", nullable: false),
                     ProductionYear = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<Guid>(type: "BLOB", nullable: false),
                     VehicleType = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -244,6 +246,12 @@ namespace Persistence.Migrations
                         name: "FK_Vehicle_ModelName_ModelNameId",
                         column: x => x.ModelNameId,
                         principalTable: "ModelName",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Vehicle_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -343,7 +351,8 @@ namespace Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FuelSummary_VehicleId",
                 table: "FuelSummary",
-                column: "VehicleId");
+                column: "VehicleId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ModelName_ManufacturerId",
@@ -365,6 +374,11 @@ namespace Persistence.Migrations
                 name: "IX_Vehicle_ModelNameId",
                 table: "Vehicle",
                 column: "ModelNameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicle_UserId",
+                table: "Vehicle",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -400,13 +414,13 @@ namespace Persistence.Migrations
                 name: "Vehicle");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Engine");
 
             migrationBuilder.DropTable(
                 name: "ModelName");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Manufacturer");

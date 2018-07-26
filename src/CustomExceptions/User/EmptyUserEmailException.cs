@@ -3,7 +3,7 @@ using System;
 
 namespace CustomExceptions.User
 {
-    public  class EmptyUserEmailException : Exception, IBadRequestException
+    public class EmptyUserEmailException : Exception, IBadRequestException
     {
         private const string message = "Empty user email";
 

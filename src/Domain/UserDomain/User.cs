@@ -1,7 +1,10 @@
 ﻿using Common.Interfaces;
+using Domain.VehicleDomain;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.UserDomain
 {
@@ -9,10 +12,12 @@ namespace Domain.UserDomain
     {
         [MaxLength(20)]
         public string FirstName { get; set; }
+
         [MaxLength(20)]
         public string LastName { get; set; }
-        public Guid UserSettingsId { get; set; }
+
+        public virtual List<Vehicle> Vehicles { get; set; }
+
         public virtual UserSettings UserSettings { get; set; }
-        //public virtual List<Vehicle> Vehicles { get; set; } = new List<Vehicle>(); 
     }
 }

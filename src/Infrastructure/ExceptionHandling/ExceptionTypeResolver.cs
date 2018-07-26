@@ -9,7 +9,7 @@ namespace Infrastructure.ExceptionHandling
 {
     public class ExceptionTypeResolver : IExceptionTypeResolver
     {
-        public ActionStatus ReturnCommandStatusForException(Exception ex)
+        public ActionStatus ReturnStatusForException(Exception ex)
         {
             var exceptionTypeInfo = ex.InnerException == null ? ex.GetType().GetTypeInfo() : ex.InnerException.GetType().GetTypeInfo();
             var customExceptionType = exceptionTypeInfo.ImplementedInterfaces.FirstOrDefault(i => i.Namespace.Contains("CustomExceptions"));

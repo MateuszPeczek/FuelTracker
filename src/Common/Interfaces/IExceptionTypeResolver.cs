@@ -7,6 +7,6 @@ namespace Common.Interfaces
 {
     public interface IExceptionTypeResolver
     {
-        ActionStatus ReturnCommandStatusForException(Exception ex);
+        ActionStatus ReturnStatusForException(Exception ex);
     }
 }

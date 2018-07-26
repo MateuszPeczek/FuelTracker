@@ -13,8 +13,8 @@ using System;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20180725201144_User_AddNameProperties")]
-    partial class User_AddNameProperties
+    [Migration("20180726203622_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -75,7 +75,8 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId");
+                    b.HasIndex("VehicleId")
+                        .IsUnique();
 
                     b.ToTable("FuelSummary");
                 });
@@ -95,9 +96,11 @@ namespace Persistence.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<string>("FirstName");
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(20);
 
-                    b.Property<string>("LastName");
+                    b.Property<string>("LastName")
+                        .HasMaxLength(20);
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -121,8 +124,6 @@ namespace Persistence.Migrations
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
-
-                    b.Property<Guid>("UserSettingsId");
 
                     b.HasKey("Id");
 
@@ -240,6 +241,8 @@ namespace Persistence.Migrations
 
                     b.Property<int?>("ProductionYear");
 
+                    b.Property<Guid>("UserId");
+
                     b.Property<int?>("VehicleType");
 
                     b.HasKey("Id");
@@ -247,6 +250,8 @@ namespace Persistence.Migrations
                     b.HasIndex("EngineId");
 
                     b.HasIndex("ModelNameId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Vehicle");
                 });
@@ -335,7 +340,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.FuelStatisticsDomain.ConsumptionReport", b =>
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
-                        .WithMany()
+                        .WithMany("ConsumptionReports")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -343,8 +348,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.FuelStatisticsDomain.FuelSummary", b =>
                 {
                     b.HasOne("Domain.VehicleDomain.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
+                        .WithOne("FuelSummary")
+                        .HasForeignKey("Domain.FuelStatisticsDomain.FuelSummary", "VehicleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -373,6 +378,11 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.VehicleDomain.ModelName", "ModelName")
                         .WithMany("Vehicles")
                         .HasForeignKey("ModelNameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Domain.UserDomain.User", "User")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

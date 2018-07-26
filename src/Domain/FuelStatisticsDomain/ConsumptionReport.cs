@@ -11,7 +11,6 @@ namespace Domain.FuelStatisticsDomain
     public class ConsumptionReport : IEntity
     {
         public Guid Id { get; set; }
-        [ForeignKey("VehicleId")]
         public Guid VehicleId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
@@ -22,6 +21,7 @@ namespace Domain.FuelStatisticsDomain
         public DateTime LastChanged { get; set; }
         [Timestamp]
         public byte[] RowVersion{ get; set; }
+
         public virtual Vehicle Vehicle { get; set; }
     }
 }

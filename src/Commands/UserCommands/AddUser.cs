@@ -39,7 +39,7 @@ namespace Commands.UserCommands
             {
                 var email = new MailAddress(command.Email);
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
                 throw new InvalidUserEmailException();
             }
@@ -80,10 +80,20 @@ namespace Commands.UserCommands
                 Email = command.Email,
                 Id = command.Id
             };
-            
+
+            var newSettings = new UserSettings()
+            {
+                Units = Domain.Common.Units.Metric,
+                User = newUser,
+                UserId = command.Id
+            };
+
             var result = userManager.CreateAsync(newUser, command.Password);
             result.Wait();
 
+            if (result.Status == System.Threading.Tasks.TaskStatus.RanToCompletion)
+                unitOfWork.Context.UserSettings.Add(newSettings);
+            
             if (result.Status == System.Threading.Tasks.TaskStatus.Faulted)
             {
                 var sb = new StringBuilder();

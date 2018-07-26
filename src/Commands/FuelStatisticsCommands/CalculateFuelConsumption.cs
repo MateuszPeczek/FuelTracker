@@ -40,8 +40,8 @@ namespace Commands.FuelStatisticsCommands
             if (command.VehicleId == new Guid())
                 throw new InvalidVehicleIdException();
 
-            //if (command.UserId == new Guid())
-            //    throw new InvalidUserIdException();
+            if (command.UserId == new Guid())
+                throw new InvalidUserIdException();
 
             if (command.Distance <= 0)
                 throw new InvalidDistanceException();
@@ -73,8 +73,8 @@ namespace Commands.FuelStatisticsCommands
             if (!unitOfWork.Context.Vehicle.Any(v => v.Id == command.VehicleId))
                 throw new VehicleNotFoundException(command.VehicleId);
 
-            //if (!unitOfWork.Context.User.Any(u => u.Id == command.UserId))
-            //    throw new UserNotFoundException(command.UserId);
+            if (!unitOfWork.Context.User.Any(u => u.Id == command.UserId))
+                throw new UserNotFoundException(command.UserId);
 
             var unitsSettings = unitOfWork.Context.UserSettings.Single(s => s.UserId == command.UserId);
             if (unitsSettings == null)

@@ -1,6 +1,7 @@
 ﻿using Common.Consts;
 using Common.Interfaces;
 using CustomExceptions.FuelStatistics;
+using CustomExceptions.User;
 using CustomExceptions.Vehicle;
 using Domain.Common;
 using Persistence;
@@ -13,6 +14,7 @@ namespace Commands.FuelStatisticsCommands
     {
         public Guid Id { get; set; }
         public Guid VehicleId { get; set; }
+        public Guid UserId { get; set; }
         public float Distance { get; set; }
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
@@ -36,6 +38,9 @@ namespace Commands.FuelStatisticsCommands
 
             if (command.VehicleId == new Guid())
                 throw new InvalidVehicleIdException();
+
+            if (command.UserId == new Guid())
+                throw new InvalidUserIdException();
 
             if (command.Distance <= 0)
                 throw new InvalidDistanceException();
@@ -66,6 +71,10 @@ namespace Commands.FuelStatisticsCommands
         {
             commandValidator.Validate(command);
 
+            var vehicleUserId = unitOfWork.Context.Vehicle.Where(v => v.Id == command.VehicleId).Select(v => v.UserId).SingleOrDefault();
+            if (vehicleUserId != command.UserId)
+                throw new UnauthorizedAccessException();
+
             var reportToUpdate = unitOfWork.Context.ConsumptionReport.SingleOrDefault(r => r.Id == command.Id);
             if (reportToUpdate == null)
                 throw new ConsumptionReportNotFoundException(command.VehicleId, command.Id);
@@ -73,8 +82,7 @@ namespace Commands.FuelStatisticsCommands
             var fuelSummaryToUpdate = unitOfWork.Context.FuelSummary.SingleOrDefault(f => f.VehicleId == reportToUpdate.VehicleId);
             if (fuelSummaryToUpdate == null)
                 throw new FuelSummaryNotFoundException(reportToUpdate.VehicleId);
-
-
+            
             if (reportToUpdate.Units == fuelSummaryToUpdate.Units)
             {
                 fuelSummaryToUpdate.DistanceDriven -= reportToUpdate.Distance - command.Distance;

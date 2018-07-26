@@ -1,4 +1,4 @@
-﻿namespace FuelTracker.ApiModels.AuthorisationApiModels
+﻿namespace FuelTracker.ApiModels.UserApiModels
 {
     public class PostUser
     {
