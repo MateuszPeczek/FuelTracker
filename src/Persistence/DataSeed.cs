@@ -132,8 +132,11 @@ namespace Persistence
                     {
                         Id = new Guid("d51b848f-c1b8-4a74-afb5-6730dd2554f5"),
                         EngineId = new Guid("5b6a048a-ce00-48f9-815b-9e287efe2588"),
+                        Engine = context.Engine.First(e => e.Id == new Guid("5b6a048a-ce00-48f9-815b-9e287efe2588")),
                         ModelNameId = new Guid("f31b62aa-22fb-49dc-8fdf-c9576a657a3b"),
+                        ModelName = context.ModelName.First(m => m.Id == new Guid("f31b62aa-22fb-49dc-8fdf-c9576a657a3b")),
                         UserId = userId,
+                        User = context.User.First(u => u.Id == userId),
                         ProductionYear = 2008,
                         VehicleType = VehicleType.Car,
                         FuelSummary = null
