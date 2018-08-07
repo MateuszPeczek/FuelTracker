@@ -9,7 +9,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+<<<<<<< HEAD
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+=======
+>>>>>>> 762846a... Identity service
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -51,7 +54,7 @@ namespace FuelTracker
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
             services.AddScoped<IUserStore<User>, GuidUserStore>();
             services.AddScoped<IRoleStore<UserRole>, GuidRoleStore>();
-            //services.AddScoped<GuidSignInManager>();
+            services.AddSingleton<IEmailSendService, EmailSender>();
             services.AddScoped((s) =>
             {
                 return services;
@@ -96,9 +99,11 @@ namespace FuelTracker
                     options.Password.RequireDigit = false;
                     options.User.RequireUniqueEmail = true;
                     options.Password.RequiredLength = 6;
+                    
                 }
             ).AddSignInManager<GuidSignInManager>()
-            .AddRoleManager<GuidUserRoleManager>();
+            .AddRoleManager<GuidUserRoleManager>()
+            .AddDefaultTokenProviders();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -111,10 +116,15 @@ namespace FuelTracker
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))                       
                     };
                 });
 
+<<<<<<< HEAD
+=======
+            
+
+>>>>>>> 762846a... Identity service
             services.SeedData();
         }
 

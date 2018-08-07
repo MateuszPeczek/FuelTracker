@@ -8,6 +8,10 @@ using Persistence.UserStore;
 using System;
 using System.Net.Mail;
 using System.Text;
+<<<<<<< HEAD
+=======
+using System.Text.Encodings.Web;
+>>>>>>> 762846a... Identity service
 
 namespace Commands.UserCommands
 {
@@ -53,12 +57,21 @@ namespace Commands.UserCommands
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddUser> commandValidator;
+<<<<<<< HEAD
+=======
+        private readonly IEmailSendService emailSender;
+>>>>>>> 762846a... Identity service
         private readonly UserManager<User> userManager;
         private readonly GuidSignInManager signInManager;
         private readonly IConfiguration config;
 
         public AddUserCommandHandler(IUnitOfWork unitOfWork, 
+<<<<<<< HEAD
                                      ICommandValidator<AddUser> commandValidator, 
+=======
+                                     ICommandValidator<AddUser> commandValidator,
+                                     IEmailSendService emailSender,
+>>>>>>> 762846a... Identity service
                                      UserManager<User> userManager,
                                      GuidSignInManager signInManager,
                                      IConfiguration config)
@@ -89,12 +102,29 @@ namespace Commands.UserCommands
             };
 
             var result = userManager.CreateAsync(newUser, command.Password);
+<<<<<<< HEAD
             result.Wait();
 
             if (result.Status == System.Threading.Tasks.TaskStatus.RanToCompletion)
+=======
+
+            if (result.Result.Succeeded)
+            {
+                var code = userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                
+                var callbackUrl = $"http://{command.Url}/api/auth/ConfirmEmail?userId={newUser.Id}&code={code.Result}";
+
+                var mailSenderResult = emailSender.SendEmail(newUser.Email, "Confirm your email",
+                    $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
+                
+>>>>>>> 762846a... Identity service
                 unitOfWork.Context.UserSettings.Add(newSettings);
             
+<<<<<<< HEAD
             if (result.Status == System.Threading.Tasks.TaskStatus.Faulted)
+=======
+            if (!result.Result.Succeeded)
+>>>>>>> 762846a... Identity service
             {
                 var sb = new StringBuilder();
 

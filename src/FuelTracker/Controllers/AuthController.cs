@@ -1,4 +1,5 @@
-﻿using Domain.UserDomain;
+﻿using Common.Interfaces;
+using Domain.UserDomain;
 using FuelTracker.ApiModels.UserApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,53 +22,148 @@ namespace FuelTracker.Controllers
     {
         public AuthController(UserManager<User> userManager,
                               GuidSignInManager signInManager,
-                              IConfiguration config)
+                              IConfiguration config,
+                              IEmailSendService emailService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.config = config;
+            this.emailService = emailService;
         }
 
         private readonly UserManager<User> userManager;
         private readonly GuidSignInManager signInManager;
         private readonly IConfiguration config;
+        private readonly IEmailSendService emailService;
 
         [AllowAnonymous]
+<<<<<<< HEAD
         [HttpPost]
+=======
+        [HttpPost(Name = "GenerateToken")]
+>>>>>>> 762846a... Identity service
         public async Task<IActionResult> GenerateToken([FromBody] PostUser model)
         {
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByEmailAsync(model.Email);
 
-                if (user != null)
-                {
-                    var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-                    if (result.Succeeded)
-                    {
+                if (user == null || !user.EmailConfirmed)
+                    return StatusCode(403);
 
-                        var claims = new[]
-                        {
+                var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                if (result.Succeeded)
+                {
+
+                    var claims = new[]
+                    {
                             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                             new Claim("UserId",user.Id.ToString())
                         };
 
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                        var token = new JwtSecurityToken(config["Jwt:Issuer"],
-                          config["Jwt:Issuer"],
-                          claims,
-                          expires: DateTime.Now.AddMinutes(30),
-                          signingCredentials: creds);
+                    var token = new JwtSecurityToken(config["Jwt:Issuer"],
+                      config["Jwt:Issuer"],
+                      claims,
+                      expires: DateTime.Now.AddMinutes(30),
+                      signingCredentials: creds);
 
-                        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
-                    }
+                    return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
                 }
             }
 
             return BadRequest("Could not create token");
         }
+<<<<<<< HEAD
+=======
+
+        [AllowAnonymous]
+        [HttpPost("RequestConfirmEmail", Name = "RequestConfirmEmail")]
+        public async Task<IActionResult> RequestConfirmEmail([FromBody]PostRequestConfirmEmail model)
+        {
+        
+            var user = await userManager.FindByEmailAsync(model.Email);
+            //if (user != null && user.EmailConfirmed)
+            //    return Ok();
+
+            var code = userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = $"http://{Request.Host.Value}/api/auth/ConfirmEmail?userId={user.Id}&code={code.Result}";
+            var mailSenderResult = emailService.SendEmail(user.Email, "Confirm your email",
+                $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
+
+            if (mailSenderResult)
+                return Ok();
+
+            return BadRequest("Invalid token or user id");
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("ConfirmEmail", Name = "ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+                return Ok();
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Ok();
+
+            code = code.Replace(" ", "+");
+
+            var result = await userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+                return Ok();
+
+            return BadRequest("Invalid token or user id");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("ForgotPassword", Name = "ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody]PostForgotPassword model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+
+                if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+                {
+                    return Ok();
+                }
+
+                var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                var url = $"http://{Request.Host.Value}/api/auth/ConfirmEmail?userId={user.Id}&code={code}";
+                var mailSenderResult = emailService.SendEmail(user.Email, "Code for password reset",
+                    $"Password reset code: {code}");
+                return Ok();
+            }
+            
+            return BadRequest(ModelState);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("ResetPassword", Name = "ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody]PostResetPassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return Ok();
+            }
+            var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            return Ok();
+        }
+>>>>>>> 762846a... Identity service
     }
 }

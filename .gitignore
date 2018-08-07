@@ -251,3 +251,5 @@ paket-files/
 .idea/
 *.sln.iml
 .sonarqube/*
+/src/FuelTracker/appsettings.json
+/src/FuelTracker/appsettings.json
