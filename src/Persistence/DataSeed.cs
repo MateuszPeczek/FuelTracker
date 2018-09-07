@@ -25,7 +25,7 @@ namespace Persistence
 
         private static Guid CreateUser(ApplicationContext context)
         {
-            if (!context.Manufacturer.Any())
+            if (!context.User.Any())
             {
                 var hasher = new PasswordHasher<User>();
 
@@ -54,8 +54,10 @@ namespace Persistence
 
                 return user.Id;
             }
-
-            return Guid.NewGuid();
+            else
+            {
+                return context.User.First(u => u.Email == "***REMOVED***").Id;
+            }
         }
 
         private static void SeedManufacturers(ApplicationContext context)

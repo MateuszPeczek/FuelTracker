@@ -13,8 +13,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace FuelTracker.Controllers
 {
     [Route("api/auth")]
@@ -37,11 +35,7 @@ namespace FuelTracker.Controllers
         private readonly IEmailSendService emailService;
 
         [AllowAnonymous]
-<<<<<<< HEAD
-        [HttpPost]
-=======
         [HttpPost(Name = "GenerateToken")]
->>>>>>> 762846a... Identity service
         public async Task<IActionResult> GenerateToken([FromBody] PostUser model)
         {
             if (ModelState.IsValid)
@@ -77,8 +71,7 @@ namespace FuelTracker.Controllers
 
             return BadRequest("Could not create token");
         }
-<<<<<<< HEAD
-=======
+
 
         [AllowAnonymous]
         [HttpPost("RequestConfirmEmail", Name = "RequestConfirmEmail")]
@@ -116,7 +109,7 @@ namespace FuelTracker.Controllers
 
             var result = await userManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
-                return Ok();
+                return View("EmailConfirmed");
 
             return BadRequest("Invalid token or user id");
         }
@@ -135,9 +128,9 @@ namespace FuelTracker.Controllers
                 }
 
                 var code = await userManager.GeneratePasswordResetTokenAsync(user);
-                var url = $"http://{Request.Host.Value}/api/auth/ConfirmEmail?userId={user.Id}&code={code}";
-                var mailSenderResult = emailService.SendEmail(user.Email, "Code for password reset",
-                    $"Password reset code: {code}");
+                var url = $"http://{Request.Host.Value}/api/auth/ResetPassword?code={code}";
+                var mailSenderResult = emailService.SendEmail(user.Email, "Reset password request",
+                    $"Go to reset password form by <a href='{url}'>clicking here</a>.");
                 return Ok();
             }
             
@@ -145,8 +138,20 @@ namespace FuelTracker.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("ResetPassword", Name = "ResetPassword")]
+        public IActionResult ResetPassword(string code = null)
+        {
+            if (code == null)
+            {
+                throw new ApplicationException("A code must be supplied for password reset.");
+            }
+            var model = new PostResetPassword { Code = code };
+            return View(model);
+        }
+
+        [AllowAnonymous]
         [HttpPost("ResetPassword", Name = "ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromBody]PostResetPassword model)
+        public async Task<IActionResult> ResetPassword(PostResetPassword model)
         {
             if (!ModelState.IsValid)
             {
@@ -160,10 +165,9 @@ namespace FuelTracker.Controllers
             var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
-                return Ok();
+                return View("PasswordUpdated");
             }
             return Ok();
         }
->>>>>>> 762846a... Identity service
     }
 }

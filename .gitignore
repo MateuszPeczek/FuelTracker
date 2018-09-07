@@ -253,3 +253,4 @@ paket-files/
 .sonarqube/*
 /src/FuelTracker/appsettings.json
 /src/FuelTracker/appsettings.json
+/src/FuelTracker/appsettings.json

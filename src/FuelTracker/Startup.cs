@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-<<<<<<< HEAD
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-=======
->>>>>>> 762846a... Identity service
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using Persistence.UserStore;
+using Services.Email;
 using Swashbuckle.Swagger.Model;
 using System;
 using System.Collections.Generic;
@@ -46,6 +44,7 @@ namespace FuelTracker
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<ICommandSender, CommandBus>();
             services.AddScoped<IQuerySender, QueryBus>();
             services.AddScoped<ICommandHandlerFactory, HandlerFactory>();
@@ -120,11 +119,6 @@ namespace FuelTracker
                     };
                 });
 
-<<<<<<< HEAD
-=======
-            
-
->>>>>>> 762846a... Identity service
             services.SeedData();
         }
 
@@ -156,7 +150,6 @@ namespace FuelTracker
                 routes.MapRoute(name: "default",
                     template: "api/v{version:apiVersion}/{controller=Default}/{action=Get}/{id?}");
             });
-
 
             app.UseSwagger();
             app.UseSwaggerUi();

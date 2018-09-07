@@ -8,9 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.UserQueries;
 using System;
-using System.Linq;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FuelTracker.Controllers
 {
@@ -29,11 +26,15 @@ namespace FuelTracker.Controllers
 
         }
 
-        private IQueryResult<UserDetails> GetUserDetails()
+        private IQueryResult<UserDetails> GetUserDetails(Guid? userId = null)
         {
-            var query = new GetSingleUser(HttpContext.GetCurrentUserId());
-            var result = queryBus.InvokeQuery<UserDetails>(query);
+            IQueryResult<UserDetails> result;
 
+            if (userId.HasValue)
+                result = queryBus.InvokeQuery<UserDetails>(new GetSingleUser(userId.Value));
+            else
+                result = queryBus.InvokeQuery<UserDetails>(new GetSingleUser(HttpContext.GetCurrentUserId()));
+            
             return result;
         }
 
@@ -69,7 +70,7 @@ namespace FuelTracker.Controllers
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
-                    var result = GetUserDetails();
+                    var result = GetUserDetails(command.Id);
 
                     return CreatedAtRoute(
                         "GetUser",
