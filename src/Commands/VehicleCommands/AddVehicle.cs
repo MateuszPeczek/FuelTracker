@@ -11,11 +11,13 @@ namespace Commands.VehicleCommands
     {
         public Guid Id { get; set; }
         public Guid ModelNameId { get; set; }
+        public Guid UserId { get; set; }
 
-        public AddVehicle(Guid modelId)
+        public AddVehicle(Guid modelId, Guid userId)
         {
             Id = Guid.NewGuid();
             ModelNameId = modelId;
+            UserId = userId;
         }
     }
 
@@ -28,6 +30,9 @@ namespace Commands.VehicleCommands
 
             if (command.ModelNameId == Guid.Empty)
                 throw new InvalidModelIdException();
+
+            if (command.UserId == Guid.Empty)
+                throw new UnauthorizedAccessException();
         }
     }
 
@@ -50,6 +55,7 @@ namespace Commands.VehicleCommands
             {
                 Id = command.Id,
                 ModelNameId = command.ModelNameId,
+                UserId = command.UserId
             };
 
             unitOfWork.Context.Vehicle.Add(newVehicle);

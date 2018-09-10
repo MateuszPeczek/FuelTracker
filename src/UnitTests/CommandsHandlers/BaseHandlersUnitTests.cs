@@ -169,7 +169,7 @@ namespace UnitTests.CommandsHandlers
         {
             var id = Guid.NewGuid();
             var manufacturerId = Guid.NewGuid();
-            //var userId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
             modelId = modelId ?? Guid.NewGuid();
             engineId = engineId ?? Guid.NewGuid();
 
@@ -190,8 +190,8 @@ namespace UnitTests.CommandsHandlers
                 ProductionYear = expectedVehicleProductionYear,
                 EngineId = engineId.Value,
                 Engine = new Engine() { Id = engineId.Value},
-                //UserId = userId,
-                //User = new User() { Id = userId }
+                UserId = userId,
+                User = new User() { Id = userId }
             };
 
             unitOfWork.Context.Vehicle.Add(newVehicle);
@@ -202,5 +202,32 @@ namespace UnitTests.CommandsHandlers
 
         #endregion
 
+        #region User
+
+        protected const string userEmail = "test@email.com";
+        protected const string userName = "test";
+        protected const string password = "password";
+        protected const string firstName = "Name";
+
+        protected Guid InsertUserToDatabase(Guid? userId = null)
+        {
+            var id = userId ?? Guid.NewGuid();
+
+            var newUser = new User()
+            {
+                Id = id,
+                Email = userEmail,
+                UserName = userName,
+                PasswordHash = password.GetHashCode().ToString(),
+                FirstName = firstName
+            };
+
+            unitOfWork.Context.User.Add(newUser);
+            context.SaveChanges();
+
+            return id;
+        }
+
+        #endregion   
     }
 }

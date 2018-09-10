@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace FuelTracker.ApiModels.UserApiModels
+namespace FuelTracker.Models.Auth
 {
     public class ResetPassword
     {

@@ -22,8 +22,9 @@ namespace UnitTests.CommandsHandlers.VehicleHandlerUnitTests
         public void CommandValid_VehicleAdded()
         {
             var modelId = InsertModelToDatabase();
-            var addVehicleCommand = new AddVehicle(modelId);
-            
+            var userId = InsertUserToDatabase();
+            var addVehicleCommand = new AddVehicle(modelId, userId);
+
             A.CallTo(() => addVehicleValidator.Validate(addVehicleCommand)).DoesNothing();
 
             addVehicleHandler.Handle(addVehicleCommand);
@@ -41,7 +42,8 @@ namespace UnitTests.CommandsHandlers.VehicleHandlerUnitTests
         public void ValidatorThrowsException_HandlerThrowsException()
         {
             var modelId = InsertModelToDatabase();
-            var addVehicleCommand = new AddVehicle(modelId);
+            var userId = InsertUserToDatabase();
+            var addVehicleCommand = new AddVehicle(modelId, userId);
 
             A.CallTo(() => addVehicleValidator.Validate(addVehicleCommand)).Throws<Exception>();
 

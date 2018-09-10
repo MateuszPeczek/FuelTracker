@@ -131,7 +131,7 @@ namespace FuelTracker.Controllers
                 var url = $"http://{Request.Host.Value}/api/auth/ResetPassword?code={code}";
                 var mailSenderResult = emailService.SendEmail(user.Email, "Reset password request",
                     $"Go to reset password form by <a href='{url}'>clicking here</a>.");
-                return Ok();
+                return View("ForgotPassword");
             }
             
             return BadRequest(ModelState);
@@ -145,13 +145,15 @@ namespace FuelTracker.Controllers
             {
                 throw new ApplicationException("A code must be supplied for password reset.");
             }
-            var model = new PostResetPassword { Code = code };
+            code = code.Replace(" ", "+");
+
+            var model = new Models.Auth.ResetPassword { Code = code };
             return View(model);
         }
 
         [AllowAnonymous]
         [HttpPost("ResetPassword", Name = "ResetPassword")]
-        public async Task<IActionResult> ResetPassword(PostResetPassword model)
+        public async Task<IActionResult> ResetPassword(ResetPassword model)
         {
             if (!ModelState.IsValid)
             {
@@ -162,6 +164,8 @@ namespace FuelTracker.Controllers
             {
                 return Ok();
             }
+
+            model.Code = model.Code.Replace(" ", "+");
             var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {

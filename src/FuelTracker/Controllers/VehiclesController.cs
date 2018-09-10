@@ -75,7 +75,7 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new AddVehicle(model.ModelId);
+                var command = new AddVehicle(model.ModelId, new Guid()); //TODO: Retrieve current user id 
                 commandBus.AddCommand(command);
                 
                 var commandResult = commandBus.InvokeCommandsQueue();

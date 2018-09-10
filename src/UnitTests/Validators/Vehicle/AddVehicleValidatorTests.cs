@@ -21,7 +21,7 @@ namespace UnitTests.Validators.Vehicle
 
         private AddVehicle GetValidAddVehicleCommand()
         {
-            return new AddVehicle(Guid.NewGuid());
+            return new AddVehicle(Guid.NewGuid(), Guid.NewGuid());
         }
 
         #endregion
