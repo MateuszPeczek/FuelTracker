@@ -2,7 +2,7 @@
 
 namespace FuelTracker.ApiModels.UserApiModels
 {
-    public class ResetPassword
+    public class PostResetPassword
     {
         public string Code { get; set; }
         [DisplayName("Email")]

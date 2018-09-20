@@ -21,7 +21,7 @@ namespace UnitTests.Validators.FuelStatistics
 
         public UpdateConsumptionReport GetValidUpdateConsumptionReportCommand()
         {
-            return new UpdateConsumptionReport(Guid.NewGuid(), Guid.NewGuid(), 100, 5, 4);
+            return new UpdateConsumptionReport(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 100, 5, 4);
         }
 
         #endregion

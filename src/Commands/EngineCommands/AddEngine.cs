@@ -51,7 +51,8 @@ namespace Commands.EngineCommands
         private readonly IUnitOfWork unitOfWork;
         private readonly ICommandValidator<AddEngine> commandValidator;
 
-        public AddEngineHandler(IUnitOfWork unitOfWork, ICommandValidator<AddEngine> commandValidator)
+        public AddEngineHandler(IUnitOfWork unitOfWork, 
+                                ICommandValidator<AddEngine> commandValidator)
         {
             this.unitOfWork = unitOfWork;
             this.commandValidator = commandValidator;
@@ -60,6 +61,7 @@ namespace Commands.EngineCommands
         public void Handle(AddEngine command)
         {
             commandValidator.Validate(command);
+
             var engineToAdd = new Engine();
 
             engineToAdd.Id = command.Id;

@@ -28,11 +28,15 @@ namespace FuelTracker.Controllers
     {
         private readonly ICommandSender commandBus;
         private readonly IQuerySender queryBus;
+        private readonly Common.Interfaces.IAuthorizationService authService;
 
-        public VehiclesController(ICommandSender commandBus, IQuerySender queryBus)
+        public VehiclesController(ICommandSender commandBus, 
+                                  IQuerySender queryBus,
+                                  Common.Interfaces.IAuthorizationService authService)
         {
             this.commandBus = commandBus;
             this.queryBus = queryBus;
+            this.authService = authService;
         }
 
         // GET: api/vehicles
@@ -220,7 +224,8 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var command = new UpdateConsumptionReport(vehicleId, fuelReportId, model.Distance, model.FuelBurned, model.PricePerUnit);
+                var userData = authService.GetCurrentUserData();
+                var command = new UpdateConsumptionReport(vehicleId, fuelReportId, userData.UserId, model.Distance, model.FuelBurned, model.PricePerUnit);
                 commandBus.AddCommand(command);
 
                 var commandResult = commandBus.InvokeCommandsQueue();

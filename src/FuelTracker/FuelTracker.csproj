@@ -7,6 +7,8 @@
     <OutputType>Exe</OutputType>
     <PackageId>FuelTracker</PackageId>
     <AssetTargetFallback>$(AssetTargetFallback);dotnet5.6;portable-net45+win8</AssetTargetFallback>
+    <UserSecretsId>7844aaa5-e2f2-486e-a760-d03e7fd2c566</UserSecretsId>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

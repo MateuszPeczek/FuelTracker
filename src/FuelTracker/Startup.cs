@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +19,6 @@ using Persistence;
 using Persistence.UserStore;
 using Services.Email;
 using Swashbuckle.Swagger.Model;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -44,7 +42,6 @@ namespace FuelTracker
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<ICommandSender, CommandBus>();
             services.AddScoped<IQuerySender, QueryBus>();
             services.AddScoped<ICommandHandlerFactory, HandlerFactory>();
@@ -53,6 +50,7 @@ namespace FuelTracker
             services.AddScoped<IExceptionTypeResolver, ExceptionTypeResolver>();
             services.AddScoped<IUserStore<User>, GuidUserStore>();
             services.AddScoped<IRoleStore<UserRole>, GuidRoleStore>();
+            services.AddScoped<Common.Interfaces.IAuthorizationService, Services.Auth.AuthorisationService>();
             services.AddSingleton<IEmailSendService, EmailSender>();
             services.AddScoped((s) =>
             {
@@ -154,5 +152,6 @@ namespace FuelTracker
             app.UseSwagger();
             app.UseSwaggerUi();
         }
+
     }
 }

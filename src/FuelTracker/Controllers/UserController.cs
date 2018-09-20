@@ -18,32 +18,13 @@ namespace FuelTracker.Controllers
     {
         private readonly ICommandSender commandBus;
         private readonly IQuerySender queryBus;
+        private readonly Common.Interfaces.IAuthorizationService authService;
 
-        public UserController(ICommandSender commandBus, IQuerySender queryBus)
+        public UserController(ICommandSender commandBus, IQuerySender queryBus, Common.Interfaces.IAuthorizationService authService)
         {
             this.commandBus = commandBus;
             this.queryBus = queryBus;
-
-        }
-
-        private IQueryResult<UserDetails> GetUserDetails(Guid? userId = null)
-        {
-            IQueryResult<UserDetails> result;
-
-            if (userId.HasValue)
-                result = queryBus.InvokeQuery<UserDetails>(new GetSingleUser(userId.Value));
-            else
-                result = queryBus.InvokeQuery<UserDetails>(new GetSingleUser(HttpContext.GetCurrentUserId()));
-            
-            return result;
-        }
-
-        private IQueryResult<Settings> GetUserSettings()
-        {
-            var query = new GetUserSettings(HttpContext.GetCurrentUserId());
-            var result = queryBus.InvokeQuery<Settings>(query);
-
-            return result;
+            this.authService = authService;
         }
 
         private IActionResult HandleQueryStatus<T>(IQueryResult<T> userDetailsQueryResult)
@@ -57,12 +38,26 @@ namespace FuelTracker.Controllers
             else return null;
         }
 
+        private IQueryResult<UserDetails> GetUserDetails(Guid? userId = null)
+        {
+            IQueryResult<UserDetails> result;
+
+            if (userId.HasValue)
+                result = queryBus.InvokeQuery<UserDetails>(new GetSingleUser(userId.Value));
+            else
+                result = queryBus.InvokeQuery<UserDetails>(new GetSingleUser(HttpContext.GetCurrentUserId()));
+
+            return result;
+        }
+
         [AllowAnonymous]
         [HttpPost]
         public IActionResult CreateUser([FromBody]PostUser model)
         {
             if (ModelState.IsValid)
             {
+                var currentUser = authService.GetCurrentUserData();
+
                 var command = new AddUser(model.Email, model.Password);
                 commandBus.AddCommand(command);
 
@@ -92,20 +87,17 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentUser = GetUserDetails();
+                var userData = authService.GetCurrentUserData();
 
-                var state = HandleQueryStatus(currentUser);
-                if (state != null)
-                    return state;
 
-                var command = new UpdateUser(new Guid(currentUser.Data.Id), model.FirstName, model.LastName);
+                var command = new UpdateUser(userData.UserId, model.FirstName, model.LastName);
                 commandBus.AddCommand(command);
 
                 var commandResult = commandBus.InvokeCommandsQueue();
 
                 if (commandResult.Status == ActionStatus.Success)
                 {
-                    var result = GetUserDetails();
+                    var result = GetUserDetails(userData.UserId);
 
                     return CreatedAtRoute(
                         "GetUser",
@@ -148,8 +140,8 @@ namespace FuelTracker.Controllers
         {
             try
             {
-
-                var settings = GetUserSettings();
+                var user = authService.GetCurrentUserData();
+                var settings = queryBus.InvokeQuery<Settings>(new GetUserSettings(user.UserId));
                 var state = HandleQueryStatus(settings);
                 if (state != null)
                     return state;

@@ -1,6 +1,7 @@
 ﻿using Domain.UserDomain;
 using Domain.VehicleDomain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,15 +13,17 @@ namespace Persistence
     {
         public static void SeedData(this IServiceCollection serviceCollection)
         {
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceScope = serviceCollection.BuildServiceProvider().CreateScope();
 
-            var context = (ApplicationContext)serviceProvider.GetRequiredService(typeof(ApplicationContext));
-            
-            var userId = CreateUser(context);
-            SeedManufacturers(context);
-            SeedModels(context);
-            SeedEngines(context);
-            SeedVehicle(context, userId);
+            using (var context = serviceScope.ServiceProvider.GetService<ApplicationContext>())
+            {
+                context.Database.Migrate();
+                var userId = CreateUser(context);
+                SeedManufacturers(context);
+                SeedModels(context);
+                SeedEngines(context);
+                SeedVehicle(context, userId);
+            }
         }
 
         private static Guid CreateUser(ApplicationContext context)

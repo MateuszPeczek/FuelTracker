@@ -19,10 +19,11 @@ namespace Commands.FuelStatisticsCommands
         public float FuelBurned { get; set; }
         public float PricePerUnit { get; set; }
 
-        public UpdateConsumptionReport(Guid consumptionReportId, Guid vehicleId, float distance, float fuelBurned, float pricePerUnit)
+        public UpdateConsumptionReport(Guid consumptionReportId, Guid vehicleId, Guid userId, float distance, float fuelBurned, float pricePerUnit)
         {
             Id = consumptionReportId;
             VehicleId = vehicleId;
+            UserId = userId;
             Distance = distance;
             FuelBurned = fuelBurned;
             PricePerUnit = pricePerUnit;
