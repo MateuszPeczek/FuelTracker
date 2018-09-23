@@ -1,10 +1,10 @@
 ﻿using Common.Enums;
 using Common.Interfaces;
 using Infrastructure.CommunicationModels;
+using Infrastructure.ExceptionHandling;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Infrastructure.Bus
 {
@@ -36,18 +36,10 @@ namespace Infrastructure.Bus
 
                 throw new Exception($"Handle method not found on {handler.ToString()} object");
             }
-            catch (Exception ex)
+            catch (TargetInvocationException exception)
             {
-                var message = new StringBuilder();
-
-                message.Append(ex.Message);
-                
-                if (ex.InnerException != null)
-                {
-                    message.Append($" Inner: -> {ex.InnerException.Message}");
-                }
-
-                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnStatusForException(ex), ExceptionMessage = message.ToString()};
+                var ex = exception;
+                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnStatusForException(ex), ExceptionMessage = ex.GetMessageIncludingInnerExceptions() };
             }
         }
     }

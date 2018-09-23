@@ -3,6 +3,7 @@ using Domain.VehicleDomain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence.UserStore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,12 @@ namespace Persistence
         public static void SeedData(this IServiceCollection serviceCollection)
         {
             var serviceScope = serviceCollection.BuildServiceProvider().CreateScope();
+            var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>();
 
             using (var context = serviceScope.ServiceProvider.GetService<ApplicationContext>())
             {
                 context.Database.Migrate();
-                var userId = CreateUser(context);
+                var userId = CreateUser(context, userManager);
                 SeedManufacturers(context);
                 SeedModels(context);
                 SeedEngines(context);
@@ -26,20 +28,18 @@ namespace Persistence
             }
         }
 
-        private static Guid CreateUser(ApplicationContext context)
+        private static Guid CreateUser(ApplicationContext context, UserManager<User> userManager)
         {
             if (!context.User.Any())
             {
-                var hasher = new PasswordHasher<User>();
-
                 var user = new User
                 {
                     Id = new Guid("7b80243c-0204-4e02-8b6a-5f757c3e6a2f"),
                     UserName = "Mateusz",
-                    Email = "***REMOVED***",
-                    NormalizedEmail = "***REMOVED***".Normalize(),
-                    NormalizedUserName = "Mateusz".Normalize(),
+                    Email = "***REMOVED***"
                 };
+
+                var createdUser = userManager.CreateAsync(user, "***REMOVED***");
 
                 var userSettings = new UserSettings()
                 {
@@ -49,9 +49,6 @@ namespace Persistence
                     User = user
                 };
 
-                user.PasswordHash = hasher.HashPassword(user, "***REMOVED***");
-
-                context.User.Add(user);
                 context.UserSettings.Add(userSettings);
                 context.SaveChanges();
 

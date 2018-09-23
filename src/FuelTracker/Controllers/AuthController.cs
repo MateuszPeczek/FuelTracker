@@ -1,4 +1,5 @@
 ﻿using Common.DataTransferObjects;
+using Infrastructure.ExceptionHandling;
 using FuelTracker.ApiModels.UserApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +24,15 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var token = await authService.GenerateToken(new UserCredentials() { Email = model.Email, Password = model.Password });
-
-                return Ok(new { token });
+                try
+                {
+                    var token = await authService.GenerateToken(new UserCredentials() { Email = model.Email, Password = model.Password });
+                    return Ok(new { token });
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.GetMessageIncludingInnerExceptions());
+                }
             }
 
             return BadRequest("Could not create token");
@@ -35,78 +42,112 @@ namespace FuelTracker.Controllers
         [HttpPost("RequestConfirmEmail", Name = "RequestConfirmEmail")]
         public async Task<IActionResult> RequestConfirmEmail([FromBody]PostRequestConfirmEmail model)
         {
+            try
+            {
+                var mailSenderResult = await authService.RequestConfirmEmail(model.Email);
 
-            var mailSenderResult = await authService.RequestConfirmEmail(model.Email);
+                if (mailSenderResult)
+                    return Ok();
 
-            if (mailSenderResult)
-                return Ok();
-
-            return BadRequest("Invalid token or user id");
+                return BadRequest("Invalid token or user id");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.GetMessageIncludingInnerExceptions());
+            }
         }
 
         [AllowAnonymous]
         [HttpGet("ConfirmEmail", Name = "ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            var result = await authService.ConfirmEmail(new EmailConfirmationCredentials() { Code = code, UserId = new Guid(userId) });
+            try
+            {
+                var result = await authService.ConfirmEmail(new EmailConfirmationCredentials() { Code = code, UserId = new Guid(userId) });
 
-            if (result)
-                return View("EmailConfirmed");
+                if (result)
+                    return View("EmailConfirmed");
 
-            return BadRequest("Invalid token or user id");
+                return BadRequest("Invalid token or user id");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.GetMessageIncludingInnerExceptions());
+            }
         }
 
         [AllowAnonymous]
         [HttpPost("ForgotPassword", Name = "ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody]PostForgotPassword model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var result = await authService.RequestForgotPassword(model.Email);
+                if (ModelState.IsValid)
+                {
+                    var result = await authService.RequestForgotPassword(model.Email);
 
-                if (result)
-                    return View("ForgotPassword");
+                    if (result)
+                        return View("ForgotPassword");
+                }
+
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.GetMessageIncludingInnerExceptions());
+            }
         }
 
         [AllowAnonymous]
         [HttpGet("ResetPassword", Name = "ResetPassword")]
         public IActionResult ResetPassword(string code = null)
         {
-            if (code == null)
+            try
             {
-                throw new ApplicationException("A code must be supplied for password reset.");
-            }
-            code = code.Replace(" ", "+");
+                if (code == null)
+                {
+                    throw new ApplicationException("A code must be supplied for password reset.");
+                }
+                code = code.Replace(" ", "+");
 
-            var model = new Models.Auth.ResetPassword { Code = code };
-            return View(model);
+                var model = new Models.Auth.ResetPassword { Code = code };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.GetMessageIncludingInnerExceptions());
+            }
         }
 
         [AllowAnonymous]
         [HttpPost("ResetPassword", Name = "ResetPassword")]
         public async Task<IActionResult> ResetPassword(PostResetPassword model)
         {
-            if (model.Password != model.ConfirmPassword)
-                ModelState.AddModelError("Password", "Password and confirm password fields are not the same");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await authService.ResetPassword(new ResetPasswordData()
+            try
             {
-                Code = model.Code,
-                ConfirmPassword = model.ConfirmPassword,
-                Email = model.Email,
-                Password = model.Password
-            });
+                if (model.Password != model.ConfirmPassword)
+                    ModelState.AddModelError("Password", "Password and confirm password fields are not the same");
 
-            if (result)
-                return View("PasswordUpdated");
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            return Ok();
+                var result = await authService.ResetPassword(new ResetPasswordData()
+                {
+                    Code = model.Code,
+                    ConfirmPassword = model.ConfirmPassword,
+                    Email = model.Email,
+                    Password = model.Password
+                });
+
+                if (result)
+                    return View("PasswordUpdated");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.GetMessageIncludingInnerExceptions());
+            }
         }
     }
 }

@@ -56,8 +56,6 @@ namespace FuelTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentUser = authService.GetCurrentUserData();
-
                 var command = new AddUser(model.Email, model.Password);
                 commandBus.AddCommand(command);
 

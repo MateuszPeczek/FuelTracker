@@ -1,6 +1,7 @@
 ﻿using Common.Enums;
 using Common.Interfaces;
 using CustomExceptions.CommandBus;
+using Infrastructure.ExceptionHandling;
 using Infrastructure.CommunicationModels;
 using Persistence;
 using System;
@@ -59,9 +60,10 @@ namespace Infrastructure.Bus
 
                 return new CommandResult() { Status = ActionStatus.Success, ExceptionMessage = string.Empty };
             }
-            catch (Exception ex)
-            {         
-                return new CommandResult() { Status = exceptionTypeResolver.ReturnStatusForException(ex), ExceptionMessage = ex.InnerException == null ? ex.Message : ex.InnerException.Message };
+            catch (TargetInvocationException ex)
+            {
+                var exception = ex.InnerException;
+                return new CommandResult() { Status = exceptionTypeResolver.ReturnStatusForException(exception), ExceptionMessage = ex.GetMessageIncludingInnerExceptions()};
             }
         }
     }
