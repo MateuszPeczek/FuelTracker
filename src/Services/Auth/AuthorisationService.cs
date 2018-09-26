@@ -80,7 +80,7 @@ namespace Services.Auth
 
             var code = userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = $"http://{GetCurrentServerName()}/api/auth/ConfirmEmail?userId={user.Id}&code={code.Result}";
-            var mailSenderResult = emailService.SendEmail(user.Email, "Confirm your email",
+            var mailSenderResult = await emailService.SendEmail(user.Email, "Confirm your email",
                 $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
 
             return mailSenderResult;
@@ -111,7 +111,7 @@ namespace Services.Auth
             
             var code = await userManager.GeneratePasswordResetTokenAsync(user);
             var url = $"http://{GetCurrentServerName()}/api/auth/ResetPassword?code={code}";
-            var mailSenderResult = emailService.SendEmail(user.Email, "Reset password request",
+            var mailSenderResult = await emailService.SendEmail(user.Email, "Reset password request",
                 $"Go to reset password form by <a href='{url}'>clicking here</a>.");
 
             return mailSenderResult;

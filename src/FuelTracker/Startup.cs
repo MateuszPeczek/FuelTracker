@@ -35,6 +35,12 @@ namespace FuelTracker
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
             Configuration = builder.Build();
         }
 
@@ -42,6 +48,7 @@ namespace FuelTracker
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IEmailSendService, EmailSender>();
             services.AddScoped<ICommandSender, CommandBus>();
             services.AddScoped<IQuerySender, QueryBus>();
             services.AddScoped<ICommandHandlerFactory, HandlerFactory>();
@@ -51,7 +58,6 @@ namespace FuelTracker
             services.AddScoped<IUserStore<User>, GuidUserStore>();
             services.AddScoped<IRoleStore<UserRole>, GuidRoleStore>();
             services.AddScoped<Common.Interfaces.IAuthorizationService, Services.Auth.AuthorisationService>();
-            services.AddSingleton<IEmailSendService, EmailSender>();
             services.AddScoped((s) =>
             {
                 return services;
@@ -117,6 +123,7 @@ namespace FuelTracker
                     };
                 });
 
+            services.AddLogging();
             services.SeedData();
         }
 
@@ -124,7 +131,7 @@ namespace FuelTracker
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-
+        
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

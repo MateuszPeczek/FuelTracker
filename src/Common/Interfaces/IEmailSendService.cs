@@ -1,7 +1,9 @@
-﻿namespace Common.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Common.Interfaces
 {
     public interface IEmailSendService
     {
-        bool SendEmail(string email, string subject, string message);
+        Task<bool> SendEmail(string email, string subject, string message);
     }
 }
