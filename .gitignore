@@ -252,5 +252,5 @@ paket-files/
 *.sln.iml
 .sonarqube/*
 /src/FuelTracker/appsettings.json
-/src/FuelTracker/appsettings.json
-/src/FuelTracker/appsettings.json
+/src/FuelTracker/fuelTracker.db
+
