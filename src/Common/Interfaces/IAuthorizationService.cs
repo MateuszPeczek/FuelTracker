@@ -5,7 +5,8 @@ namespace Common.Interfaces
 {
     public interface IAuthorizationService
     {
-        Task<string> GenerateToken(UserCredentials userCredentials);
+        Task<Token> AuthorizeUser(UserCredentials userCredentials);
+        Task<Token> RefreshToken(RefreshTokenCredentials refreshTokenCredentials);
         Task<bool> RequestConfirmEmail(string email);
         Task<bool> ConfirmEmail(EmailConfirmationCredentials emailConfirmationCredentials);
         Task<bool> RequestForgotPassword(string email);

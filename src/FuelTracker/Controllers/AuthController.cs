@@ -19,15 +19,35 @@ namespace FuelTracker.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost(Name = "GenerateToken")]
-        public async Task<IActionResult> GenerateToken([FromBody]PostUser model)
+        [HttpPost("AuhorizeUser", Name = "AuthorizeUser")]
+        public async Task<IActionResult> AuhorizeUser([FromBody]PostUser model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var token = await authService.GenerateToken(new UserCredentials() { Email = model.Email, Password = model.Password });
-                    return Ok(new { token });
+                    var token = await authService.AuthorizeUser(new UserCredentials() { Email = model.Email, Password = model.Password });
+                    return Ok(token);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.GetMessageIncludingInnerExceptions());
+                }
+            }
+
+            return BadRequest("Could not create token");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("RefreshToken", Name = "RefreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody]RefreshTokenCredentials refreshTokenCredentials)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var token = await authService.RefreshToken(refreshTokenCredentials);
+                    return Ok(token);
                 }
                 catch (Exception ex)
                 {

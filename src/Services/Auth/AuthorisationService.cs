@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Persistence;
 using Persistence.UserStore;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -17,18 +19,21 @@ namespace Services.Auth
 {
     public class AuthorisationService : IAuthorizationService
     {
+        private readonly ApplicationContext context;
         private readonly UserManager<User> userManager;
         private readonly GuidSignInManager signInManager;
         private readonly IConfiguration config;
         private readonly IEmailSendService emailService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public AuthorisationService(UserManager<User> userManager,
+        public AuthorisationService(ApplicationContext context,
+                              UserManager<User> userManager,
                               GuidSignInManager signInManager,
                               IConfiguration config,
                               IEmailSendService emailService,
                               IHttpContextAccessor httpContextAccessor)
         {
+            this.context = context;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.config = config;
@@ -36,12 +41,7 @@ namespace Services.Auth
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        private string GetCurrentServerName()
-        {
-            return httpContextAccessor.HttpContext.Request.Host.Value;
-        }
-
-        public async Task<string> GenerateToken(UserCredentials userCredentials)
+        public async Task<Token> AuthorizeUser(UserCredentials userCredentials)
         {
             var user = await userManager.FindByEmailAsync(userCredentials.Email);
 
@@ -51,27 +51,30 @@ namespace Services.Auth
             var result = await signInManager.CheckPasswordSignInAsync(user, userCredentials.Password, false);
             if (result.Succeeded)
             {
-
-                var claims = new[]
-                {
-                            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                            new Claim("UserId",user.Id.ToString())
-                        };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                var token = new JwtSecurityToken(config["Jwt:Issuer"],
-                  config["Jwt:Issuer"],
-                  claims,
-                  expires: DateTime.Now.AddMinutes(30),
-                  signingCredentials: creds);
-
-                return new JwtSecurityTokenHandler().WriteToken(token);
+                return GenerateUserToken(user);
             }
 
             throw new Exception("Error on token generation");
+        }
+
+        public async Task<Token> RefreshToken(RefreshTokenCredentials refreshTokenCredentials)
+        {
+            var unauthorizedException = new UnauthorizedAccessException("Unauthorized token refresh action");
+            var userRefreshToken = context.RefreshToken.SingleOrDefault(t => t.Token == refreshTokenCredentials.Token && t.UserId == refreshTokenCredentials.UserId);
+
+            if (userRefreshToken == null)
+                throw unauthorizedException;
+
+            var tokenManager = new JwtSecurityTokenHandler();
+            var token = tokenManager.ReadJwtToken(refreshTokenCredentials.Token);
+
+            var tokenUserGuid = token.Claims.Where(c => c.Type == "UserId").Select(c => c.Value).FirstOrDefault();
+            if (tokenUserGuid == null || tokenUserGuid != refreshTokenCredentials.UserId.ToString())
+                throw unauthorizedException;
+
+            var user = await userManager.FindByIdAsync(refreshTokenCredentials.UserId.ToString());
+
+            return GenerateUserToken(user);
         }
 
         public async Task<bool> RequestConfirmEmail(string email)
@@ -145,5 +148,77 @@ namespace Services.Auth
 
             return userData;
         }
+
+        #region "Private methods"
+
+        private Token GenerateUserToken(User user)
+        {
+            var token = new Token();
+            double expiryDays;
+            int expiryMonths;
+
+            if (!double.TryParse(config["Jwt:AccessTokenDaysValid"], out expiryDays) ||
+                !int.TryParse(config["Jwt:RefreshTokenMonthsValid"], out expiryMonths))
+                throw new Exception("Invalid token expriation settings");
+
+
+            token.AccessToken = GenerateToken(new[] {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim("UserId",user.Id.ToString())
+                    },
+                expiryDate: DateTime.UtcNow.AddDays(expiryDays));
+
+
+            token.RefreshToken = GenerateToken(new[] {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim("UserId",user.Id.ToString())
+                    },
+                expiryDate: DateTime.UtcNow.AddMonths(expiryMonths));
+        
+            var existingRefreshToken = context.RefreshToken.SingleOrDefault(t => t.UserId == user.Id);
+
+            if (existingRefreshToken == null)
+            {
+                var newUserRefreshToken = new RefreshToken()
+                {
+                    Token = token.RefreshToken,
+                    UserId = user.Id,
+                    User = user
+                };
+
+                context.Add(newUserRefreshToken);
+            }
+            else
+            {
+                existingRefreshToken.Token = token.RefreshToken;
+                context.Entry(existingRefreshToken).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
+
+            context.SaveChanges();
+
+            return token;
+        }
+
+        private string GenerateToken(IEnumerable<Claim> claims, DateTime expiryDate)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(config["Jwt:Issuer"],
+              config["Jwt:Issuer"],
+              claims,
+              expires: expiryDate,
+              signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string GetCurrentServerName()
+        {
+            return httpContextAccessor.HttpContext.Request.Host.Value;
+        }
+
+#endregion
     }
 }

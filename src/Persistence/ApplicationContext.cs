@@ -3,6 +3,7 @@ using Domain.UserDomain;
 using Domain.VehicleDomain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Persistence.UserStore;
 using System;
 
 namespace Persistence
@@ -21,6 +22,7 @@ namespace Persistence
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<UserSettings> UserSettings { get; set; }
+        public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
         public DbSet<FuelSummary> FuelSummary { get; set; }
         public DbSet<Engine> Engine { get; set; }
