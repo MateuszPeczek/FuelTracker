@@ -58,6 +58,26 @@ namespace FuelTracker.Controllers
             return BadRequest("Could not create token");
         }
 
+        [Authorize]
+        [HttpPost("RevokeToken", Name = "RevokeToken")]
+        public async Task<IActionResult> RevokeToken([FromBody]Guid userId)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await authService.RevokeToken(userId);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.GetMessageIncludingInnerExceptions());
+                }
+            }
+
+            return BadRequest("Could not revoke token");
+        }
+
         [AllowAnonymous]
         [HttpPost("RequestConfirmEmail", Name = "RequestConfirmEmail")]
         public async Task<IActionResult> RequestConfirmEmail([FromBody]PostRequestConfirmEmail model)

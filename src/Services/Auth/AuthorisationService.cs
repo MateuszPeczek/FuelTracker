@@ -77,6 +77,20 @@ namespace Services.Auth
             return GenerateUserToken(user);
         }
 
+        public async Task<bool> RevokeToken(Guid userId)
+        {
+            var userRefreshToken = context.RefreshToken.SingleOrDefault(t => t.UserId == userId);
+
+            if (userRefreshToken == null)
+                return true;
+            else
+                await Task.Run(() => context.Remove(userRefreshToken));
+
+            context.SaveChanges();
+
+            return true;
+        }
+
         public async Task<bool> RequestConfirmEmail(string email)
         {
             var user = await userManager.FindByEmailAsync(email);
