@@ -27,17 +27,6 @@ namespace FuelTracker.Controllers
             this.authService = authService;
         }
 
-        private IActionResult HandleQueryStatus<T>(IQueryResult<T> userDetailsQueryResult)
-        {
-            if (userDetailsQueryResult.QueryStatus == ActionStatus.BadRequest)
-                return BadRequest(userDetailsQueryResult.ExceptionMessage);
-            else if (userDetailsQueryResult.QueryStatus == ActionStatus.NotFound)
-                return NotFound(userDetailsQueryResult.ExceptionMessage);
-            else if (userDetailsQueryResult.QueryStatus == ActionStatus.Failure)
-                return StatusCode(500, userDetailsQueryResult.ExceptionMessage);
-            else return null;
-        }
-
         private IQueryResult<UserDetails> GetUserDetails(Guid? userId = null)
         {
             IQueryResult<UserDetails> result;
@@ -58,23 +47,15 @@ namespace FuelTracker.Controllers
             {
                 var command = new AddUser(model.Email, model.Password);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
+                var result = GetUserDetails(command.Id);
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetUserDetails(command.Id);
-
-                    return CreatedAtRoute(
-                        "GetUser",
-                        new { userEmail = command.Email },
-                        result.Data
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                return CreatedAtRoute(
+                    "GetUser",
+                    new { userEmail = command.Email },
+                    result.Data
+                    );
             }
 
             return BadRequest(ModelState);
@@ -90,23 +71,15 @@ namespace FuelTracker.Controllers
 
                 var command = new UpdateUser(userData.UserId, model.FirstName, model.LastName);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
+                var result = GetUserDetails(userData.UserId);
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetUserDetails(userData.UserId);
-
-                    return CreatedAtRoute(
-                        "GetUser",
-                        new { firstName = command.FirstName, lastName = command.LastName },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                return CreatedAtRoute(
+                    "GetUser",
+                    new { firstName = command.FirstName, lastName = command.LastName },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -116,40 +89,18 @@ namespace FuelTracker.Controllers
         [HttpGet(Name = "GetUser")]
         public IActionResult GetUser()
         {
-            try
-            {
-                var currentUser = GetUserDetails();
-
-                var state = HandleQueryStatus(currentUser);
-                if (state != null)
-                    return state;
-                else
-                    return Ok(currentUser.Data);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var currentUser = GetUserDetails();
+            return Ok(currentUser.Data);
         }
 
         //GET: api/users/settings
         [HttpGet("settings", Name = "GetUserSettings")]
         public IActionResult GetSettings()
         {
-            try
-            {
-                var user = authService.GetCurrentUserData();
-                var settings = queryBus.InvokeQuery<Settings>(new GetUserSettings(user.UserId));
-                var state = HandleQueryStatus(settings);
-                if (state != null)
-                    return state;
+            var user = authService.GetCurrentUserData();
+            var settings = queryBus.InvokeQuery<Settings>(new GetUserSettings(user.UserId));
 
-                return Ok(settings);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(settings.Data);
         }
     }
 }

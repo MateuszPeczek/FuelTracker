@@ -1,7 +1,6 @@
 ﻿using Common.Enums;
 using Common.Interfaces;
 using Infrastructure.CommunicationModels;
-using Infrastructure.ExceptionHandling;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -36,10 +35,13 @@ namespace Infrastructure.Bus
 
                 throw new Exception($"Handle method not found on {handler.ToString()} object");
             }
-            catch (TargetInvocationException exception)
+            catch (TargetInvocationException ex)
             {
-                var ex = exception;
-                return new QueryResult<T>() { Data = default(T), QueryStatus = exceptionTypeResolver.ReturnStatusForException(ex), ExceptionMessage = ex.GetMessageIncludingInnerExceptions() };
+                throw ex.InnerException;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

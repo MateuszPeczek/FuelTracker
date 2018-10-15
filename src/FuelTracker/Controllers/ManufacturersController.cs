@@ -1,6 +1,5 @@
 ﻿using Commands.ManufacturerCommands;
 using Commands.ModelCommands;
-using Common.Enums;
 using Common.Interfaces;
 using Common.Ordering.Shared;
 using Common.Paging;
@@ -43,7 +42,7 @@ namespace FuelTracker.Controllers
             var query = new GetManufacturersList(pageSize, pageNo, orderDirection);
             var result = queryBus.InvokeQuery<PaginatedList<ManufacturerDetails>>(query);
 
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         private ManufacturerDetails GetManufacturerDetails(Guid manufacturerId)
@@ -67,10 +66,6 @@ namespace FuelTracker.Controllers
         public IActionResult GetManufacturer(Guid manufacturerId)
         {
             var result = GetManufacturerDetails(manufacturerId);
-
-            if (result == null)
-                return NotFound();
-
             return Ok(result);
         }
 
@@ -81,14 +76,7 @@ namespace FuelTracker.Controllers
             var query = new GetManufacturersByIds(manufacturersIds);
             var result = queryBus.InvokeQuery<IEnumerable<ManufacturerDetails>>(query);
 
-            if (result.QueryStatus == ActionStatus.Success)
-                return Ok(result);
-
-            if (result.QueryStatus == ActionStatus.BadRequest)
-                return BadRequest(result.ExceptionMessage);
-
-            return StatusCode(500, result.ExceptionMessage);
-            
+            return Ok(result.Data);
         }
 
         // POST api/manufacturers
@@ -98,24 +86,14 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new AddManufacturer(model.Name, model.ModelsNames);
-                commandBus.AddCommand(command);
+                commandBus.AddCommand(command); commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetManufacturerDetails(command.Id);
-
-                    return CreatedAtRoute(
-                        "GetManufacturer",
-                        new { manufacturerId = command.Id },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                var result = GetManufacturerDetails(command.Id);
+                return CreatedAtRoute(
+                    "GetManufacturer",
+                    new { manufacturerId = command.Id },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -134,22 +112,13 @@ namespace FuelTracker.Controllers
                     var command = new AddManufacturer(manufacturer.Name, manufacturer.ModelsNames);
                     commandBus.AddCommand(command);
                 }
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetManufacturersDetails(commandBus.CommandIds);
-
-                    return CreatedAtRoute(
-                        "GetManufacturersByIds",
-                        new { ids = string.Join(",", commandBus.CommandIds) },
-                        result);
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                var result = GetManufacturersDetails(commandBus.CommandIds);
+                return CreatedAtRoute(
+                    "GetManufacturersByIds",
+                    new { ids = string.Join(",", commandBus.CommandIds) },
+                    result);
             }
             else
             {
@@ -165,13 +134,9 @@ namespace FuelTracker.Controllers
             {
                 var command = new UpdateManufacturer(manufacturerId, model.Name);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return GetManufacturer(command.Id);
-                else
-                    return new JsonResult(commandResult.ExceptionMessage);
+                return GetManufacturer(command.Id);
             }
 
             return BadRequest(ModelState);
@@ -183,13 +148,9 @@ namespace FuelTracker.Controllers
         {
             var command = new DeleteManufacturer(manufacturerId);
             commandBus.AddCommand(command);
+            commandBus.InvokeCommandsQueue();
 
-            var commandResult = commandBus.InvokeCommandsQueue();
-
-            if (commandResult.Status == ActionStatus.Success)
-                return Ok();
-            else
-                return new JsonResult(commandResult.ExceptionMessage);
+            return Ok();
         }
 
         // GET: api/manufacturers/{manufacturerId}/models
@@ -202,7 +163,7 @@ namespace FuelTracker.Controllers
             var query = new GetModelsList(manufacturerId, pageSize, pageNo, orderDirection);
             var result = queryBus.InvokeQuery<PaginatedList<ModelDetails>>(query);
 
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         private ModelDetails GetModelDetails(Guid manufacturerId, Guid modelId)
@@ -226,10 +187,6 @@ namespace FuelTracker.Controllers
         public IActionResult GetModel(Guid manufacturerId, Guid modelId)
         {
             var result = GetModelDetails(manufacturerId, modelId);
-            
-            if (result == null)
-                return NotFound();
-
             return Ok(result);
         }
 
@@ -240,13 +197,7 @@ namespace FuelTracker.Controllers
             var query = new GetModelsDetailsByIds(manufacturerId, ids);
             var result = queryBus.InvokeQuery<IEnumerable<ModelDetails>>(query);
 
-            if (result.QueryStatus == ActionStatus.Success)
-                return Ok(result);
-
-            if (result.QueryStatus == ActionStatus.BadRequest)
-                return BadRequest(result.ExceptionMessage);
-
-            return StatusCode(500, result.ExceptionMessage);
+            return Ok(result.Data);
         }
 
         // POST api/manufacturers/{manufacturerId}/models
@@ -257,23 +208,15 @@ namespace FuelTracker.Controllers
             {
                 var command = new AddModelName(manufacturerId, model.ModelName);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
+                var result = GetModelDetails(manufacturerId, command.Id);
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetModelDetails(manufacturerId, command.Id);
-
-                    return CreatedAtRoute(
-                        "GetModel",
-                        new { manufacturerId = manufacturerId, modelId = command.Id },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                return CreatedAtRoute(
+                    "GetModel",
+                    new { manufacturerId = manufacturerId, modelId = command.Id },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -293,22 +236,15 @@ namespace FuelTracker.Controllers
                     var command = new AddModelName(manufacturerId, model.ModelName);
                     commandBus.AddCommand(command);
                 }
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetModelDetailsByIdsData(manufacturerId, commandBus.CommandIds);
+                var result = GetModelDetailsByIdsData(manufacturerId, commandBus.CommandIds);
 
-                    return CreatedAtRoute(
-                        "GetModelsByIds",
-                        new { ids = string.Join(",", commandBus.CommandIds) },
-                        result);
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                return CreatedAtRoute(
+                    "GetModelsByIds",
+                    new { ids = string.Join(",", commandBus.CommandIds) },
+                    result);
             }
             else
             {
@@ -324,13 +260,9 @@ namespace FuelTracker.Controllers
             {
                 var command = new UpdateModelName(modelId, manufactuerId, model.ModelName);
                 commandBus.AddCommand(command);
-
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return GetModel(manufactuerId, command.Id);
-                else
-                    return new JsonResult(commandResult.ExceptionMessage);
+                commandBus.InvokeCommandsQueue();
+                
+                return GetModel(manufactuerId, command.Id);
             }
 
             return BadRequest(ModelState);
@@ -342,13 +274,9 @@ namespace FuelTracker.Controllers
         {
             var command = new DeleteModelName(manufactuerId, modelId);
             commandBus.AddCommand(command);
+            commandBus.InvokeCommandsQueue();
 
-            var commandResult = commandBus.InvokeCommandsQueue();
-
-            if (commandResult.Status == ActionStatus.Success)
-                return Ok();
-            else
-                return new JsonResult(commandResult.ExceptionMessage);
+            return Ok();
         }
     }
 }

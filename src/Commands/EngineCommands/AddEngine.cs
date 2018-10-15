@@ -43,6 +43,18 @@ namespace Commands.EngineCommands
 
             if (command.Id == new Guid())
                 throw new InvalidEngineIdException();
+
+            if (command.Displacement < 1)
+                throw new InvalidEngineDisplacementException();
+
+            if (command.Power < 0)
+                throw new InvalidEnginePowerException();
+
+            if (command.Torque < 0)
+                throw new InvalidEngineTorqueException();
+
+            if (command.Cylinders < 1)
+                throw new InvalidEngineCylindersException();
         }
     }
 

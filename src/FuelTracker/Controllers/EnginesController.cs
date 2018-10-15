@@ -1,5 +1,4 @@
 ﻿using Commands.EngineCommands;
-using Common.Enums;
 using Common.Interfaces;
 using Common.Ordering.Engine;
 using Common.Ordering.Shared;
@@ -13,6 +12,7 @@ using Queries.EngineQueries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace FuelTracker.Controllers
 {
@@ -53,10 +53,6 @@ namespace FuelTracker.Controllers
         public IActionResult GetEngine([ModelBinder(BinderType = typeof(CollectionModelBinder))]Guid engineId)
         {
             var result = GetEngineDetails(engineId);
-
-            if (result == null)
-                return NotFound();
-
             return Ok(result);
         }
 
@@ -71,14 +67,7 @@ namespace FuelTracker.Controllers
             var query = new GetEnginesList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.InvokeQuery<PaginatedList<EngineDetails>>(query);
 
-            if (result.QueryStatus == ActionStatus.Success)
-                return Ok(result);
-
-            if (result.QueryStatus == ActionStatus.BadRequest)
-                return BadRequest(result.ExceptionMessage);
-
-            return StatusCode(500, result.ExceptionMessage);
-
+            return Ok(result.Data);
         }
 
         //GET: api/engines/(engineId, engineId, ...)
@@ -88,14 +77,8 @@ namespace FuelTracker.Controllers
         {
             var query = new GetEnginesByIds(ids);
             var result = queryBus.InvokeQuery<IEnumerable<EngineDetails>>(query);
-            
-            if (result.QueryStatus == ActionStatus.Success)
-                return Ok(result);
 
-            if (result.QueryStatus == ActionStatus.BadRequest)
-                return BadRequest(result.ExceptionMessage);
-
-            return StatusCode(500, result.ExceptionMessage);
+            return Ok(result.Data);
         }
 
         //POST: api/engines
@@ -106,23 +89,14 @@ namespace FuelTracker.Controllers
             {
                 var command = new AddEngine(model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement, model.FuelType);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetEngineDetails(command.Id);
-
-                    return CreatedAtRoute(
-                        "GetEngine", 
-                        new { engineId = command.Id },
-                        result
-                        );  
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                var result = GetEngineDetails(command.Id);
+                return CreatedAtRoute(
+                    "GetEngine",
+                    new { engineId = command.Id },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -143,22 +117,14 @@ namespace FuelTracker.Controllers
                     commandBus.AddCommand(command);
                 }
 
-                var commandResult = commandBus.InvokeCommandsQueue();
+                commandBus.InvokeCommandsQueue();
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetEngineDetails(commandBus.CommandIds);
-
-                    return CreatedAtRoute(
-                        "GetEnginesByIds",
-                        new { ids = string.Join(",", commandBus.CommandIds) },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                var result = GetEngineDetails(commandBus.CommandIds);
+                return CreatedAtRoute(
+                    "GetEnginesByIds",
+                    new { ids = string.Join(",", commandBus.CommandIds) },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -172,14 +138,9 @@ namespace FuelTracker.Controllers
             {
                 var command = new UpdateEngine(engineId, model.Name, model.Power, model.Torque, model.Cylinders, model.Displacement);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return GetEngine(command.Id);
-                else
-                    return StatusCode(500);
-
+                return GetEngine(command.Id);
             }
 
             return BadRequest(ModelState);
@@ -189,17 +150,11 @@ namespace FuelTracker.Controllers
         [HttpDelete("{engineId}")]
         public IActionResult DeleteEngine(Guid engineId)
         {
-            {
-                var command = new DeleteEngine(engineId);
-                commandBus.AddCommand(command);
+            var command = new DeleteEngine(engineId);
+            commandBus.AddCommand(command);
+            commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return Ok();
-                else
-                    return BadRequest(ModelState);
-            }
+            return Ok();
         }
     }
 }

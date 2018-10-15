@@ -3,10 +3,7 @@ using Common.Ordering.Engine;
 using Common.Ordering.Shared;
 using Common.Paging;
 using Dapper;
-using Domain.VehicleDomain;
 using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Queries.EngineQueries

@@ -74,6 +74,9 @@ namespace Services.Auth
 
             var user = await userManager.FindByIdAsync(refreshTokenCredentials.UserId.ToString());
 
+            if (user == null)
+                throw unauthorizedException;
+
             return GenerateUserToken(user);
         }
 

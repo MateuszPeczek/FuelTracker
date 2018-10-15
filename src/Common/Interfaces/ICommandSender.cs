@@ -6,7 +6,7 @@ namespace Common.Interfaces
     public interface ICommandSender
     {
         void AddCommand(ICommand command);
-        ICommandResult InvokeCommandsQueue();
+        void InvokeCommandsQueue();
 
         IEnumerable<Guid> CommandIds { get; }
     }

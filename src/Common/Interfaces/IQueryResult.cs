@@ -1,14 +1,7 @@
-﻿using Common.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Common.Interfaces
+﻿namespace Common.Interfaces
 {
     public interface IQueryResult<T>
     {
         T Data { get; set; }
-        string ExceptionMessage { get; set; }
-        ActionStatus QueryStatus { get; set; }
     }
 }

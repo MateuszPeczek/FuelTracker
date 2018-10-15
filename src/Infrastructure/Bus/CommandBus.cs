@@ -1,8 +1,5 @@
-﻿using Common.Enums;
-using Common.Interfaces;
+﻿using Common.Interfaces;
 using CustomExceptions.CommandBus;
-using Infrastructure.ExceptionHandling;
-using Infrastructure.CommunicationModels;
 using Persistence;
 using System;
 using System.Collections.Generic;
@@ -40,13 +37,13 @@ namespace Infrastructure.Bus
             commandIds.Add(command.Id);
         }
 
-        public ICommandResult InvokeCommandsQueue()
+        public void InvokeCommandsQueue()
         {
+            if (!commandsList.Any())
+                throw new EmptyCommandsQueueException("No commands in queue");
+
             try
             {
-                if (!commandsList.Any())
-                    throw new EmptyCommandsQueueException("No commands in queue");
-                
                 foreach (var command in commandsList)
                 {
                     var handler = commandHandlerFactory.GetHandler(command);
@@ -54,16 +51,19 @@ namespace Infrastructure.Bus
 
                     if (sendingMethod != null)
                         sendingMethod.Invoke(handler, new object[] { command });
+                    else
+                        throw new Exception($"Handle method not found on {handler.ToString()} object");
                 }
 
                 unitOfWork.SaveChanges();
-
-                return new CommandResult() { Status = ActionStatus.Success, ExceptionMessage = string.Empty };
             }
             catch (TargetInvocationException ex)
             {
-                var exception = ex.InnerException;
-                return new CommandResult() { Status = exceptionTypeResolver.ReturnStatusForException(exception), ExceptionMessage = ex.GetMessageIncludingInnerExceptions()};
+                throw ex.InnerException;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

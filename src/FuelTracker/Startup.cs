@@ -132,22 +132,11 @@ namespace FuelTracker
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-        
+
             if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+                app.UseMiddleware<DevExceptionHandler>();
             else
-            {
-                app.UseExceptionHandler(appBuilder =>
-                {
-                    appBuilder.Run(async context =>
-                    {
-                        context.Response.StatusCode = 500;
-                        await context.Response.WriteAsync("Unexpected exception happened");
-                    });
-                });
-            }
+                app.UseMiddleware<ExceptionHandler>();
 
             app.UseAuthentication();
 

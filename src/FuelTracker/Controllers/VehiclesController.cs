@@ -1,6 +1,5 @@
 ﻿using Commands.FuelStatisticsCommands;
 using Commands.VehicleCommands;
-using Common.Enums;
 using Common.Interfaces;
 using Common.Ordering.FuelStatistics;
 using Common.Ordering.Shared;
@@ -30,7 +29,7 @@ namespace FuelTracker.Controllers
         private readonly IQuerySender queryBus;
         private readonly Common.Interfaces.IAuthorizationService authService;
 
-        public VehiclesController(ICommandSender commandBus, 
+        public VehiclesController(ICommandSender commandBus,
                                   IQuerySender queryBus,
                                   Common.Interfaces.IAuthorizationService authService)
         {
@@ -42,15 +41,15 @@ namespace FuelTracker.Controllers
         // GET: api/vehicles
         [HttpGet("")]
         [ProducesResponseType(typeof(PaginatedList<VehicleDetails>), 200)]
-        public IActionResult GetVehicles([FromQuery]int pageSize = 10, 
-                                         [FromQuery]int pageNo = 1, 
+        public IActionResult GetVehicles([FromQuery]int pageSize = 10,
+                                         [FromQuery]int pageNo = 1,
                                          [FromQuery]VehicleOrderColumn orderbyColumn = VehicleOrderColumn.Manufacturer,
                                          [FromQuery]OrderDirection orderDirection = OrderDirection.Asc)
         {
             var query = new GetVehicleDetailsList(pageSize, pageNo, orderbyColumn, orderDirection);
             var result = queryBus.InvokeQuery<PaginatedList<VehicleDetails>>(query);
 
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         private VehicleDetails GetVehicleDetails(Guid vehicleId)
@@ -67,9 +66,6 @@ namespace FuelTracker.Controllers
         {
             var result = GetVehicleDetails(vehicleId);
 
-            if (result == null)
-                return NotFound();
-
             return Ok(result);
         }
 
@@ -81,23 +77,15 @@ namespace FuelTracker.Controllers
             {
                 var command = new AddVehicle(model.ModelId, new Guid()); //TODO: Retrieve current user id 
                 commandBus.AddCommand(command);
-                
-                var commandResult = commandBus.InvokeCommandsQueue();
+                commandBus.InvokeCommandsQueue();
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetVehicleDetails(command.Id);
+                var result = GetVehicleDetails(command.Id);
 
-                    return CreatedAtRoute(
-                        "GetVehicle",
-                        new { vehicleId = command.Id },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                return CreatedAtRoute(
+                    "GetVehicle",
+                    new { vehicleId = command.Id },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -111,12 +99,9 @@ namespace FuelTracker.Controllers
             {
                 var command = new UpdateVehicle(vehicleId, model.ProductionYear, model.EngineId);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return GetVehicle(command.Id);
-
+                return GetVehicle(command.Id);
             }
 
             return BadRequest();
@@ -129,13 +114,9 @@ namespace FuelTracker.Controllers
             {
                 var command = new DeleteVehicle(vehicleId);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return Ok();
-                else
-                    return BadRequest(ModelState);
+                return Ok();
             }
         }
 
@@ -146,10 +127,7 @@ namespace FuelTracker.Controllers
             var query = new GetFuelSummary(vehicleId);
             var result = queryBus.InvokeQuery<FuelSummaryDetails>(query);
 
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         //GET: api/vehicles/{vehicleId}/fuelreports
@@ -165,7 +143,7 @@ namespace FuelTracker.Controllers
             var query = new GetConsumptionReportsList(pageSize, pageNo, orderDirection, orderColumn, startDate, endDate);
             var result = queryBus.InvokeQuery<PaginatedList<ConsumptionReportDetails>>(query);
 
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         private ConsumptionReportDetails GetConsumptionReportDetails(Guid vehicleId, Guid fuelReportId)
@@ -181,10 +159,6 @@ namespace FuelTracker.Controllers
         public IActionResult GetConsumptionReport(Guid vehicleId, Guid fuelReportId)
         {
             var result = GetConsumptionReportDetails(vehicleId, fuelReportId);
-
-            if (result == null)
-                return NotFound();
-
             return Ok(result);
         }
 
@@ -195,24 +169,15 @@ namespace FuelTracker.Controllers
             if (ModelState.IsValid)
             {
                 var command = new CalculateFuelConsumption(vehicleId, model.UserId, model.Distance, model.FuelBurned, model.PricePerUnit);
-                commandBus.AddCommand(command);
+                commandBus.AddCommand(command); commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
+                var result = GetConsumptionReportDetails(vehicleId, command.Id);
 
-                if (commandResult.Status == ActionStatus.Success)
-                {
-                    var result = GetConsumptionReportDetails(vehicleId, command.Id);
-
-                    return CreatedAtRoute(
-                        "GetConsumptionReport",
-                        new { vehicleId = vehicleId, fuelReportId = command.Id },
-                        result
-                        );
-                }
-                else
-                {
-                    return StatusCode(500, commandResult.ExceptionMessage);
-                }
+                return CreatedAtRoute(
+                    "GetConsumptionReport",
+                    new { vehicleId = vehicleId, fuelReportId = command.Id },
+                    result
+                    );
             }
 
             return BadRequest(ModelState);
@@ -227,13 +192,9 @@ namespace FuelTracker.Controllers
                 var userData = authService.GetCurrentUserData();
                 var command = new UpdateConsumptionReport(vehicleId, fuelReportId, userData.UserId, model.Distance, model.FuelBurned, model.PricePerUnit);
                 commandBus.AddCommand(command);
+                commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return GetConsumptionReport(vehicleId, fuelReportId);
-                else
-                    return new JsonResult(commandResult);
+                return GetConsumptionReport(vehicleId, fuelReportId);
             }
 
             return BadRequest(ModelState);
@@ -243,17 +204,11 @@ namespace FuelTracker.Controllers
         [HttpDelete("{vehicleId}/fuelReport/{fuelReportId}")]
         public IActionResult DeleteConsumptionReport(Guid vehicleId, Guid fuelReportId)
         {
-            {
-                var command = new DeleteConsumptionReport(vehicleId, fuelReportId);
-                commandBus.AddCommand(command);
+            var command = new DeleteConsumptionReport(vehicleId, fuelReportId);
+            commandBus.AddCommand(command);
+            commandBus.InvokeCommandsQueue();
 
-                var commandResult = commandBus.InvokeCommandsQueue();
-
-                if (commandResult.Status == ActionStatus.Success)
-                    return Ok();
-                else
-                    return new JsonResult(commandResult);
-            }
+            return Ok();
         }
     }
 }
