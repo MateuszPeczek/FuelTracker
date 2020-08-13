@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using Persistence.UserStore;
+using Services.Email;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -97,7 +98,6 @@ namespace Services.Auth
         public async Task<bool> RequestConfirmEmail(string email)
         {
             var user = await userManager.FindByEmailAsync(email);
-
             var code = userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = $"http://{GetCurrentServerName()}/api/auth/ConfirmEmail?userId={user.Id}&code={code.Result}";
             var mailSenderResult = await emailService.SendEmail(user.Email, "Confirm your email",
